@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> <!-- #409EFF -->
+    <title>item</title>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header style="border-bottom: #409EFF">
+            <el-row type="flex" justify="center">
+                <el-col :span="12">
+                    <el-row :gutter="20">
+                        <el-col :span="4">
+                            <span style="color:#409EFF;font-size: 30px;height: 40px;">智购</span>
+                        </el-col>
+                        <el-col :span='inputLength'>
+                            <el-input prefix-icon="el-icon-search" placeholder="请输入内容" v-model="keyword" @keyup.native.enter="search" clearable></el-input>
+                        </el-col>
+                        <el-col :span="2" :offset="6">
+                            <el-button type="text">清单</el-button>
+                        </el-col>
+                        <el-col :span="2">
+                            <el-button type="text">排行</el-button>
+                        </el-col>
+                    </el-row>
+                </el-col>
+            </el-row>
+        </el-header>
+        <el-main>
+            <el-row type="flex" justify="center">
+                <el-col :span="12">
+
+                    <!-- main content -->
+                    <h2>{{greeting}}</h2>
+                    <!-- basic info card -->
+                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
+                        <div slot="header">
+                            <span>{{itemInfo.name.cn}} <span style="color: #909399">（{{itemInfo.name.en}}）</span></span>
+                            <!--<img style="float: right; height: 22px" :src="'imgs/markets/' + sessionInfo.sourceMarket + '/logo.png'">-->
+                            <!--<span style="float: right; height: 22px">来源：</span>-->
+                            <el-button type="text" style="float: right;padding: 2px">报错</el-button>
+                        </div>
+                        <div>
+                            <el-row>
+                                <el-col :span="10">
+                                    <el-carousel :interval="10000" indicator-position="outside">
+                                        <el-carousel-item v-for="img in itemInfo.basicImages" :key="img" >
+                                            <img :src='"imgs/items/" + itemInfo.name.code + "/basicImgs/" + img' height="300">
+                                        </el-carousel-item>
+                                    </el-carousel>
+                                </el-col>
+                                <el-col :span="12" :offset="1">
+                                    <el-row>
+                                        <el-col :span="12">
+                                            <div style="border-bottom: 1px solid #DCDFE6; border-right: 1px solid #DCDFE6; height: 150px">
+
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                            <div  style="border-bottom: 1px solid #DCDFE6; height: 150px">
+
+                                            </div>
+                                        </el-col>
+                                    </el-row>
+                                    <el-row>
+                                        <el-col :span="12">
+                                            <div style="border-right: 1px solid #DCDFE6; height: 150px;">
+
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                            <div style="height: 150px"></div>
+                                        </el-col>
+                                    </el-row>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </el-card>
+
+                    <!-- brand info card -->
+                    <el-card :body-style="{padding: '20px'}">
+                        <div slot="header">
+                            <span>品牌</span>
+                        </div>
+                        <div>
+
+                        </div>
+                    </el-card>
+
+                    <!-- detail info card -->
+                    <el-card :body-style="{padding: '20px'}">
+                        <div slot="header">
+                            <span>详细分析</span>
+                        </div>
+                        <div>
+
+                        </div>
+                    </el-card>
+
+                    <!-- end main content -->
+                </el-col>
+            </el-row>
+        </el-main>
+        <el-footer>
+
+        </el-footer>
+    </el-container>
+</div>
+</body>
+<!-- import jQuery -->
+<script src="jquery-3.3.1.js"></script>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- import ECharts -->
+<script src="echarts.js"></script>
+<script th:inline="javascript">
+    var app = new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                keyword: [[${keyword}]],
+                inputLength: 10,
+                headerInputShow: true,
+                headerButtonShow: true,
+                sessionInfo: {
+                    sourceMarket: 'jd'
+                },
+                itemInfo: {
+                    basicInfo: {
+                        sellerMarkets: ['jd']
+                    },
+                    name: {
+                        cn: '三星Galaxy S9+',
+                        en: 'SM-G9650/DS Galaxy S9+ Duos TD-LTE CN',
+                        code: 'samsung_s9'
+                    },
+                    basicImages: [
+                        '5a96a286N0958bd54.jpg',
+                        '5a9679d6N7b8d458f.jpg',
+                        '5a9679d7N0b3fa77e.jpg',
+                        '5a9679d7Nd85ccf33.jpg',
+                        '5a9679d7Ne0771423.jpg'
+                    ]
+                },
+                greetings: [
+                    '我觉得是...',
+                    '我猜是这个...',
+                    '我想你说的是...',
+                    '是这个吗？'
+                ]
+            }
+        },
+        computed: {
+            greeting: function () {
+                return this.greetings[Math.floor(Math.random() * this.greetings.length)]
+            }
+        },
+        methods: {
+            search: function() {
+                if(app.keyword != null){
+                    window.location.href = 'search?keyword=' + app.keyword;
+                }
+            },
+        }
+    })
+</script>
+</html>
