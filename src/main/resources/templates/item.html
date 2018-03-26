@@ -118,7 +118,7 @@
                         <div slot="header">
                             <span>基于品牌的分析</span>
                         </div>
-                        <el-row type="flex"  style="align-items: center;">
+                        <el-row type="flex"  style="align-items: center; border-bottom: #DCDFE6; border-bottom: 1px solid #DCDFE6; padding-bottom: 20px; margin-bottom: 20px">
                             <el-col :span="6" :offset="1" style="vertical-align: center;">
                                 <img :src="'imgs/brand/' + itemInfo.brand.code + '/logo.svg'" width="200px"/>
                             </el-col>
@@ -135,6 +135,11 @@
                                         score-template="{value}"
                                         style="padding-left: 100px">
                                 </el-rate>
+                            </el-col>
+                        </el-row>
+                        <el-row type="flex" style="align-items: center;height: 200px">
+                            <el-col :span="6">
+
                             </el-col>
                         </el-row>
                     </el-card>
