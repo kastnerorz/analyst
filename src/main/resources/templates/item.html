@@ -34,60 +34,109 @@
                 <el-col :span="12">
 
                     <!-- main content -->
+
+                    <!-- greeting words -->
                     <h2>{{greeting}}</h2>
+
                     <!-- basic info card -->
                     <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
+
+                        <!-- card header part -->
                         <div slot="header">
                             <span>{{itemInfo.name.cn}} <span style="color: #909399">（{{itemInfo.name.en}}）</span></span>
                             <!--<img style="float: right; height: 22px" :src="'imgs/markets/' + sessionInfo.sourceMarket + '/logo.png'">-->
                             <!--<span style="float: right; height: 22px">来源：</span>-->
                             <el-button type="text" style="float: right;padding: 2px">报错</el-button>
                         </div>
+
+                        <!-- card body part -->
                         <div>
                             <el-row>
                                 <el-col :span="10">
                                     <el-carousel :interval="10000" indicator-position="outside">
-                                        <el-carousel-item v-for="img in itemInfo.basicImages" :key="img" >
-                                            <img :src='"imgs/items/" + itemInfo.name.code + "/basicImgs/" + img' height="300">
+                                        <el-carousel-item v-for="img in itemInfo.basicImages" :key="img" style="text-align: center"  >
+                                            <img :src='"imgs/items/" + itemInfo.name.code + "/basicImgs/" + img' width="300">
                                         </el-carousel-item>
                                     </el-carousel>
                                 </el-col>
                                 <el-col :span="12" :offset="1">
-                                    <el-row>
-                                        <el-col :span="12">
-                                            <div style="border-bottom: 1px solid #DCDFE6; border-right: 1px solid #DCDFE6; height: 150px">
+                                    <h2 style="color: #ff9900"> ￥{{sessionInfo.price}}</h2>
+                                    <div id="priceChart" style="width: 400px; height: 250px"></div>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </el-card>
 
-                                            </div>
-                                        </el-col>
-                                        <el-col :span="12">
-                                            <div  style="border-bottom: 1px solid #DCDFE6; height: 150px">
+                    <!-- product based analyse card -->
+                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
+                        <div slot="header">
+                            <span>基本商品的分析</span>
+                        </div>
+                        <div>
+                        <el-row>
+                            <el-col :span="6">
+                                <div style="border-right: 1px solid #DCDFE6; height: 150px; text-align: center;">
+                                    <br />
+                                    <span style="text-align: center;">归一化销量排位</span>
+                                    <h2 style="text-align: center; vertical-align: center; color:#409EFF; font-size: xx-large ">#4</h2>
+                                    <!-- #F44336 #F44336 #FFEB3B #409EFF-->
+                                </div>
+                            </el-col>
+                            <el-col :span="6">
 
-                                            </div>
-                                        </el-col>
-                                    </el-row>
-                                    <el-row>
-                                        <el-col :span="12">
-                                            <div style="border-right: 1px solid #DCDFE6; height: 150px;">
 
-                                            </div>
-                                        </el-col>
-                                        <el-col :span="12">
-                                            <div style="height: 150px"></div>
-                                        </el-col>
-                                    </el-row>
+                            </el-col>
+                        </el-row>
+                        </div>
+                    </el-card>
+
+                    <!-- detail info card -->
+                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
+                        <div slot="header">
+                            <span>基本类别的分析</span>
+                        </div>
+                        <div>
+                            <el-row>
+                                <el-col :span="6">
+                                    <div style="border-right: 1px solid #DCDFE6; height: 150px; text-align: center;">
+                                        <br />
+                                        <span style="text-align: center;">归一化销量排位</span>
+                                        <h2 style="text-align: center; vertical-align: center; color:#409EFF; font-size: xx-large ">#4</h2>
+                                        <!-- #F44336 #F44336 #FFEB3B #409EFF-->
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+
+
                                 </el-col>
                             </el-row>
                         </div>
                     </el-card>
 
                     <!-- brand info card -->
-                    <el-card :body-style="{padding: '20px'}">
+                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
                         <div slot="header">
-                            <span>品牌</span>
+                            <span>基于品牌的分析</span>
                         </div>
-                        <div>
-
-                        </div>
+                        <el-row type="flex"  style="align-items: center;">
+                            <el-col :span="6" :offset="1" style="vertical-align: center;">
+                                <img :src="'imgs/brand/' + itemInfo.brand.code + '/logo.svg'" width="200px"/>
+                            </el-col>
+                            <el-col :span="19" style="padding-left: 50px">
+                                <h1>{{itemInfo.brand.cn}} （{{itemInfo.brand.en}}）</h1>
+                                <p>{{itemInfo.brand.introduction}}</p>
+                                <p style="text-align: right; font-style: italic">—— 维基百科</p>
+                                <p>客户总体评分：</p>
+                                <el-rate
+                                        v-model="itemInfo.brand.rate"
+                                        disabled
+                                        show-score
+                                        text-color="#ff9900"
+                                        score-template="{value}"
+                                        style="padding-left: 100px">
+                                </el-rate>
+                            </el-col>
+                        </el-row>
                     </el-card>
 
                     <!-- detail info card -->
@@ -128,11 +177,35 @@
                 headerInputShow: true,
                 headerButtonShow: true,
                 sessionInfo: {
-                    sourceMarket: 'jd'
+                    sourceMarket: 'jd',
+                    price: 6999
                 },
                 itemInfo: {
-                    basicInfo: {
-                        sellerMarkets: ['jd']
+                    sellerMarkets: ['jd'],
+                    prices: [
+                        ["2018-06-05",7999],
+                        ["2018-06-06",7999],
+                        ["2018-06-07",7899],
+                        ["2018-06-08",7699],
+                        ["2018-06-09",7999],
+                        ["2018-06-10",8230],
+                        ["2018-06-11",7600],
+                        ["2018-06-12",7499],
+                        ["2018-06-13",7799],
+                        ["2018-06-14",7450],
+                        ["2018-06-15",7399],
+                        ["2018-06-16",7499],
+                        ["2018-06-17",7200],
+                        ["2018-06-18",7199],
+                        ["2018-06-19",7199],
+                        ["2018-06-20",6999]
+                    ],
+                    brand: {
+                        cn: '三星电子',
+                        en: 'Samsung Electronics',
+                        code: 'samsung_electronics',
+                        introduction: '三星电子（朝鲜语：삼성전자／三星電子，英语：Samsung Electronics），三星集团子公司，韩国最大的消费电子产品及电子组件制造商，亦是全球最大的信息技术公司。2017年，三星电子在Interbrand全球品牌排行榜中名列第六位，连续第六年进入世界品牌前十强。在美国《财富》杂志2015年、2016年评选的财富世界500强排行榜中第13名。2016年，根据品牌咨询机构 Reputation Institute 调查，为美国最受尊敬科技企业第2名。',
+                        rate: 3.9
                     },
                     name: {
                         cn: '三星Galaxy S9+',
@@ -168,5 +241,119 @@
             },
         }
     })
+    // 初始化 EChart 实例
+    // var priceChart = echarts.init(document.getElementById('priceChart1'));
+
+    // 指定图表的配置项和数据
+    var option = {
+
+        title: {
+            text: '同价格商品\n占品牌的销量比重',
+            left: 'center',
+            top: 0,
+            textStyle: {
+                fontWeight: 'normal',
+                fontSize: 16
+            }
+
+        },
+
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+
+        visualMap: {
+            show: false,
+            // min: 80,
+            // max: 600,
+            inRange: {
+                colorLightness: [0, 1]
+            }
+        },
+        series : [
+            {
+                name:'访问来源',
+                type:'pie',
+                radius : '55%',
+                center: ['50%', '50%'],
+                data:[
+                    {value:335, name:'直接访问'},
+                    {value:310, name:'邮件营销'},
+                    {value:274, name:'联盟广告'},
+                    {value:235, name:'视频广告'},
+                    {value:400, name:'搜索引擎'}
+                ].sort(function (a, b) { return a.value - b.value; }),
+                roseType: 'radius',
+                label: {
+                    normal: {
+                        textStyle: {
+                            color: 'rgba(255, 255, 255, 0.3)'
+                        }
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        lineStyle: {
+                            color: 'rgba(255, 255, 255, 0.3)'
+                        },
+                        smooth: 0.2,
+                        length: 10,
+                        length2: 20
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#409EFF'
+                    }
+                },
+
+                animationType: 'scale',
+                animationEasing: 'elasticOut',
+                animationDelay: function (idx) {
+                    return Math.random() * 200;
+                }
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    // priceChart.setOption(option);
+
+    var priceChart = echarts.init(document.getElementById('priceChart'));
+
+    var dateList = app.itemInfo.prices.map(function (item) {
+        return item[0];
+    });
+    var priceList = app.itemInfo.prices.map(function (item) {
+        return item[1];
+    });
+
+    option = {
+
+        // Make gradient line here
+
+        title: {
+            left: 'center',
+            text: '近期价格走势'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            data: dateList
+        },
+        yAxis: {
+            splitLine: {show: false},
+            min: 6000
+        },
+
+        series: {
+            type: 'line',
+            showSymbol: false,
+            data: priceList
+        }
+    };
+    priceChart.setOption(option);
 </script>
 </html>
