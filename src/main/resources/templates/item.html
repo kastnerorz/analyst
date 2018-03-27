@@ -74,7 +74,7 @@
                         </div>
                         <div>
                         <el-row type="flex" style="align-items: center">
-                            <el-col :span="6">
+                            <el-col :span="4">
                                 <div style="border-right: 1px solid #DCDFE6; height: 150px; text-align: center;">
                                     <br />
                                     <span style="text-align: center;">归一化销量排位</span>
@@ -82,14 +82,14 @@
                                     <!-- #F44336 #F44336 #FFEB3B #409EFF-->
                                 </div>
                             </el-col>
-                            <el-col :span="6">
-                                <div id="latestPriceChart" style="height: 300px; width: 200px"></div>
+                            <el-col :span="8">
+                                <div id="totalPriceChart" style="height: 300px; width: 350px"></div>
                             </el-col>
-                            <el-col :span="6">
-                                <p style="font-size: 50px; font-weight: lighter; color: #909399">+</p>
+                            <el-col :span="4">
+                                <p style="font-size: 50px; font-weight: lighter; color: #909399; text-align: center">+</p>
                             </el-col>
-                            <el-col :span="6">
-                                <div id="totalPriceChart" style="height: 300px; width: 200px;"></div>
+                            <el-col :span="8">
+                                <div id="latestPriceChart" style="height: 300px; width: 200px;"></div>
                             </el-col>
                         </el-row>
                         </div>
@@ -103,7 +103,7 @@
                         <div>
                             <p style="color: #606266; margin-top: 0">关键特性</p>
                             <el-row style="border-bottom: 1px solid #DCDFE6; flex-direction: column; flex-wrap: wrap; height: 150px; padding-left: 20px" type="flex">
-                                <el-col :span="6" v-for="(feature, index) in itemInfo.keyFeatures" :key="feature">
+                                <el-col :span="12" v-for="(feature, index) in itemInfo.keyFeatures" :key="feature">
                                     <p  style="margin-bottom: 0">{{index + 1}}. {{feature}}</p>
                                 </el-col>
                             </el-row>
@@ -124,7 +124,7 @@
                         <div slot="header">
                             <span>基于品牌的分析</span>
                         </div>
-                        <el-row type="flex"  style="align-items: center; border-bottom: #DCDFE6; border-bottom: 1px solid #DCDFE6; padding-bottom: 20px; margin-bottom: 20px">
+                        <el-row type="flex"  style="align-items: center; padding-bottom: 20px; margin-bottom: 20px">
                             <el-col :span="6" :offset="1" style="vertical-align: center;">
                                 <img :src="'imgs/brand/' + itemInfo.brand.code + '/logo.svg'" width="200px"/>
                             </el-col>
@@ -143,25 +143,11 @@
                                 </el-rate>
                             </el-col>
                         </el-row>
-                        <el-row type="flex" style="align-items: center;height: 200px">
-                            <el-col :span="6">
-
-                            </el-col>
-                        </el-row>
                     </el-card>
 
-                    <!-- detail info card -->
-                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
-                        <div slot="header">
-                            <span>详细分析</span>
-                        </div>
-                        <div>
-
-                        </div>
-                    </el-card>
 
                     <!-- detail info card -->
-                    <el-card :body-style="{padding: '20px'}">
+                    <el-card :body-style="{padding: '20px'}" v-loading="true"  element-loading-text="正在抓取并分析评论...">
                         <div slot="header">
                             <span>基本评论的分析</span>
                         </div>
@@ -233,6 +219,15 @@
                         ["06-18",7199],
                         ["06-19",7199],
                         ["06-20",6999]
+                    ],
+                    latestPrices:[
+                        ["06-05",0],
+                        ["06-06",1],
+                        ["06-07",4],
+                        ["06-08",5],
+                        ["06-09",7],
+                        ["06-10",10],
+                        ["06-11",13]
                     ],
                     keyFeatures: [
                         'Dolby Atmos speakers',
@@ -327,20 +322,18 @@
         }
     })
     // 初始化 EChart 实例
-    // var priceChart = echarts.init(document.getElementById('priceChart1'));
+    var totalPriceChart = echarts.init(document.getElementById('totalPriceChart'));
 
     // 指定图表的配置项和数据
-    var option = {
-
+    var totalPriceChartOption = {
         title: {
-            text: '同价格商品\n占品牌的销量比重',
+            text: '历史总销量',
             left: 'center',
-            top: 0,
+            top: 20,
             textStyle: {
-                fontWeight: 'normal',
-                fontSize: 16
-            }
-
+                fontWeight: 'normal'
+            },
+            top: 5
         },
 
         tooltip : {
@@ -350,8 +343,8 @@
 
         visualMap: {
             show: false,
-            // min: 80,
-            // max: 600,
+            min: 80,
+            max: 600,
             inRange: {
                 colorLightness: [0, 1]
             }
@@ -360,27 +353,31 @@
             {
                 name:'访问来源',
                 type:'pie',
-                radius : '55%',
+                radius : '75%',
                 center: ['50%', '50%'],
                 data:[
-                    {value:335, name:'直接访问'},
-                    {value:310, name:'邮件营销'},
-                    {value:274, name:'联盟广告'},
-                    {value:235, name:'视频广告'},
-                    {value:400, name:'搜索引擎'}
+                    {value:335, name:'iPhone X'},
+                    {value:310, name:'Huawei \nMate 10 Pro'},
+                    {value:274, name:'Galaxy S9+'},
+                    {value:235, name:'iPhone 8'},
+                    {value:400, name:'iPhone 8 \nPlus'}
                 ].sort(function (a, b) { return a.value - b.value; }),
                 roseType: 'radius',
                 label: {
                     normal: {
                         textStyle: {
-                            color: 'rgba(255, 255, 255, 0.3)'
-                        }
-                    }
+                            color: '#FFF',
+                            distance: 2,
+
+                        },
+                        position: 'inside'
+                    },
+
                 },
                 labelLine: {
                     normal: {
                         lineStyle: {
-                            color: 'rgba(255, 255, 255, 0.3)'
+                            color: '#000'
                         },
                         smooth: 0.2,
                         length: 10,
@@ -389,7 +386,7 @@
                 },
                 itemStyle: {
                     normal: {
-                        color: '#409EFF'
+                        color: '#409EFF',
                     }
                 },
 
@@ -403,7 +400,7 @@
     };
 
     // 使用刚指定的配置项和数据显示图表。
-    // priceChart.setOption(option);
+    totalPriceChart.setOption(totalPriceChartOption);
 
     var priceChart = echarts.init(document.getElementById('priceChart'));
 
@@ -414,13 +411,17 @@
         return item[1];
     });
 
-    option = {
+    priceChartOption = {
 
         // Make gradient line here
 
         title: {
             left: 'center',
-            text: '近期价格走势'
+            text: '近期价格走势',
+            textStyle: {
+                fontWeight: 'normal',
+
+            }
         },
         tooltip: {
             trigger: 'axis'
@@ -439,6 +440,51 @@
             data: priceList
         }
     };
-    priceChart.setOption(option);
+    priceChart.setOption(priceChartOption);
+
+    var latestPriceChart = echarts.init(document.getElementById('latestPriceChart'));
+
+    var latestDateList = app.itemInfo.latestPrices.map(function (item) {
+        return item[0];
+    });
+    var latestPriceList = app.itemInfo.latestPrices.map(function (item) {
+        return item[1];
+    });
+
+    latestPriceChartOption = {
+
+        // Make gradient line here
+
+        title: {
+            left: 'center',
+            text: '近期销量',
+            textStyle: {
+                fontWeight: 'normal'
+            },
+            top: 5
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: {
+            data: latestDateList
+        },
+        yAxis: {
+            splitLine: {show: false},
+            min: 0
+        },
+
+        series: {
+            type: 'line',
+            showSymbol: false,
+            data: latestPriceList,
+            itemStyle: {
+                normal: {
+                    color: '#409EFF',
+                }
+            }
+        }
+    };
+    latestPriceChart.setOption(latestPriceChartOption);
 </script>
 </html>
