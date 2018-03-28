@@ -147,7 +147,7 @@
 
 
                     <!-- detail info card -->
-                    <el-card :body-style="{padding: '20px'}" v-loading="true"  element-loading-text="正在抓取并分析评论...">
+                    <el-card :body-style="{padding: '20px'}" v-loading="loading"  element-loading-text="正在抓取并分析评论...">
                         <div slot="header">
                             <span>基本评论的分析</span>
                         </div>
@@ -200,6 +200,7 @@
                     sourceMarket: 'jd',
                     price: 6999
                 },
+                loading: true,
                 itemInfo: {
                     sellerMarkets: ['jd'],
                     prices: [
@@ -318,9 +319,22 @@
                 if(app.keyword != null){
                     window.location.href = 'search?keyword=' + app.keyword;
                 }
-            },
+            }
         }
-    })
+    });
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function demo() {
+        console.log('Taking a break...');
+        await sleep(20000);
+        app.loading = false;
+        console.log('Two second later');
+    }
+
+    demo();
+    //
     // 初始化 EChart 实例
     var totalPriceChart = echarts.init(document.getElementById('totalPriceChart'));
 
@@ -351,7 +365,7 @@
         },
         series : [
             {
-                name:'访问来源',
+                name:'总销量',
                 type:'pie',
                 radius : '75%',
                 center: ['50%', '50%'],
