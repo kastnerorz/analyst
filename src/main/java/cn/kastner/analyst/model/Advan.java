@@ -6,14 +6,14 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "pro")
-public class Pro {
+@Table(name = "advan")
+public class Advan {
 
     @Id
     private String id;
     private String content;
 
-    public Pro () {
+    public Advan () {
         id = UUID.randomUUID().toString();
     }
 
