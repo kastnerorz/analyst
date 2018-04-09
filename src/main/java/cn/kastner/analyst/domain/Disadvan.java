@@ -1,4 +1,4 @@
-package cn.kastner.analyst.model;
+package cn.kastner.analyst.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -6,14 +6,14 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "market")
-public class Market {
+@Table(name = "disadvan")
+public class Disadvan {
 
     @Id
     private String id;
-    private String name;
+    private String content;
 
-    public Market () {
+    public Disadvan () {
         id = UUID.randomUUID().toString();
     }
 
@@ -25,11 +25,11 @@ public class Market {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getContent() {
+        return content;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setContent(String content) {
+        this.content = content;
     }
 }

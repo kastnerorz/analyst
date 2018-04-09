@@ -1,4 +1,4 @@
-package cn.kastner.analyst.model;
+package cn.kastner.analyst.domain;
 
 import javax.persistence.Entity;
 
