@@ -12,11 +12,12 @@ public class ItemController {
     @Autowired
     ItemRepository itemRepository;
 
-    @RequestMapping(value = "/getBasicInfo")
-    public String getBasicInfo() {
-        String result = "";
+    @RequestMapping(value = "/getItemInfo")
+    public Item getItemInfo() {
+        Item item = new Item();
 
 
-        return result;
+
+        return item;
     }
 }
