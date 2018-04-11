@@ -4,7 +4,9 @@ import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 public class ItemController {
@@ -13,11 +15,7 @@ public class ItemController {
     ItemRepository itemRepository;
 
     @RequestMapping(value = "/getItemInfo")
-    public Item getItemInfo() {
-        Item item = new Item();
-
-
-
-        return item;
+    public Item getItemInfo(@RequestParam String id) {
+        return itemRepository.findItemById(id);
     }
 }
