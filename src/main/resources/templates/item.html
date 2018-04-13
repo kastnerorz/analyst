@@ -30,13 +30,16 @@
             </el-row>
         </el-header>
         <el-main>
-            <el-row type="flex" justify="center">
-                <el-col :span="12">
-
-                    <!-- main content -->
-
+            <el-row>
+                <el-col :span="12" :offset="4">
                     <!-- greeting words -->
                     <h2>{{greeting}}</h2>
+                </el-col>
+            </el-row>
+            <el-row type="flex">
+                <el-col :span="12" :offset="4">
+
+                    <!-- main content -->
 
                     <!-- basic info card -->
                     <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
@@ -170,7 +173,40 @@
                     </el-card>
                     <!-- end main content -->
                 </el-col>
+                <el-col :span="7" :offset="1">
+                    <el-card>
+                        <div slot="header">
+                            <span>需求清单</span>
+                        </div>
+                        <div>
+                           <!--<el-row type="flex" style="flex-direction: row; flex-wrap: wrap;">-->
+                               <!--<el-tag v-for="tag in fulfilledTags"-->
+                                       <!--:key="tag.name"-->
+                                       <!--closable-->
+                                       <!--:type="success"></el-tag>-->
+                           <!--</el-row>-->
+                            <!--<el-row type="flex"-->
+                                    <!--justify="space-around"-->
+                                    <!--v-for="tag in unfulfilledTags"-->
+                                    <!--:key="tag.name"></el-row>-->
+                            <el-collapse v-model="activeDemandBlock">
+                                <el-collapse-item v-for="demand in demands">
+                                    <div slot="title">
+                                        <template>
+                                            {{demand.name}}：
+                                            <el-tag v-for="tag in demand.tags"
+                                                    :key="tag.name"
+                                                    closable
+                                                    :type=""></el-tag>
+                                        </template>
+                                    </div>
+                                </el-collapse-item>
+                            </el-collapse>
+                        </div>
+                    </el-card>
+                </el-col>
             </el-row>
+
         </el-main>
         <el-footer>
 
@@ -189,7 +225,7 @@
 <script th:inline="javascript">
     var app = new Vue({
         el: '#app',
-        data: function() {
+        data () {
             return {
                 keyword: [[${keyword}]],
                 inputLength: 10,
@@ -200,6 +236,9 @@
                     sourceMarket: 'jd',
                     price: 6999
                 },
+                fulfilledTags: [
+                    ''
+                ],
                 loading: true,
                 itemInfo: {
                     sellerMarkets: ['jd'],
@@ -310,30 +349,30 @@
             }
         },
         computed: {
-            greeting: function () {
+            greeting () {
                 return this.greetings[Math.floor(Math.random() * this.greetings.length)]
             }
         },
         methods: {
-            search: function() {
+            search () {
                 if(app.keyword != null){
                     window.location.href = 'search?keyword=' + app.keyword;
                 }
             }
         }
     });
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    // function sleep(ms) {
+    //     return new Promise(resolve => setTimeout(resolve, ms));
+    // }
 
-    async function demo() {
-        console.log('Taking a break...');
-        await sleep(20000);
-        app.loading = false;
-        console.log('Two second later');
-    }
+    // async function demo() {
+    //     console.log('Taking a break...');
+    //     await sleep(20000);
+    //     app.loading = false;
+    //     console.log('Two second later');
+    // }
 
-    demo();
+    // demo();
     //
     // 初始化 EChart 实例
     var totalPriceChart = echarts.init(document.getElementById('totalPriceChart'));
@@ -381,11 +420,11 @@
                     normal: {
                         textStyle: {
                             color: '#FFF',
-                            distance: 2,
+                            distance: 2
 
                         },
                         position: 'inside'
-                    },
+                    }
 
                 },
                 labelLine: {
