@@ -171,6 +171,13 @@
                     <!-- end main content -->
                 </el-col>
             </el-row>
+            <el-row :span="6">
+                <el-card>
+                    <div slot="header">
+                        <span>你的选择</span>
+                    </div>
+                </el-card>
+            </el-row>
         </el-main>
         <el-footer>
 
@@ -322,18 +329,18 @@
             }
         }
     });
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    // function sleep(ms) {
+    //     return new Promise(resolve => setTimeout(resolve, ms));
+    // }
 
-    async function demo() {
-        console.log('Taking a break...');
-        await sleep(20000);
-        app.loading = false;
-        console.log('Two second later');
-    }
+    // async function demo() {
+    //     console.log('Taking a break...');
+    //     await sleep(20000);
+    //     app.loading = false;
+    //     console.log('Two second later');
+    // }
 
-    demo();
+    // demo();
     //
     // 初始化 EChart 实例
     var totalPriceChart = echarts.init(document.getElementById('totalPriceChart'));
@@ -381,11 +388,11 @@
                     normal: {
                         textStyle: {
                             color: '#FFF',
-                            distance: 2,
+                            distance: 2
 
                         },
                         position: 'inside'
-                    },
+                    }
 
                 },
                 labelLine: {
