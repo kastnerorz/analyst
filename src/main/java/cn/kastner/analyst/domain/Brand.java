@@ -1,5 +1,6 @@
 package cn.kastner.analyst.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -12,8 +13,12 @@ public class Brand {
 
     @Id
     private String id;
+
     private String name;
-    private Text introduction;
+
+    @Column(columnDefinition = "TEXT")
+    private String introduction;
+
     private Integer rate;
 
     public Brand () {
@@ -44,11 +49,11 @@ public class Brand {
         this.rate = rate;
     }
 
-    public Text getIntroduction() {
+    public String getIntroduction() {
         return introduction;
     }
 
-    public void setIntroduction(Text introduction) {
+    public void setIntroduction(String introduction) {
         this.introduction = introduction;
     }
 }
