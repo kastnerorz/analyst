@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.xml.soap.Text;
 import java.util.UUID;
 
 @Entity
@@ -12,40 +11,41 @@ import java.util.UUID;
 public class Brand {
 
     @Id
-    private String id;
+    private String brandId;
 
-    private String name;
+    private String brandName;
 
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
-    private Integer rate;
+    @Column(columnDefinition = "decimal(10,2)")
+    private Float rate;
 
     public Brand () {
-        id = UUID.randomUUID().toString();
+        brandId = UUID.randomUUID().toString();
     }
 
-    public String getId() {
-        return id;
+    public String getBrandId() {
+        return brandId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setBrandId(String brandId) {
+        this.brandId = brandId;
     }
 
-    public String getName() {
-        return name;
+    public String getBrandName() {
+        return brandName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
 
-    public Integer getRate() {
+    public Float getRate() {
         return rate;
     }
 
-    public void setRate(Integer rate) {
+    public void setRate(Float rate) {
         this.rate = rate;
     }
 

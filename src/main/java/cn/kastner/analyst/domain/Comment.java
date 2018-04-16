@@ -10,20 +10,24 @@ import java.util.UUID;
 public class Comment {
 
     @Id
-    private String id;
+    private String commentId;
+
     private String component;
+
     private String feature;
 
+    private String itemId;
+
     public Comment () {
-        id = UUID.randomUUID().toString();
+        commentId = UUID.randomUUID().toString();
     }
 
-    public String getId() {
-        return id;
+    public String getCommentId() {
+        return commentId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
 
     public String getComponent() {
@@ -40,5 +44,13 @@ public class Comment {
 
     public void setFeature(String feature) {
         this.feature = feature;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 }

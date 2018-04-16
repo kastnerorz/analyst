@@ -10,26 +10,27 @@ import java.util.UUID;
 public class Market {
 
     @Id
-    private String id;
-    private String name;
+    private String marketId;
+
+    private String marketName;
 
     public Market () {
-        id = UUID.randomUUID().toString();
+        marketId = UUID.randomUUID().toString();
     }
 
-    public String getId() {
-        return id;
+    public String getMarketId() {
+        return marketId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMarketId(String marketId) {
+        this.marketId = marketId;
     }
 
-    public String getName() {
-        return name;
+    public String getMarketName() {
+        return marketName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
     }
 }

@@ -16,6 +16,6 @@ public class ItemController {
 
     @RequestMapping(value = "/getItemInfo")
     public Item getItemInfo(@RequestParam String id) {
-        return itemRepository.findItemById(id);
+        return itemRepository.findItemByItemId(id);
     }
 }

@@ -1,9 +1,8 @@
 package cn.kastner.analyst.domain;
 
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -11,28 +10,35 @@ import java.util.UUID;
 public class Price {
 
     @Id
-    private String id;
-    private String content;
+    private String itemId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
+
+    private String price;
+
     private String marketId;
 
+    private Long volume;
+
     public Price () {
-        id = UUID.randomUUID().toString();
+        itemId = UUID.randomUUID().toString();
     }
 
-    public String getId() {
-        return id;
+    public String getItemId() {
+        return itemId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
-    public String getContent() {
-        return content;
+    public String getPrice() {
+        return price;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public String getMarketId() {
@@ -41,5 +47,21 @@ public class Price {
 
     public void setMarketId(String marketId) {
         this.marketId = marketId;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Long getVolume() {
+        return volume;
+    }
+
+    public void setVolume(Long volume) {
+        this.volume = volume;
     }
 }

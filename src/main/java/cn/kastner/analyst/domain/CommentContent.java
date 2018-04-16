@@ -1,5 +1,6 @@
 package cn.kastner.analyst.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -10,30 +11,21 @@ import java.util.UUID;
 public class CommentContent {
 
     @Id
-    private String id;
     private String commentId;
-    private String title;
+
     private String content;
 
-    public CommentContent () {
-        id = UUID.randomUUID().toString();
+    @Column(columnDefinition="BOOLEAN DEFAULT false")
+    private Boolean isGood;
+
+    public String getCommentId() {
+        return commentId;
     }
 
-    public String getId() {
-        return id;
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public String getContent() {
         return content;
@@ -43,11 +35,11 @@ public class CommentContent {
         this.content = content;
     }
 
-    public String getCommentId() {
-        return commentId;
+    public Boolean getGood() {
+        return isGood;
     }
 
-    public void setCommentId(String commentId) {
-        this.commentId = commentId;
+    public void setGood(Boolean good) {
+        isGood = good;
     }
 }
