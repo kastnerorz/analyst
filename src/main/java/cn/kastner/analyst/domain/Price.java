@@ -15,7 +15,8 @@ public class Price {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-    private String price;
+    @Column(columnDefinition = "decimal(10,2)")
+    private Double price;
 
     private String marketId;
 
@@ -33,11 +34,11 @@ public class Price {
         this.itemId = itemId;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

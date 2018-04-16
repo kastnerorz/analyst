@@ -18,7 +18,7 @@ public class Brand {
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
-    @Column(columnDefinition = "decimal(10,2)")
+    @Column(columnDefinition = "decimal(2,2)")
     private Float rate;
 
     public Brand () {
