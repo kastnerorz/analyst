@@ -13,6 +13,9 @@ public class Item {
     private String id;
     private String cname;
     private String ename;
+    private String brandId;
+    private String advan;
+    private String disAdvan;
 
     public Item () {
         id = UUID.randomUUID().toString();
@@ -40,5 +43,29 @@ public class Item {
 
     public void setEname(String ename) {
         this.ename = ename;
+    }
+
+    public String getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(String brandId) {
+        this.brandId = brandId;
+    }
+
+    public String getAdvan() {
+        return advan;
+    }
+
+    public void setAdvan(String advan) {
+        this.advan = advan;
+    }
+
+    public String getDisAdvan() {
+        return disAdvan;
+    }
+
+    public void setDisAdvan(String disAdvan) {
+        this.disAdvan = disAdvan;
     }
 }
