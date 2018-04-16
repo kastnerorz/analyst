@@ -27,6 +27,9 @@ public class Item {
     @Column(columnDefinition = "TEXT")
     private String disAdvan;
 
+    @Column(columnDefinition = "TEXT")
+    private String keyFeature;
+
     public Item () {
         itemId = UUID.randomUUID().toString();
     }
@@ -77,5 +80,13 @@ public class Item {
 
     public void setDisAdvan(String disAdvan) {
         this.disAdvan = disAdvan;
+    }
+
+    public String getKeyFeature() {
+        return keyFeature;
+    }
+
+    public void setKeyFeature(String keyFeature) {
+        this.keyFeature = keyFeature;
     }
 }

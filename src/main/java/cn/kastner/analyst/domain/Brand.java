@@ -13,12 +13,14 @@ public class Brand {
     @Id
     private String brandId;
 
-    private String brandName;
+    private String brandZhName;
+
+    private String brandEnName;
 
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
-    @Column(columnDefinition = "decimal(2,2)")
+    @Column(columnDefinition = "decimal(5,2)")
     private Float rate;
 
     public Brand () {
@@ -33,12 +35,12 @@ public class Brand {
         this.brandId = brandId;
     }
 
-    public String getBrandName() {
-        return brandName;
+    public String getBrandZhName() {
+        return brandZhName;
     }
 
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
+    public void setBrandZhName(String brandZhName) {
+        this.brandZhName = brandZhName;
     }
 
     public Float getRate() {
@@ -55,5 +57,13 @@ public class Brand {
 
     public void setIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public String getBrandEnName() {
+        return brandEnName;
+    }
+
+    public void setBrandEnName(String brandEnName) {
+        this.brandEnName = brandEnName;
     }
 }

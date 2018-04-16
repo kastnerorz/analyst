@@ -11,12 +11,19 @@ import java.util.UUID;
 public class CommentContent {
 
     @Id
+    private String id;
+
     private String commentId;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column(columnDefinition="BOOLEAN DEFAULT false")
     private Boolean isGood;
+
+    public CommentContent () {
+        id = UUID.randomUUID().toString();
+    }
 
     public String getCommentId() {
         return commentId;
@@ -41,5 +48,13 @@ public class CommentContent {
 
     public void setGood(Boolean good) {
         isGood = good;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
