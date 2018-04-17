@@ -8,5 +8,6 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, String> {
 
     Item findItemByItemId(String itemId);
-    List<Item> findItemByCname(String Cname);
+    List<Item> findItemByCnameContaining(String Cname);
+    List<String> findAllByCnameContaining(String Cname);
 }
