@@ -3,6 +3,7 @@ package cn.kastner.analyst.controller;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.util.NetResult;
+import netscape.javascript.JSObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

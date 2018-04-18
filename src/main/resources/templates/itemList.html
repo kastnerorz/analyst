@@ -16,7 +16,7 @@
                         <el-col :span="4">
                             <span style="color:#409EFF;font-size: 30px;height: 40px;">智购</span>
                         </el-col>
-                        <el-col :span='inputLength'>
+                        <el-col :span="10">
                             <el-input prefix-icon="el-icon-search" placeholder="请输入内容" v-model="keyword" @keyup.native.enter="search" clearable></el-input>
                         </el-col>
                         <el-col :span="2" :offset="6">
@@ -34,7 +34,20 @@
                 <el-col :span="12" :offset="4">
 
                     <!-- main content -->
-                    [[${keyword}]]
+                    <el-row type="flex" style="flex-direction: row; flex-wrap: wrap" :gutter="5">
+                        <el-col :span="8" v-for="(o, index) in 3" :key="o">
+                            <el-card :body-style="{ padding: '0px' }">
+                                <img src="~examples/assets/images/hamburger.png" class="image">
+                                <div style="padding: 14px;">
+                                    <span>好吃的汉堡</span>
+                                    <div class="bottom clearfix">
+                                        <time class="time">{{ currentDate }}</time>
+                                        <el-button type="text" class="button">操作按钮</el-button>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-row>
                     <!-- basic info card -->
 
                     <!-- end main content -->
@@ -107,25 +120,16 @@
             }
         }
     });
-    // axios.post('/getItemInfoByCname', {
-    //     cname: [[${keyword}]]
-    // })
-    //     .then(function (res) {
-    //         console.log(res);
-    //     })
-    //     .catch(function (err) {
-    //         console.log(err);
-    //     })
     axios({
         url: '/getItemInfoByCname',
         method: 'post',
-        dataType: 'text',
-        data: {
+        params: {
             cname: [[${keyword}]]
         }
     })
         .then(function (response) {
             app.items = response.result;
+            console.log(response.data.result);
         })
         .catch(function (err) {
             console.log(err);

@@ -26,8 +26,8 @@ public class HomeController {
     public String search(@RequestParam String keyword, Model model) {
         model.addAttribute("keyword", keyword);
         Boolean isMatch = Pattern.matches(".*https?.*", keyword);
-        System.out.println(keyword);
-        System.out.println(isMatch);
+//        System.out.println(keyword);
+//        System.out.println(isMatch);
 
         if (isMatch) {
 //            String itemId = jdCrawler.crawItem(keyword);
