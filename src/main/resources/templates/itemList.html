@@ -30,147 +30,13 @@
             </el-row>
         </el-header>
         <el-main>
-            <el-row>
-                <el-col :span="12" :offset="4">
-                    <!-- greeting words -->
-                    <h2>{{greeting}}</h2>
-                </el-col>
-            </el-row>
             <el-row type="flex">
                 <el-col :span="12" :offset="4">
 
                     <!-- main content -->
-
+                    [[${keyword}]]
                     <!-- basic info card -->
-                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
 
-                        <!-- card header part -->
-                        <div slot="header">
-                            <span>{{itemInfo.name.cn}} <span style="color: #909399">（{{itemInfo.name.en}}）</span></span>
-                            <!--<img style="float: right; height: 22px" :src="'imgs/markets/' + sessionInfo.sourceMarket + '/logo.png'">-->
-                            <!--<span style="float: right; height: 22px">来源：</span>-->
-                            <el-button type="text" style="float: right;padding: 2px">报错</el-button>
-                        </div>
-
-                        <!-- card body part -->
-                        <div>
-                            <el-row>
-                                <el-col :span="10">
-                                    <el-carousel :interval="10000" indicator-position="outside">
-                                        <el-carousel-item v-for="img in itemInfo.basicImages" :key="img" style="text-align: center"  >
-                                            <img :src='"imgs/items/" + itemInfo.name.code + "/basicImgs/" + img' width="300">
-                                        </el-carousel-item>
-                                    </el-carousel>
-                                </el-col>
-                                <el-col :span="12" :offset="1">
-                                    <h2 style="color: #ff9900"> ￥{{sessionInfo.price}}</h2>
-                                    <div id="priceChart" style="width: 400px; height: 250px"></div>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </el-card>
-
-                    <!-- product based analyse card -->
-                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
-                        <div slot="header">
-                            <span>基本类别的分析 <span style="color: #909399">（价格区间：5000 ~ 9000）</span></span>
-                        </div>
-                        <div>
-                            <el-row type="flex" style="align-items: center">
-                                <el-col :span="4">
-                                    <div style="border-right: 1px solid #DCDFE6; height: 150px; text-align: center;">
-                                        <br />
-                                        <span style="text-align: center;">归一化销量排位</span>
-                                        <h2 style="text-align: center; vertical-align: center; color:#409EFF; font-size: xx-large ">#4 <i class="el-icon-caret-top" style="color: #67C23A"></i></h2>
-                                        <!-- #F44336 #F44336 #FFEB3B #409EFF-->
-                                    </div>
-                                </el-col>
-                                <el-col :span="8">
-                                    <div id="totalPriceChart" style="height: 300px; width: 350px"></div>
-                                </el-col>
-                                <el-col :span="4">
-                                    <p style="font-size: 50px; font-weight: lighter; color: #909399; text-align: center">+</p>
-                                </el-col>
-                                <el-col :span="8">
-                                    <div id="latestPriceChart" style="height: 300px; width: 200px;"></div>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </el-card>
-
-                    <!-- detail info card -->
-                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
-                        <div slot="header">
-                            <span>基本商品的分析</span>
-                        </div>
-                        <div>
-                            <p style="color: #606266; margin-top: 0">关键特性</p>
-                            <el-row style="border-bottom: 1px solid #DCDFE6; flex-direction: column; flex-wrap: wrap; height: 150px; padding-left: 20px" type="flex">
-                                <el-col :span="12" v-for="(feature, index) in itemInfo.keyFeatures" :key="feature">
-                                    <p  style="margin-bottom: 0">{{index + 1}}. {{feature}}</p>
-                                </el-col>
-                            </el-row>
-                            <p style="color: #606266;">优缺点</p>
-                            <el-row style="padding-left: 20px" type="flex">
-                                <el-col :span="12">
-                                    <p v-for="pro in itemInfo.pros" :key="pro"><i class="el-icon-check" style="color: #67C23A"></i> {{pro}}</p>
-                                </el-col>
-                                <el-col :span="12">
-                                    <p v-for="con in itemInfo.cons" :key="con"><i class="el-icon-close" style="color: #F56C6C"></i> {{con}}</p>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </el-card>
-
-                    <!-- brand info card -->
-                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
-                        <div slot="header">
-                            <span>基于品牌的分析</span>
-                        </div>
-                        <el-row type="flex"  style="align-items: center; padding-bottom: 20px; margin-bottom: 20px">
-                            <el-col :span="6" :offset="1" style="vertical-align: center;">
-                                <img :src="'imgs/brand/' + itemInfo.brand.code + '/logo.svg'" width="200px"/>
-                            </el-col>
-                            <el-col :span="19" style="padding-left: 50px">
-                                <h1>{{itemInfo.brand.cn}} （{{itemInfo.brand.en}}）</h1>
-                                <p>{{itemInfo.brand.introduction}}</p>
-                                <p style="text-align: right; font-style: italic">—— 维基百科</p>
-                                <p>客户总体评分：</p>
-                                <el-rate
-                                        v-model="itemInfo.brand.rate"
-                                        disabled
-                                        show-score
-                                        text-color="#ff9900"
-                                        score-template="{value}"
-                                        style="padding-left: 100px">
-                                </el-rate>
-                            </el-col>
-                        </el-row>
-                    </el-card>
-
-
-                    <!-- detail info card -->
-                    <el-card :body-style="{padding: '20px'}" v-loading="loading"  element-loading-text="正在抓取并分析评论...">
-                        <div slot="header">
-                            <span>基本评论的分析</span>
-                        </div>
-                        <div style="margin-left: 10px">
-                            <el-row type="flex" style="align-items: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #DCDFE6" v-for="comment in itemInfo.comments" :key="comment.feature">
-                                <el-col :span="6">
-                                    <p>{{comment.component}}：</p>
-                                    <p style="color: #409EFF;">{{comment.feature}}</p>
-                                </el-col>
-                                <el-col :span="18">
-                                    <el-collapse v-model="commentActiveNames">
-                                        <el-collapse-item v-for="(content, index) in comment.contents" :title="content.title + '...'"  :name="index" :key="content.all">
-                                            <div>{{content.all}}</div>
-                                        </el-collapse-item>
-                                    </el-collapse>
-                                </el-col>
-                            </el-row>
-                            <el-button type="text" style="float: right; margin: 10px">查看更多</el-button>
-                        </div>
-                    </el-card>
                     <!-- end main content -->
                 </el-col>
                 <el-col :span="7" :offset="1">
@@ -227,73 +93,11 @@
         data() {
             return {
                 keyword: [[${keyword}]],
-                inputLength: 10,
-                headerInputShow: true,
-                headerButtonShow: true,
-                commentActiveNames: [],
-                sessionInfo: {
-                    sourceMarket: 'jd',
-                    price: 6999
-                },
-                fulfilledTags: [
-                    ''
-                ],
-                loading: true,
-                itemInfo: {
-                    sellerMarkets: ['jd'],
-                    prices: [
-                        ["06-05",7999]
-                    ],
-                    latestPrices:[
-                        ["06-05",0]
-                    ],
-                    keyFeatures: [],
-                    pros: [],
-                    cons: [],
-                    brand: {
-                        cn: '',
-                        en: '',
-                        code: '',
-                        introduction: '',
-                        rate: 0
-                    },
-                    name: {
-                        cn: '',
-                        en: '',
-                        code: ''
-                    },
-                    basicImages: [
-                        '5a96a286N0958bd54.jpg',
-                        '5a9679d6N7b8d458f.jpg',
-                        '5a9679d7N0b3fa77e.jpg',
-                        '5a9679d7Nd85ccf33.jpg',
-                        '5a9679d7Ne0771423.jpg'
-                    ],
-                    comments: [
-                        {
-                            component: '',
-                            feature: '',
-                            contents: [
-                                {
-                                    title: '',
-                                    all: ''
-                                }
-                            ]
-                        }
-                    ]
-                },
-                greetings: [
-                    '我觉得是...',
-                    '我猜是这个...',
-                    '我想你说的是...',
-                    '是这个吗？'
-                ]
+                items: []
             }
         },
         computed: {
-            greeting () {
-                return this.greetings[Math.floor(Math.random() * this.greetings.length)]
-            }
+
         },
         methods: {
             search () {
@@ -303,5 +107,28 @@
             }
         }
     });
+    // axios.post('/getItemInfoByCname', {
+    //     cname: [[${keyword}]]
+    // })
+    //     .then(function (res) {
+    //         console.log(res);
+    //     })
+    //     .catch(function (err) {
+    //         console.log(err);
+    //     })
+    axios({
+        url: '/getItemInfoByCname',
+        method: 'post',
+        dataType: 'text',
+        data: {
+            cname: [[${keyword}]]
+        }
+    })
+        .then(function (response) {
+            app.items = response.result;
+        })
+        .catch(function (err) {
+            console.log(err);
+        })
 </script>
 </html>
