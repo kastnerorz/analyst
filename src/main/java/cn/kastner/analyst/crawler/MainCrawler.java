@@ -1,7 +1,5 @@
 package cn.kastner.analyst.crawler;
 
-import cn.kastner.analyst.crawler.JdCrawler;
-
 public class MainCrawler {
 
     JdCrawler jdCrawler;

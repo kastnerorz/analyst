@@ -28,10 +28,14 @@ public class CrawlerTest {
 //            System.out.println(itemCname);
 //Sample Text
 //        }
-        Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
-        Matcher modelMatcher = modelPattern.matcher("【三星Galaxy S9+】三星 Galaxy S9+（SM-G9650/DS）6GB+128GB 谜夜黑 移动联通电信4G手机 双卡双待【行情 报价 价格 评测】-京东");
-        if (modelMatcher.find()) {
-            System.out.println(modelMatcher.group(1));
+        String cat = "";
+        Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
+        Matcher catMatcher = catPattern.matcher("t17188/348/549404753/23939/99deacd5/5a9679d8Nc56087b7.jpg\"],\n" +
+                "                cat: [9987, 653, 655],\n" +
+                "                forceAdUpdate: '8277',");
+        if (catMatcher.find()) {
+            cat = catMatcher.group(1);
+            System.out.println(cat);
         }
 
 

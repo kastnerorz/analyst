@@ -27,6 +27,10 @@ public class Item {
 
     private String marketId;
 
+    private String venderId;
+
+    private String vender;
+
     @Column(columnDefinition = "TEXT")
     private String advan;
 
@@ -198,5 +202,21 @@ public class Item {
 
     public void setMarketId(String marketId) {
         this.marketId = marketId;
+    }
+
+    public String getVenderId() {
+        return venderId;
+    }
+
+    public void setVenderId(String venderId) {
+        this.venderId = venderId;
+    }
+
+    public String getVender() {
+        return vender;
+    }
+
+    public void setVender(String vender) {
+        this.vender = vender;
     }
 }

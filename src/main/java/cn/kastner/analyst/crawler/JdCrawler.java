@@ -13,6 +13,7 @@ import org.json.JSONArray;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,24 +72,43 @@ public class JdCrawler {
         item.setCname(itemCname);
         item.setModel(itemModel);
 
-        String skuid = "";
+
         // analyse doc
         // get skuid
+        String skuid = "";
         Pattern skuidPattern = Pattern.compile("skuid: (\\d*),");
         Matcher skuidMatcher = skuidPattern.matcher(doc.head().toString());
         if (skuidMatcher.find()) {
             skuid = skuidMatcher.group(1);
             item.setSkuId(skuid);
         }
+
+        // get venderId
+        String venderId = "";
+        Pattern venderIdPattern = Pattern.compile("venderId: (\\d*),");
+        Matcher venderIdMatcher = venderIdPattern.matcher(doc.head().toString());
+        if (venderIdMatcher.find()) {
+            venderId = venderIdMatcher.group(1);
+            item.setVenderId(venderId);
+        }
+
+        // get category
+        String cat = "";
+        Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
+        Matcher catMatcher = catPattern.matcher(doc.head().toString());
+        if (catMatcher.find()) {
+            cat = catMatcher.group(1);
+        }
+
         Integer jQueryId = 3456098;
         Long timeStamp = System.currentTimeMillis()/1000;
 
 
         // get commentsCount
-        Document CommentsCountDoc = new Document("");
+        Document commentsCountDoc = new Document("");
 
         try {
-            CommentsCountDoc = Jsoup.connect("https://club.jd.com/comment/productCommentSummaries.action?")
+            commentsCountDoc = Jsoup.connect("https://club.jd.com/comment/productCommentSummaries.action")
                     .header(":authority", "club.jd.com")
                     .header(":method", "GET")
                     .header(":path", "/comment/productCommentSummaries.action?referenceIds=" + skuid +
@@ -109,7 +129,7 @@ public class JdCrawler {
         }
         JSONObject commentsCount;
         Pattern commentsCountPattern = Pattern.compile("^jQuery" + jQueryId + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);$");
-        Matcher commentsCountMatcher = commentsCountPattern.matcher(CommentsCountDoc.toString());
+        Matcher commentsCountMatcher = commentsCountPattern.matcher(commentsCountDoc.toString());
         if (commentsCountMatcher.find()) {
 
             commentsCount = new JSONObject(commentsCountMatcher.group(1));
@@ -132,7 +152,54 @@ public class JdCrawler {
             String poorCountStr = commentsCount.getString("PoorCountStr");
             item.setPoorCountStr(poorCountStr);
         }
+        jQueryId = jQueryId + 1;
+
+        // get stock info
+        Document stockDoc = new Document("");
+        int pduid = 1901035936;
+        try {
+            stockDoc = Jsoup.connect("https://c0.3.cn/stock")
+                    .header("Accept", "*/*")
+                    .header("Accept-Encoding", "gzip, deflate, br")
+                    .header("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+                    .header("Connection", "keep-alive")
+                    .header("Host", "c0.3.cn")
+                    .header("Referer", "https://item.jd.com/6577495.html")
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
+                    .data("skuId", skuid)
+                    .data("area", "1_72_2799_0")
+                    .data("venderId", venderId)
+                    .data("cat", cat)
+                    .data("buyNum", "1")
+                    .data("choseSuitSkuIds", "")
+                    .data("extraParam", "{\"originid\":\"1\"}")
+                    .data("ch", "1")
+                    .data("pduid", "" + (System.currentTimeMillis() / 1000) + pduid )
+                    .data("pdpin", "")
+                    .data("detailedAdd", "null")
+                    .data("callback", "jQuery" + jQueryId)
+                    .get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Pattern stockPattern = Pattern.compile("^jQuery" + jQueryId + "\\(\\{\\\"stock\\\":\\[(.+)]\\}\\);$");
+        Matcher stockMatcher = stockPattern.matcher(stockDoc.toString());
+        if (stockMatcher.find()) {
+            JSONObject stock = new JSONObject(stockMatcher.group(1));
+
+            JSONObject selfDeliver = stock.getJSONObject("self_D");
+            String vender = selfDeliver.getString("vender");
+            item.setVender(vender);
+
+            JSONObject jdPrice = stock.getJSONObject("jdPrice");
+            String p = jdPrice.getString("p");
+            // has plus price
+
+
+        }
+
         itemRepository.save(item);
+
         return itemId;
     }
 }
