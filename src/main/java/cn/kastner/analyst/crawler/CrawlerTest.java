@@ -9,24 +9,31 @@ import java.util.regex.Pattern;
 
 public class CrawlerTest {
     public static void main(String [] args) {
-        String url = "https://item.jd.com/2357091.html";
-        Document doc = new Document("");
-        try {
-            doc = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
-                    .get();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+//        String url = "https://item.jd.com/2357091.html";
+//        Document doc = new Document("");
+//        try {
+//            doc = Jsoup.connect(url)
+//                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+//                    .get();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        String title = doc.title();
+//        Pattern pattern = Pattern.compile("(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
+//        Matcher matcher = pattern.matcher(title);
+//        Boolean hasItemCname = matcher.find();
+//        if (hasItemCname) {
+//            String itemCname = matcher.group();
+//            System.out.println(itemCname);
+//Sample Text
+//        }
+        Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
+        Matcher modelMatcher = modelPattern.matcher("【三星Galaxy S9+】三星 Galaxy S9+（SM-G9650/DS）6GB+128GB 谜夜黑 移动联通电信4G手机 双卡双待【行情 报价 价格 评测】-京东");
+        if (modelMatcher.find()) {
+            System.out.println(modelMatcher.group(1));
         }
-        String title = doc.title();
-        Pattern pattern = Pattern.compile("(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
-        Matcher matcher = pattern.matcher(title);
-        Boolean hasItemCname = matcher.find();
-        if (hasItemCname) {
-            String itemCname = matcher.group();
-            System.out.println(itemCname);
 
-        }
+
     }
 }
