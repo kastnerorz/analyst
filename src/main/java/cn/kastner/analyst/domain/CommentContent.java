@@ -1,9 +1,7 @@
 package cn.kastner.analyst.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -15,11 +13,16 @@ public class CommentContent {
 
     private String commentId;
 
+    private String itemId;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column(columnDefinition="BOOLEAN DEFAULT false")
     private Boolean isGood;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createDate;
 
     public CommentContent () {
         contentId = UUID.randomUUID().toString();
@@ -56,5 +59,21 @@ public class CommentContent {
 
     public void setContentId(String contentId) {
         this.contentId = contentId;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 }

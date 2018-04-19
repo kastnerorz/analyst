@@ -10,6 +10,8 @@ import java.util.UUID;
 public class Price {
 
     @Id
+    private String priceId;
+
     private String itemId;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -23,7 +25,7 @@ public class Price {
     private Long volume;
 
     public Price () {
-        itemId = UUID.randomUUID().toString();
+        priceId = UUID.randomUUID().toString();
     }
 
     public String getItemId() {
@@ -64,5 +66,13 @@ public class Price {
 
     public void setVolume(Long volume) {
         this.volume = volume;
+    }
+
+    public String getPriceId() {
+        return priceId;
+    }
+
+    public void setPriceId(String priceId) {
+        this.priceId = priceId;
     }
 }

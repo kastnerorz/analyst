@@ -1,9 +1,13 @@
 package cn.kastner.analyst.crawler;
 
+import org.json.JSONObject;
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,16 +32,9 @@ public class CrawlerTest {
 //            System.out.println(itemCname);
 //Sample Text
 //        }
-        String cat = "";
-        Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
-        Matcher catMatcher = catPattern.matcher("t17188/348/549404753/23939/99deacd5/5a9679d8Nc56087b7.jpg\"],\n" +
-                "                cat: [9987, 653, 655],\n" +
-                "                forceAdUpdate: '8277',");
-        if (catMatcher.find()) {
-            cat = catMatcher.group(1);
-            System.out.println(cat);
-        }
-
+        // get commentVersion from html title
+        Date date = new Date("\"2018-03-16 15:27:44\"");
+        System.out.println(());
 
     }
 }
