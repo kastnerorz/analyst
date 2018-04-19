@@ -30,7 +30,7 @@ public class HomeController {
 //        System.out.println(isMatch);
 
         if (isMatch) {
-            String itemId = jdCrawler.crawItem(keyword);
+            String itemId = jdCrawler.crawItemByUrl(keyword);
             model.addAttribute("itemId", itemId);
             return "item";
         }

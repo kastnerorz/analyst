@@ -1,4 +1,6 @@
 package cn.kastner.analyst.crawler;
+import cn.kastner.analyst.domain.Comment;
+import cn.kastner.analyst.domain.CommentContent;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.CommentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
@@ -23,14 +25,16 @@ public class JdCrawler {
     @Autowired
     CommentRepository commentRepository;
 
+    TrustReviewCrawler trustReviewCrawler;
     /**
      * @param url
      * @return itemId
      */
-    public String crawItem (String url) {
+    public String crawItemByUrl (String url) {
         Document doc = new Document("");
         String itemCname = "";
         String itemModel = "";
+        Item item;
         try {
             doc = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
@@ -40,12 +44,13 @@ public class JdCrawler {
             e.printStackTrace();
         }
 
+        // get itemCname from html title
         Pattern cnamePattern = Pattern.compile("(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
         Matcher cnameMatcher = cnamePattern.matcher(doc.title());
         if (cnameMatcher.find()) {
             itemCname = cnameMatcher.group();
         }
-
+        // get itemModel from html title
         Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
         Matcher modelMatcher = modelPattern.matcher(doc.title());
         if (modelMatcher.find()) {
@@ -55,11 +60,17 @@ public class JdCrawler {
         // check if has item already
         List<Item> items = itemRepository.findItemByCnameContaining(itemCname);
         if (items != null) {
-            return items.get(0).getItemId();
+            item = items.get(0);
         }
-
         // no item => new item
-        Item item = new Item();
+        item = new Item();
+
+        String itemId = item.getItemId();
+
+        item.setMarketId("1");
+        item.setCname(itemCname);
+        item.setModel(itemModel);
+
         String skuid = "";
         // analyse doc
         // get skuid
@@ -67,11 +78,15 @@ public class JdCrawler {
         Matcher skuidMatcher = skuidPattern.matcher(doc.head().toString());
         if (skuidMatcher.find()) {
             skuid = skuidMatcher.group(1);
+            item.setSkuId(skuid);
         }
         Integer jQueryId = 3456098;
         Long timeStamp = System.currentTimeMillis()/1000;
+
+
         // get commentsCount
         Document CommentsCountDoc = new Document("");
+
         try {
             CommentsCountDoc = Jsoup.connect("https://club.jd.com/comment/productCommentSummaries.action?")
                     .header(":authority", "club.jd.com")
@@ -96,10 +111,28 @@ public class JdCrawler {
         Pattern commentsCountPattern = Pattern.compile("^jQuery" + jQueryId + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);$");
         Matcher commentsCountMatcher = commentsCountPattern.matcher(CommentsCountDoc.toString());
         if (commentsCountMatcher.find()) {
+
             commentsCount = new JSONObject(commentsCountMatcher.group(1));
+
             int generalCount = commentsCount.getInt("GeneralCount");
+            item.setGeneralCount(generalCount);
+
+            String generalCountStr = commentsCount.getString("GneralCountStr");
+            item.setGeneralCountStr(generalCountStr);
+
+            int goodCount = commentsCount.getInt("GoodCount");
+            item.setGoodCount(goodCount);
+
+            String goodCountStr = commentsCount.getString("GoodCountStr");
+            item.setGoodCountStr(goodCountStr);
+
+            int poorCount = commentsCount.getInt("PoorCount");
+            item.setPoorCount(poorCount);
+
+            String poorCountStr = commentsCount.getString("PoorCountStr");
+            item.setPoorCountStr(poorCountStr);
         }
-        item = itemRepository.saveAndFlush(item);
-        return item.getItemId();
+        itemRepository.save(item);
+        return itemId;
     }
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
 public class CommentContent {
 
     @Id
-    private String id;
+    private String contentId;
 
     private String commentId;
 
@@ -22,7 +22,7 @@ public class CommentContent {
     private Boolean isGood;
 
     public CommentContent () {
-        id = UUID.randomUUID().toString();
+        contentId = UUID.randomUUID().toString();
     }
 
     public String getCommentId() {
@@ -50,11 +50,11 @@ public class CommentContent {
         isGood = good;
     }
 
-    public String getId() {
-        return id;
+    public String getContentId() {
+        return contentId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
     }
 }
