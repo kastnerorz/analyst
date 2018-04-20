@@ -6,6 +6,7 @@ import cn.kastner.analyst.repository.CommentContentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.repository.PriceRepository;
 import org.jsoup.*;
+import org.jsoup.Connection.*;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.json.JSONObject;
@@ -87,13 +88,7 @@ public class JdCrawler {
             logger.info("Get Item Model from title: " + itemModel);
         }
 
-        // get commentVersion from html title
-        Pattern commentVersionPattern = Pattern.compile("commentVersion: \\'(\\d+)\\',");
-        Matcher commentVersionMatcher = commentVersionPattern.matcher(doc.title());
-        if (commentVersionMatcher.find()) {
-            commentVersion = commentVersionMatcher.group(1);
-            logger.info("Get comment version from title: " + commentVersion);
-        }
+
 
         // check if has item already
 //        List<Item> items = itemRepository.findItemByCnameContaining(itemCname);
@@ -125,13 +120,22 @@ public class JdCrawler {
         String venderId = "";
         Pattern venderIdPattern = Pattern.compile("venderId:(\\d+),");
         Matcher venderIdMatcher = venderIdPattern.matcher(doc.head().toString());
-
         if (venderIdMatcher.find()) {
             venderId = venderIdMatcher.group(1);
             logger.info("Get  venderId from head: " + venderId);
             item.setVenderId(venderId);
         } else {
             logger.warning("no venderId");
+        }
+
+        // get commentVersion from html head
+        Pattern commentVersionPattern = Pattern.compile("commentVersion:\\'(.+)\\',");
+        Matcher commentVersionMatcher = commentVersionPattern.matcher(doc.head().toString());
+        if (commentVersionMatcher.find()) {
+            commentVersion = commentVersionMatcher.group(1);
+            logger.info("Get comment version from head: " + commentVersion);
+        } else {
+            logger.warning("no commentVersion");
         }
 
         // get category
@@ -199,7 +203,7 @@ public class JdCrawler {
 
 
         // get stock info
-        Document stockDoc = new Document("");
+        String stockStr = "";
         int pduid = 1901035936;
         try {
 //            URL stockUrl = new URL("https://c0.3.cn/stock?skuid=" + skuid +
@@ -230,26 +234,21 @@ public class JdCrawler {
 
 
 
-            stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + skuid +
+            Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + skuid +
                                                                                         "&area=1_72_2799_0" +
                                                                                         "&venderId=" + venderId +
                                                                                         "&cat=" + cat +
                                                                                         "&buyNum=1" +
                                                                                         "&choseSuitSkuIds=" +
-                                                                                        "&extraParam={\"originid\":\"1\"}" +
+                                                                                        "&extraParam={%22originid%22:%221%22}" +
                                                                                         "&ch=1" +
                                                                                         "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
                                                                                         "&pdpin=" +
                                                                                         "&detailedAdd=null" +
                                                                                         "&callback=jQuery" + jQueryId)
                     .ignoreContentType(true)
-                    .get();
+                    .execute();
 
-            Map originid = new HashMap() {
-                {
-                    put("originid", "1");
-                }
-            };
 //            stockDoc = Jsoup.connect("http://c0.3.cn/stock")
 //                            .header("Accept", "text/*")
 //                            .header("Accept-Encoding", "gzip, deflate, br")
@@ -272,31 +271,32 @@ public class JdCrawler {
 //                            .data("callback", "jQuery" + jQueryId)
 //                            .ignoreContentType(true)
 //                            .get();
-            logger.info(stockDoc.text());
+            stockStr = stockDoc.body();
+            logger.info(stockStr);
 //            String stockStr = new String(stockDoc.toString().getBytes(), "gbk");
         } catch (IOException e) {
             e.printStackTrace();
         }
         Pattern stockPattern = Pattern.compile("jQuery" + jQueryId + "\\(\\{\\\"stock\\\":(\\{.+\\}),\\\"");
-        Matcher stockMatcher = stockPattern.matcher(stockDoc.text());
+        Matcher stockMatcher = stockPattern.matcher(stockStr);
         if (stockMatcher.find()) {
             JSONObject stock = new JSONObject(stockMatcher.group(1));
 
             JSONObject selfDeliver = new JSONObject();
-//            try {
-//                selfDeliver = stock.getJSONObject("self_D");
-//                String vender = selfDeliver.getString("vender");
-//                item.setVender(vender);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                selfDeliver = stock.getJSONObject("self_D");
+                String vender = selfDeliver.getString("vender");
+                item.setVender(vender);
+            } catch (Exception e) {
+                logger.info("get selfDeliver from D");
+            }
 
             try {
                 selfDeliver = stock.getJSONObject("D");
                 String vender = selfDeliver.getString("vender");
                 item.setVender(vender);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.info("get selfDeliver from self_D");
             }
 
 
@@ -313,50 +313,46 @@ public class JdCrawler {
 
             Date now = new Date();
             price.setDate(now);
-            logger.info("\nprice_id   ->" + price.getPriceId() + "\n" +
+            logger.info("price_id   ->" + price.getPriceId() + "\n" +
                         "date       ->" + price.getDate() + "\n" +
                         "item_id    ->" + price.getItemId() + "\n" +
                         "market_id  ->" + price.getMarketId() + "\n" +
                         "price      ->" + price.getPrice() + "\n" +
                         "volume     ->" + price.getVolume());
             priceRepository.save(price);
-            logger.info("price saved");
+            logger.info("price has been saved.");
         }
 
         // get comments
-        Document commentDoc = new Document("");
-        for (int currentPage = 0; currentPage < generalCount / 10; currentPage++) {
+        String commentStr = "";
+        for (int currentPage = 0; currentPage < 5; currentPage++) {
             try {
-                logger.info("Connecting to http://club.jd.com/comment/skuProductPageComments.action");
-                commentDoc = Jsoup.connect("http://club.jd.com/comment/skuProductPageComments.action")
-//                        .header(":authority", "club.jd.com")
-//                        .header(":method","GET")
-//                        .header(":path", "/comment/skuProductPageComments.action?callback=fetchJSON_comment98vv" + commentVersion +
-//                                "&productId=" + itemId +
-//                                "&score=0&sortType=5" +
-//                                "&page=" + currentPage +
-//                                "&pageSize=10&isShadowSku=0&rid=0&fold=1")
-//                        .header(":scheme", "https")
+                String commentUrl = "https://club.jd.com/comment/skuProductPageComments.action?" +
+                        "callback=fetchJSON_comment98vv" + commentVersion +
+                        "&productId=" + skuid +
+                        "&score=0" +
+                        "&sortType=5" +
+                        "&page=" + currentPage +
+                        "&pageSize=10" +
+                        "&isShadowSku=0" +
+                        "&rid=0" +
+                        "&fold=1";
+                logger.info("Connecting to " + commentUrl);
+                Response commentDoc = Jsoup.connect(commentUrl)
                         .header("accept","*/*")
                         .header("accept-encoding","gzip, deflate, br")
                         .header("accept-language","zh-CN,zh;q=0.9")
-                        .header("referer","https://item.jd.com/" + itemId + ".html")
+                        .header("referer","https://item.jd.com/" + skuid + ".html")
                         .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-                        .data("callback", "fetchJSON_comment98vv" + commentVersion)
-                        .data("productId", itemId)
-                        .data("score","0")
-                        .data("sortType","5")
-                        .data("page", "" + currentPage)
-                        .data("pageSize", "10")
-                        .data("isShadowSku","0")
-                        .data("rid","0")
-                        .data("fold","1")
-                        .get();
+                        .execute();
+                commentStr = commentDoc.body();
+                logger.info(commentStr);
             } catch (IOException e) {
+                logger.info("Can't connect to http://club.jd.com/comment/skuProductPageComments.action");
                 e.printStackTrace();
             }
-            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv3781\\((\\{.+\\})\\);");
-            Matcher commentMatcher = commentPattern.matcher(commentDoc.toString());
+            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv" + commentVersion + "\\((\\{.+\\})\\);");
+            Matcher commentMatcher = commentPattern.matcher(commentStr);
             if (commentMatcher.find()) {
                 JSONObject comment = new JSONObject(commentMatcher.group(1));
                 if (0 == currentPage) {
@@ -367,24 +363,31 @@ public class JdCrawler {
 
                     String commentCountStr = productCommentsCount.getString("commentCountStr");
                     item.setCommentCountStr(commentCountStr);
+                    logger.info("[set]commentCountStr    ->" + item.getCommentCountStr());
 
                     generalCount = productCommentsCount.getInt("generalCount");
                     item.setGeneralCount(generalCount);
 
-                    String generalCountStr = productCommentsCount.getString("gneralCountStr");
+                    String generalCountStr = productCommentsCount.getString("generalCountStr");
                     item.setGeneralCountStr(generalCountStr);
+                    logger.info("[set]generalCountStr    ->" + item.getGeneralCountStr());
 
                     int goodCount = productCommentsCount.getInt("goodCount");
                     item.setGoodCount(goodCount);
 
                     String goodCountStr = productCommentsCount.getString("goodCountStr");
                     item.setGoodCountStr(goodCountStr);
+                    logger.info("[set]goodCountStr       ->" + item.getGoodCountStr());
+
+
 
                     int poorCount = productCommentsCount.getInt("poorCount");
                     item.setPoorCount(poorCount);
 
                     String poorCountStr = productCommentsCount.getString("poorCountStr");
                     item.setPoorCountStr(poorCountStr);
+                    logger.info("[set]poorCountStr       ->" + item.getPoorCountStr());
+
                 }
                 JSONArray comments = comment.getJSONArray("comments");
                 for (int i = 0; i < comments.length(); i++) {
@@ -395,7 +398,13 @@ public class JdCrawler {
                     String content = cmt.getString("content");
                     commentContent.setContent(content);
 
+//                    logger.info("comment_id     ->" + commentContent.getCommentId() + "\n" +
+//                                "content        ->" + commentContent.getContent() + "\n" +
+//                                "is_good        ->" + commentContent.getGood() + "\n" +
+//                                "content_id     ->" + commentContent.getContentId() + "\n" +
+//                                "item_id        ->" + commentContent.getItemId());
                     commentContentRepository.save(commentContent);
+                    logger.info("commentContent has been saved.");
                 }
             }
             try {
@@ -405,12 +414,17 @@ public class JdCrawler {
             }
         }
 
-        item.setAdvan("1");
-        item.setDisAdvan("1");
-        item.setKeyFeature("1");
-        item.setEname("1");
-        item.setBrandId("1");
+        item.setAdvan("null");
+        item.setDisAdvan("null");
+        item.setKeyFeature("null");
+        item.setEname("null");
+        item.setBrandId("null");
+        logger.info("[check]commentCountStr    ->" + item.getCommentCountStr());
+        logger.info("[check]generalCountStr    ->" + item.getGeneralCountStr());
+        logger.info("[check]goodCountStr       ->" + item.getGoodCountStr());
+        logger.info("[check]poorCountStr       ->" + item.getPoorCountStr());
         itemRepository.save(item);
+        logger.info("item has been saved.");
 
         return itemId;
     }

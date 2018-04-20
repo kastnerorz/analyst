@@ -24,7 +24,9 @@ public class CommentContent {
 
 
     public CommentContent () {
+        commentId = "null";
         contentId = UUID.randomUUID().toString();
+        isGood = true;
     }
 
     public String getCommentId() {
