@@ -1,10 +1,8 @@
 package cn.kastner.analyst.crawler;
-import cn.kastner.analyst.domain.Comment;
 import cn.kastner.analyst.domain.CommentContent;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.Price;
 import cn.kastner.analyst.repository.CommentContentRepository;
-import cn.kastner.analyst.repository.CommentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.repository.PriceRepository;
 import org.jsoup.*;
@@ -13,25 +11,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import sun.nio.cs.ext.GBK;
 
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.logging.Logger;
+
 
 @Service
 public class JdCrawler {
+
+    static String strClassName = JdCrawler.class.getName();
+    static Logger logger = Logger.getLogger(strClassName);
 
     @Autowired
     ItemRepository itemRepository;
@@ -60,7 +63,7 @@ public class JdCrawler {
         String commentVersion = "";
         Item item;
         try {
-            System.out.println("Connecting to main url ...");
+            logger.info("Connecting to base url ...");
             doc = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
                     .get();
@@ -74,14 +77,14 @@ public class JdCrawler {
         Matcher cnameMatcher = cnamePattern.matcher(doc.title());
         if (cnameMatcher.find()) {
             itemCname = cnameMatcher.group();
-            System.out.println("Get Item Cname from title: " + itemCname);
+            logger.info("Get Item Cname from title: " + itemCname);
         }
         // get itemModel from html title
         Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
         Matcher modelMatcher = modelPattern.matcher(doc.title());
         if (modelMatcher.find()) {
-            itemModel = modelMatcher.group();
-            System.out.println("Get Item Model from title: " + itemModel);
+            itemModel = modelMatcher.group(1);
+            logger.info("Get Item Model from title: " + itemModel);
         }
 
         // get commentVersion from html title
@@ -89,7 +92,7 @@ public class JdCrawler {
         Matcher commentVersionMatcher = commentVersionPattern.matcher(doc.title());
         if (commentVersionMatcher.find()) {
             commentVersion = commentVersionMatcher.group(1);
-            System.out.println("Get comment version from title: " + commentVersion);
+            logger.info("Get comment version from title: " + commentVersion);
         }
 
         // check if has item already
@@ -114,24 +117,21 @@ public class JdCrawler {
         Matcher skuidMatcher = skuidPattern.matcher(doc.head().toString());
         if (skuidMatcher.find()) {
             skuid = skuidMatcher.group(1);
-            System.out.println("Get skuid from head: " + skuid);
+            logger.info("Get skuid from head: " + skuid);
             item.setSkuId(skuid);
         }
 
         // get venderId
         String venderId = "";
-        Pattern venderIdPattern = Pattern.compile("venderId: (\\d+),");
-//        Matcher venderIdMatcher = venderIdPattern.matcher(doc.head().toString());
-        Matcher venderIdMatcher = venderIdPattern.matcher("pTag: 424177, isPop: false,\n" +
-                "                venderId: 1000003443,\n" +
-                "                shopId: '1000003443',");
+        Pattern venderIdPattern = Pattern.compile("venderId:(\\d+),");
+        Matcher venderIdMatcher = venderIdPattern.matcher(doc.head().toString());
 
         if (venderIdMatcher.find()) {
             venderId = venderIdMatcher.group(1);
-            System.out.println("Get  venderId from head: " + venderId);
+            logger.info("Get  venderId from head: " + venderId);
             item.setVenderId(venderId);
         } else {
-            System.out.println("no venderId");
+            logger.warning("no venderId");
         }
 
         // get category
@@ -140,19 +140,18 @@ public class JdCrawler {
         Matcher catMatcher = catPattern.matcher(doc.head().toString());
         if (catMatcher.find()) {
             cat = catMatcher.group(1);
-            System.out.println("Get cat from head: " + cat);
+            logger.info("Get cat from head: " + cat);
         }
 
-        Integer jQueryId = 3456098;
-        Long timeStamp = System.currentTimeMillis()/1000;
+        Integer jQueryId = 6546654;
 
 
         // get commentsCount
         Document commentsCountDoc = new Document("");
 
         try {
-            System.out.println("Connecting to https://club.jd.com/comment/productCommentSummaries.action");
-            commentsCountDoc = Jsoup.connect("https://club.jd.com/comment/productCommentSummaries.action")
+            logger.info("Connecting to http://club.jd.com/comment/productCommentSummaries.action");
+            commentsCountDoc = Jsoup.connect("http://club.jd.com/comment/productCommentSummaries.action")
 //                    .header(":authority", "club.jd.com")
 //                    .header(":method", "GET")
 //                    .header(":path", "/comment/productCommentSummaries.action?referenceIds=" + skuid +
@@ -163,7 +162,10 @@ public class JdCrawler {
                     .header("accept-encoding", "gzip, deflate, br")
                     .header("accept-language", "zh-CN,zh;q=0.9")
                     .header("referer", "https://item.jd.com/" + itemId + ".html")
-                    .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
+                    .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
+                            "AppleWebKit/537.36 (KHTML, like Gecko)" +
+                            "Chrome/65.0.3325.181 Safari/537.36")
+
                     .data("referenceIds", skuid)
                     .data("callback", "jQuery" + jQueryId)
                     .data("_", "" + System.currentTimeMillis() / 1000)
@@ -176,12 +178,12 @@ public class JdCrawler {
         Pattern commentsCountPattern = Pattern.compile("jQuery" + jQueryId + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);");
         Matcher commentsCountMatcher = commentsCountPattern.matcher(commentsCountDoc.toString());
         if (commentsCountMatcher.find()) {
-            System.out.println("analysing");
+            logger.info("analysing");
 
             commentsCount = new JSONObject(commentsCountMatcher.group(1));
 
             generalCount = commentsCount.getInt("GeneralCount");
-            System.out.println("gneralCount: " + generalCount);
+            logger.info("gneralCount: " + generalCount);
 
             String generalCountStr = commentsCount.getString("GeneralCountStr");
 
@@ -194,35 +196,84 @@ public class JdCrawler {
             String poorCountStr = commentsCount.getString("PoorCountStr");
         }
         jQueryId = jQueryId + 1;
+
+
         // get stock info
         Document stockDoc = new Document("");
         int pduid = 1901035936;
         try {
-            stockDoc = Jsoup.connect("https://c0.3.cn/stock")
-                    .header("Accept", "*/*")
-                    .header("Accept-Encoding", "gzip, deflate, br")
-                    .header("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
-                    .header("Connection", "keep-alive")
-                    .header("Host", "c0.3.cn")
-                    .header("Referer", "https://item.jd.com/6577495.html")
-                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-                    .data("skuId", skuid)
-                    .data("area", "1_72_2799_0")
-                    .data("venderId", venderId)
-                    .data("cat", cat)
-                    .data("buyNum", "1")
-                    .data("choseSuitSkuIds", "")
-                    .data("extraParam", "{\"originid\":\"1\"}")
-                    .data("ch", "1")
-                    .data("pduid", "" + (System.currentTimeMillis() / 1000) + pduid )
-                    .data("pdpin", "")
-                    .data("detailedAdd", "null")
-                    .data("callback", "jQuery" + jQueryId)
+//            URL stockUrl = new URL("https://c0.3.cn/stock?skuid=" + skuid +
+//                                    "&area=1_72_2799_0" +
+//                                    "&venderId=" + venderId +
+//                                    "&cat=" + cat +
+//                                    "&buyNum=1" +
+//                                    "&choseSuitSkuIds=" +
+//                                    "&extraParam={\"originid\":\"1\"}" +
+//                                    "&ch=1" +
+//                                    "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
+//                                    "&pdpin=" +
+//                                    "&detailedAdd=null" +
+//                                    "&callback=jQuery" + jQueryId);
+//            HttpsURLConnection connection = (HttpsURLConnection)stockUrl.openConnection();
+//            connection.addRequestProperty("contentType", "text");
+//            connection.setRequestMethod("GET");
+//            connection.addRequestProperty("accept", "*/*");
+//            connection.addRequestProperty("accept-encoding", "gzip, deflate, br");
+//            connection.addRequestProperty("accept-language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7");
+//            connection.addRequestProperty("Connection", "keep-alive");
+//            connection.addRequestProperty("Host", "c0.3.cn");
+//            connection.addRequestProperty("referer", "https://item.jd.com/" + itemId + ".html");
+//            connection.addRequestProperty("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+//            stockDoc = Jsoup.parse(connection.getInputStream(), "GBK", "https://club.jd.com/comment/productCommentSummaries.action");
+
+
+
+
+
+            stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + skuid +
+                                                                                        "&area=1_72_2799_0" +
+                                                                                        "&venderId=" + venderId +
+                                                                                        "&cat=" + cat +
+                                                                                        "&buyNum=1" +
+                                                                                        "&choseSuitSkuIds=" +
+                                                                                        "&extraParam={\"originid\":\"1\"}" +
+                                                                                        "&ch=1" +
+                                                                                        "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
+                                                                                        "&pdpin=" +
+                                                                                        "&detailedAdd=null" +
+                                                                                        "&callback=jQuery" + jQueryId)
                     .ignoreContentType(true)
                     .get();
 
-            String stockStr = new String(stockDoc.toString().getBytes(), "gbk");
-            System.out.println(stockStr);
+            Map originid = new HashMap() {
+                {
+                    put("originid", "1");
+                }
+            };
+//            stockDoc = Jsoup.connect("http://c0.3.cn/stock")
+//                            .header("Accept", "text/*")
+//                            .header("Accept-Encoding", "gzip, deflate, br")
+//                            .header("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+//                            .header("Connection", "keep-alive")
+//                            .header("Host", "c0.3.cn")
+//                            .header("Referer", "https://item.jd.com/" + itemId + ".html")
+//                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
+//                            .data("skuId", skuid)
+//                            .data("area", "1_72_2799_0")
+//                            .data("venderId", venderId)
+//                            .data("cat", cat)
+//                            .data("buyNum", "1")
+//                            .data("choseSuitSkuIds", "{\"originid\":\"1\"}")
+//                            .data("extraParam", "")
+//                            .data("ch", "1")
+//                            .data("pduid", "" + System.currentTimeMillis() + pduid )
+//                            .data("pdpin", "")
+//                            .data("detailedAdd", "null")
+//                            .data("callback", "jQuery" + jQueryId)
+//                            .ignoreContentType(true)
+//                            .get();
+            logger.info(stockDoc.text());
+//            String stockStr = new String(stockDoc.toString().getBytes(), "gbk");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -231,9 +282,23 @@ public class JdCrawler {
         if (stockMatcher.find()) {
             JSONObject stock = new JSONObject(stockMatcher.group(1));
 
-            JSONObject selfDeliver = stock.getJSONObject("self_D");
-            String vender = selfDeliver.getString("vender");
-            item.setVender(vender);
+            JSONObject selfDeliver = new JSONObject();
+//            try {
+//                selfDeliver = stock.getJSONObject("self_D");
+//                String vender = selfDeliver.getString("vender");
+//                item.setVender(vender);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
+            try {
+                selfDeliver = stock.getJSONObject("D");
+                String vender = selfDeliver.getString("vender");
+                item.setVender(vender);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             JSONObject jdPrice = stock.getJSONObject("jdPrice");
             String p = jdPrice.getString("p");
@@ -242,18 +307,27 @@ public class JdCrawler {
             price.setPrice(Double.parseDouble(p));
             price.setItemId(itemId);
             price.setMarketId(marketId);
+
             Long volume = (long) generalCount;
             price.setVolume(volume);
+
             Date now = new Date();
             price.setDate(now);
+            logger.info("\nprice_id   ->" + price.getPriceId() + "\n" +
+                        "date       ->" + price.getDate() + "\n" +
+                        "item_id    ->" + price.getItemId() + "\n" +
+                        "market_id  ->" + price.getMarketId() + "\n" +
+                        "price      ->" + price.getPrice() + "\n" +
+                        "volume     ->" + price.getVolume());
             priceRepository.save(price);
+            logger.info("price saved");
         }
 
         // get comments
         Document commentDoc = new Document("");
         for (int currentPage = 0; currentPage < generalCount / 10; currentPage++) {
             try {
-                System.out.println("Connecting to https://club.jd.com/comment/skuProductPageComments.action");
+                logger.info("Connecting to http://club.jd.com/comment/skuProductPageComments.action");
                 commentDoc = Jsoup.connect("http://club.jd.com/comment/skuProductPageComments.action")
 //                        .header(":authority", "club.jd.com")
 //                        .header(":method","GET")

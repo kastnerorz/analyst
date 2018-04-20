@@ -16,6 +16,7 @@ public class HomeController {
     @Autowired
     ItemRepository itemRepository;
 
+    @Autowired
     MainCrawler mainCrawler;
 
     @RequestMapping(value = "/index")

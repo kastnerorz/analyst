@@ -9,6 +9,7 @@ import java.util.UUID;
 @Table(name = "price")
 public class Price {
 
+
     @Id
     private String priceId;
 
@@ -25,6 +26,7 @@ public class Price {
     private Long volume;
 
     public Price () {
+        super();
         priceId = UUID.randomUUID().toString();
     }
 
