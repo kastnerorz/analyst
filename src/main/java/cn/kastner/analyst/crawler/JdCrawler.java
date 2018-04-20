@@ -3,6 +3,7 @@ import cn.kastner.analyst.domain.Comment;
 import cn.kastner.analyst.domain.CommentContent;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.Price;
+import cn.kastner.analyst.repository.CommentContentRepository;
 import cn.kastner.analyst.repository.CommentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.repository.PriceRepository;
@@ -15,14 +16,17 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import sun.nio.cs.ext.GBK;
 
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +37,7 @@ public class JdCrawler {
     ItemRepository itemRepository;
 
     @Autowired
-    CommentRepository commentRepository;
+    CommentContentRepository commentContentRepository;
 
     @Autowired
     PriceRepository priceRepository;
@@ -56,6 +60,7 @@ public class JdCrawler {
         String commentVersion = "";
         Item item;
         try {
+            System.out.println("Connecting to main url ...");
             doc = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
                     .get();
@@ -69,12 +74,14 @@ public class JdCrawler {
         Matcher cnameMatcher = cnamePattern.matcher(doc.title());
         if (cnameMatcher.find()) {
             itemCname = cnameMatcher.group();
+            System.out.println("Get Item Cname from title: " + itemCname);
         }
         // get itemModel from html title
         Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
         Matcher modelMatcher = modelPattern.matcher(doc.title());
         if (modelMatcher.find()) {
             itemModel = modelMatcher.group();
+            System.out.println("Get Item Model from title: " + itemModel);
         }
 
         // get commentVersion from html title
@@ -82,13 +89,14 @@ public class JdCrawler {
         Matcher commentVersionMatcher = commentVersionPattern.matcher(doc.title());
         if (commentVersionMatcher.find()) {
             commentVersion = commentVersionMatcher.group(1);
+            System.out.println("Get comment version from title: " + commentVersion);
         }
 
         // check if has item already
-        List<Item> items = itemRepository.findItemByCnameContaining(itemCname);
-        if (items != null) {
-            item = items.get(0);
-        }
+//        List<Item> items = itemRepository.findItemByCnameContaining(itemCname);
+//        if (items != null) {
+//            item = items.get(0);
+//        }
         // no item => new item
         item = new Item();
 
@@ -106,16 +114,24 @@ public class JdCrawler {
         Matcher skuidMatcher = skuidPattern.matcher(doc.head().toString());
         if (skuidMatcher.find()) {
             skuid = skuidMatcher.group(1);
+            System.out.println("Get skuid from head: " + skuid);
             item.setSkuId(skuid);
         }
 
         // get venderId
         String venderId = "";
-        Pattern venderIdPattern = Pattern.compile("venderId: (\\d*),");
-        Matcher venderIdMatcher = venderIdPattern.matcher(doc.head().toString());
+        Pattern venderIdPattern = Pattern.compile("venderId: (\\d+),");
+//        Matcher venderIdMatcher = venderIdPattern.matcher(doc.head().toString());
+        Matcher venderIdMatcher = venderIdPattern.matcher("pTag: 424177, isPop: false,\n" +
+                "                venderId: 1000003443,\n" +
+                "                shopId: '1000003443',");
+
         if (venderIdMatcher.find()) {
             venderId = venderIdMatcher.group(1);
+            System.out.println("Get  venderId from head: " + venderId);
             item.setVenderId(venderId);
+        } else {
+            System.out.println("no venderId");
         }
 
         // get category
@@ -124,6 +140,7 @@ public class JdCrawler {
         Matcher catMatcher = catPattern.matcher(doc.head().toString());
         if (catMatcher.find()) {
             cat = catMatcher.group(1);
+            System.out.println("Get cat from head: " + cat);
         }
 
         Integer jQueryId = 3456098;
@@ -134,13 +151,14 @@ public class JdCrawler {
         Document commentsCountDoc = new Document("");
 
         try {
+            System.out.println("Connecting to https://club.jd.com/comment/productCommentSummaries.action");
             commentsCountDoc = Jsoup.connect("https://club.jd.com/comment/productCommentSummaries.action")
-                    .header(":authority", "club.jd.com")
-                    .header(":method", "GET")
-                    .header(":path", "/comment/productCommentSummaries.action?referenceIds=" + skuid +
-                            "&callback=jQuery" + (jQueryId + 1) +
-                            "&_=" + System.currentTimeMillis()/1000)
-                    .header(":scheme", "https")
+//                    .header(":authority", "club.jd.com")
+//                    .header(":method", "GET")
+//                    .header(":path", "/comment/productCommentSummaries.action?referenceIds=" + skuid +
+//                            "&callback=jQuery" + (jQueryId + 1) +
+//                            "&_=" + System.currentTimeMillis()/1000)
+//                    .header(":scheme", "https")
                     .header("accept", "*/*")
                     .header("accept-encoding", "gzip, deflate, br")
                     .header("accept-language", "zh-CN,zh;q=0.9")
@@ -155,15 +173,17 @@ public class JdCrawler {
         }
         JSONObject commentsCount;
         int generalCount = 0;
-        Pattern commentsCountPattern = Pattern.compile("^jQuery" + jQueryId + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);$");
+        Pattern commentsCountPattern = Pattern.compile("jQuery" + jQueryId + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);");
         Matcher commentsCountMatcher = commentsCountPattern.matcher(commentsCountDoc.toString());
         if (commentsCountMatcher.find()) {
+            System.out.println("analysing");
 
             commentsCount = new JSONObject(commentsCountMatcher.group(1));
 
             generalCount = commentsCount.getInt("GeneralCount");
+            System.out.println("gneralCount: " + generalCount);
 
-            String generalCountStr = commentsCount.getString("GneralCountStr");
+            String generalCountStr = commentsCount.getString("GeneralCountStr");
 
             int goodCount = commentsCount.getInt("GoodCount");
 
@@ -174,7 +194,6 @@ public class JdCrawler {
             String poorCountStr = commentsCount.getString("PoorCountStr");
         }
         jQueryId = jQueryId + 1;
-
         // get stock info
         Document stockDoc = new Document("");
         int pduid = 1901035936;
@@ -199,12 +218,16 @@ public class JdCrawler {
                     .data("pdpin", "")
                     .data("detailedAdd", "null")
                     .data("callback", "jQuery" + jQueryId)
+                    .ignoreContentType(true)
                     .get();
+
+            String stockStr = new String(stockDoc.toString().getBytes(), "gbk");
+            System.out.println(stockStr);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Pattern stockPattern = Pattern.compile("^jQuery" + jQueryId + "\\(\\{\\\"stock\\\":(\\{.+\\}),\\\"");
-        Matcher stockMatcher = stockPattern.matcher(stockDoc.toString());
+        Pattern stockPattern = Pattern.compile("jQuery" + jQueryId + "\\(\\{\\\"stock\\\":(\\{.+\\}),\\\"");
+        Matcher stockMatcher = stockPattern.matcher(stockDoc.text());
         if (stockMatcher.find()) {
             JSONObject stock = new JSONObject(stockMatcher.group(1));
 
@@ -230,15 +253,16 @@ public class JdCrawler {
         Document commentDoc = new Document("");
         for (int currentPage = 0; currentPage < generalCount / 10; currentPage++) {
             try {
-                commentDoc = Jsoup.connect("https://club.jd.com/comment/skuProductPageComments.action")
-                        .header(":authority", "club.jd.com")
-                        .header(":method","GET")
-                        .header(":path", "/comment/skuProductPageComments.action?callback=fetchJSON_comment98vv" + commentVersion +
-                                "&productId=" + itemId +
-                                "&score=0&sortType=5" +
-                                "&page=" + currentPage +
-                                "&pageSize=10&isShadowSku=0&rid=0&fold=1")
-                        .header(":scheme", "https")
+                System.out.println("Connecting to https://club.jd.com/comment/skuProductPageComments.action");
+                commentDoc = Jsoup.connect("http://club.jd.com/comment/skuProductPageComments.action")
+//                        .header(":authority", "club.jd.com")
+//                        .header(":method","GET")
+//                        .header(":path", "/comment/skuProductPageComments.action?callback=fetchJSON_comment98vv" + commentVersion +
+//                                "&productId=" + itemId +
+//                                "&score=0&sortType=5" +
+//                                "&page=" + currentPage +
+//                                "&pageSize=10&isShadowSku=0&rid=0&fold=1")
+//                        .header(":scheme", "https")
                         .header("accept","*/*")
                         .header("accept-encoding","gzip, deflate, br")
                         .header("accept-language","zh-CN,zh;q=0.9")
@@ -257,12 +281,18 @@ public class JdCrawler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Pattern commentPattern = Pattern.compile("^fetchJSON_comment98vv3781\\((\\{.+\\})\\);$");
+            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv3781\\((\\{.+\\})\\);");
             Matcher commentMatcher = commentPattern.matcher(commentDoc.toString());
             if (commentMatcher.find()) {
                 JSONObject comment = new JSONObject(commentMatcher.group(1));
                 if (0 == currentPage) {
                     JSONObject productCommentsCount = comment.getJSONObject("productCommentSummary");
+
+                    int commentCount = productCommentsCount.getInt("commentCount");
+                    item.setCommentCount(commentCount);
+
+                    String commentCountStr = productCommentsCount.getString("commentCountStr");
+                    item.setCommentCountStr(commentCountStr);
 
                     generalCount = productCommentsCount.getInt("generalCount");
                     item.setGeneralCount(generalCount);
@@ -291,15 +321,21 @@ public class JdCrawler {
                     String content = cmt.getString("content");
                     commentContent.setContent(content);
 
-                    String dateStr = cmt.getString("creationTime");
-
-
+                    commentContentRepository.save(commentContent);
                 }
+            }
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
-
-
+        item.setAdvan("1");
+        item.setDisAdvan("1");
+        item.setKeyFeature("1");
+        item.setEname("1");
+        item.setBrandId("1");
         itemRepository.save(item);
 
         return itemId;

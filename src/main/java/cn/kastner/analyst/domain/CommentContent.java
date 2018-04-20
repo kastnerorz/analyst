@@ -21,8 +21,7 @@ public class CommentContent {
     @Column(columnDefinition="BOOLEAN DEFAULT false")
     private Boolean isGood;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createDate;
+
 
     public CommentContent () {
         contentId = UUID.randomUUID().toString();
@@ -69,11 +68,4 @@ public class CommentContent {
         this.itemId = itemId;
     }
 
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
 }

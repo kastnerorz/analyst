@@ -1,6 +1,7 @@
 package cn.kastner.analyst.controller;
 
 import cn.kastner.analyst.crawler.JdCrawler;
+import cn.kastner.analyst.crawler.MainCrawler;
 import cn.kastner.analyst.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,7 @@ public class HomeController {
     @Autowired
     ItemRepository itemRepository;
 
-    JdCrawler jdCrawler;
+    MainCrawler mainCrawler;
 
     @RequestMapping(value = "/index")
     public String index() {
@@ -30,7 +31,7 @@ public class HomeController {
 //        System.out.println(isMatch);
 
         if (isMatch) {
-            String itemId = jdCrawler.crawItemByUrl(keyword);
+            String itemId = mainCrawler.crawItemByUrl(keyword);
             model.addAttribute("itemId", itemId);
             return "item";
         }

@@ -33,8 +33,9 @@ public class CrawlerTest {
 //Sample Text
 //        }
         // get commentVersion from html title
-        Date date = new Date("\"2018-03-16 15:27:44\"");
-        System.out.println(());
+        JdCrawler jdCrawler = new JdCrawler();
+        String itemId = jdCrawler.crawItemByUrl("https://item.jd.com/6577495.html?jd_pop=9a11627d-0225-46f3-9693-dba2d671a466&abt=0");
+
 
     }
 }
