@@ -23,6 +23,11 @@ public class Item {
 
     private String model;
 
+    private String category;
+
+    @Column(columnDefinition = "TEXT")
+    private String imageList;
+
     private String brandId;
 
     private String marketId;
@@ -218,5 +223,21 @@ public class Item {
 
     public void setVender(String vender) {
         this.vender = vender;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getImageList() {
+        return imageList;
+    }
+
+    public void setImageList(String imageList) {
+        this.imageList = imageList;
     }
 }

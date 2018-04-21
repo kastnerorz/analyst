@@ -47,6 +47,21 @@ public class ItemController {
         return netResult;
     }
 
+    @RequestMapping(value = "/getImageListByItemId")
+    public NetResult getImageListByItemId(@RequestParam String itemId) {
+        NetResult netResult = new NetResult();
+        Item item = itemRepository.findItemByItemId(itemId);
+        if (item != null) {
+            String imageList = item.getImageList();
+            netResult.result = imageList;
+            netResult.status = 0;
+            return netResult;
+        }
+        netResult.result = "No such Item!";
+        netResult.status = -1;
+        return netResult;
+    }
+
     @RequestMapping(value = "/test")
     public NetResult test(@RequestParam String cname) {
         NetResult netResult = new NetResult();

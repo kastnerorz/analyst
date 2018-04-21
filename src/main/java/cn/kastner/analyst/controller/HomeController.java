@@ -2,12 +2,17 @@ package cn.kastner.analyst.controller;
 
 import cn.kastner.analyst.crawler.JdCrawler;
 import cn.kastner.analyst.crawler.MainCrawler;
+import cn.kastner.analyst.domain.Item;
+import cn.kastner.analyst.domain.Price;
 import cn.kastner.analyst.repository.ItemRepository;
+import cn.kastner.analyst.repository.PriceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 import java.util.regex.*;
 
 @Controller
@@ -15,6 +20,9 @@ public class HomeController {
 
     @Autowired
     ItemRepository itemRepository;
+
+    @Autowired
+    PriceRepository priceRepository;
 
     @Autowired
     MainCrawler mainCrawler;
@@ -34,6 +42,23 @@ public class HomeController {
         if (isMatch) {
             String itemId = mainCrawler.crawItemByUrl(keyword);
             model.addAttribute("itemId", itemId);
+
+            Item item = itemRepository.findItemByItemId(itemId);
+            String itemCode = item.getModel();
+            String cname = item.getCname();
+            String imageList = item.getImageList();
+            String primaryImage = imageList.split("\\\",\\\"")[0];
+            model.addAttribute("primaryImage", primaryImage);
+            model.addAttribute("cname", cname);
+            model.addAttribute("itemCode", itemCode);
+
+            Double price = (double) 0;
+            List<Price> prices = priceRepository.findPriceByItemId(itemId);
+            if (prices.size() != 0) {
+                price = prices.get(0).getPrice();
+            }
+            model.addAttribute("price", price);
+
             return "item";
         }
         return "itemList";

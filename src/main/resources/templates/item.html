@@ -46,7 +46,7 @@
 
                         <!-- card header part -->
                         <div slot="header">
-                            <span>{{itemInfo.name.cn}} <span style="color: #909399">（{{itemInfo.name.en}}）</span></span>
+                            <span>{{itemInfo.name.cn}}<span style="color: #909399">（{{itemInfo.name.en}}）</span></span>
                             <!--<img style="float: right; height: 22px" :src="'imgs/markets/' + sessionInfo.sourceMarket + '/logo.png'">-->
                             <!--<span style="float: right; height: 22px">来源：</span>-->
                             <el-button type="text" style="float: right;padding: 2px">报错</el-button>
@@ -58,7 +58,7 @@
                                 <el-col :span="10">
                                     <el-carousel :interval="10000" indicator-position="outside">
                                         <el-carousel-item v-for="img in itemInfo.basicImages" :key="img" style="text-align: center"  >
-                                            <img :src='"imgs/items/" + itemInfo.name.code + "/basicImgs/" + img' width="300">
+                                            <img :src='"https://img11.360buyimg.com/n1/s450x450_" + img' width="300">
                                         </el-carousel-item>
                                     </el-carousel>
                                 </el-col>
@@ -73,7 +73,7 @@
                     <!-- product based analyse card -->
                     <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
                         <div slot="header">
-                            <span>基本类别的分析 <span style="color: #909399">（价格区间：5000 ~ 9000）</span></span>
+                            <span>基本类别的分析 <span style="color: #909399">（价格区间：{{sessionInfo.price - 0.3 * sessionInfo.price}} ~ {{sessionInfo.price + 0.2 * sessionInfo.price}}）</span></span>
                         </div>
                         <div>
                         <el-row type="flex" style="align-items: center">
@@ -233,7 +233,7 @@
                 commentActiveNames: [],
                 sessionInfo: {
                     sourceMarket: 'jd',
-                    price: 6999
+                    price: [[${price}]]
                 },
                 fulfilledTags: [
                     ''
@@ -242,53 +242,120 @@
                 itemInfo: {
                     sellerMarkets: ['jd'],
                     prices: [
-                        ["06-05",7999]
+                        ["06-05",7999],
+                        ["06-06",7999],
+                        ["06-07",7899],
+                        ["06-08",7699],
+                        ["06-09",7999],
+                        ["06-10",8230],
+                        ["06-11",7600],
+                        ["06-12",7499],
+                        ["06-13",7799],
+                        ["06-14",7450],
+                        ["06-15",7399],
+                        ["06-16",7499],
+                        ["06-17",7200],
+                        ["06-18",7199],
+                        ["06-19",7199]
                     ],
                     latestPrices:[
-                        ["06-05",0]
+                        ["06-05",0],
+                        ["06-06",1],
+                        ["06-07",4],
+                        ["06-08",5],
+                        ["06-09",7],
+                        ["06-10",10],
+                        ["06-11",13]
                     ],
-                    keyFeatures: [],
-                    pros: [],
-                    cons: [],
+                    keyFeatures: [
+                        'Dolby Atmos speakers',
+                        'AR Emoji',
+                        'Secondary 12-megapixel telephoto camera',
+                        'Snapdragon 845/Exynos 9810',
+                        '6.2-inch quad-HD+ OLED display'
+                    ],
+                    pros: [
+                        'Feels great for a big phone',
+                        'The OLED display is great and highly customisable',
+                        'Numerous camera features on offer'
+                    ],
+                    cons: [
+                        'Iterative upgrade',
+                        'AR Emoji are just bad',
+                        'Some lag with Samsung’s software'
+                    ],
                     brand: {
-                        cn: '',
-                        en: '',
-                        code: '',
-                        introduction: '',
-                        rate: 0
+                        cn: '三星电子',
+                        en: 'Samsung Electronics',
+                        code: 'samsung_electronics',
+                        introduction: '三星电子（朝鲜语：삼성전자／三星電子，英语：Samsung Electronics），三星集团子公司，韩国最大的消费电子产品及电子组件制造商，亦是全球最大的信息技术公司。2017年，三星电子在Interbrand全球品牌排行榜中名列第六位，连续第六年进入世界品牌前十强。在美国《财富》杂志2015年、2016年评选的财富世界500强排行榜中第13名。2016年，根据品牌咨询机构 Reputation Institute 调查，为美国最受尊敬科技企业第2名。',
+                        rate: 3.9
                     },
                     name: {
-                        cn: '',
+                        cn: [[${cname}]],
                         en: '',
-                        code: ''
+                        code: [[${itemCode}]],
                     },
                     basicImages: [
-                        '5a96a286N0958bd54.jpg',
-                        '5a9679d6N7b8d458f.jpg',
-                        '5a9679d7N0b3fa77e.jpg',
-                        '5a9679d7Nd85ccf33.jpg',
-                        '5a9679d7Ne0771423.jpg'
+                        [[${primaryImage}]]
                     ],
                     comments: [
                         {
-                            component: '',
-                            feature: '',
+                            component: '后置摄像头',
+                            feature: '凝时拍摄（960fps)',
                             contents: [
                                 {
-                                    title: '',
-                                    all: ''
+                                    title: '哈哈哈，真的时很有趣的凝时拍照，从三星',
+                                    all: '哈哈哈，真的时很有趣的凝时拍照，从三星s6一直到s9+,一代比一代惊艳，像素高的真的装个后置镜头不虚相机，看我拍的水花，棒棒棒!吃鸡打王者毫无压力哈哈，听说王者和三星还有特优化，对于游戏迷来说，845不虚不虚，听音乐也炫酷，跑马灯怎么可以这么帅我去，动态萌拍适合妹子，大男人不好意思哈哈，期待三星越来越好，就是这个碎屏险，一开始没买京东的，还多花了我200去官网延保，欲哭无泪。支持三星，大爱颜值，有内涵，跟我一样帅！'
+                                },
+                                {
+                                    title: '凝时摄影是亮点，但是对光线要求较强。 最大的收获',
+                                    all: '3月15日支付尾款，16号京东就送到货了。没用刘海的全面大屏的确很爽，真机正面是市面上最好看的了，指纹锁在后面镜头下。bixby 声音比Siri 好听是真人声，辨别能力还不错，翻译文字的功能很不错，但是不能是大段的，最好是单词。手机音响效果可以，85分吧。凝时摄影是亮点，但是对光线要求较强。 最大的收获其实是三星手表Gear3, 比之前的Iwatch强太多了，的确像个手表了，App可以花钱和免费下载很多表盘，竟然还有陀飞轮，手表和手机连接简单方便。建议男士配这款手表。总之S9对比X性价比方面强不少，苹果还是强在系统上，三星硬件不差，要求双卡双待的可以考虑这款机子了。'
+                                },
+                                {
+                                    title: '凝视拍摄很好，相机整合了二维码，翻译，实时位置，相片购物',
+                                    all: '用了9年苹果，抗拒不了s9的外形型，拿到手简直就是惊艳，硬件比苹果要好很多，做工，颜值，外型，美感都无可挑剔。软件方面，刚开始对安卓系统的种种担心，全部消失。软件方面，三星优化整合的相当好，各种操作设置细节做的很好，很人性化，可玩性非常高。最深刻的感觉就是每项设置和系统自带APP，做的都比苹果要和，使用时候的视觉和美感都很好。凝视拍摄很好，相机整合了二维码，翻译，实时位置，相片购物，表情，美颜，红酒查询等等，三星pay也比苹果pay要好，除整合银行卡外，还有网络账号，指纹，虹膜，面部解锁都几乎秒开，多种选择，不会再出现苹果指纹经常按不开的尴尬，等等好多功能，不一一例举，从苹果转三星没让我失望，甩苹果是几条街一点不夸张，2个产品在我手里的感觉就像不是一个年代的东西，苹果像5年前的产品，外观，硬件，软件都不行。三星像未来的产品，科技感十足，外形，硬件，软件都完美。强烈推荐！'
+                                }
+                            ]
+                        },
+                        {
+                            component: '扬声器',
+                            feature: 'AKG 调教、杜比音效',
+                            contents: [
+                                {
+                                    title: '据说音质不错，这有待后续检验',
+                                    all: '随包装有akg的耳机，据说音质不错，这有待后续检验。充电器之类的配件变成黑色了，遗憾的是快充依然不给力，可能是真的因为之前的事情有点怕了吧。SIM卡拖和网上说的一样，略微有点突出，不知道是紫色会这样还是都是这样，但愿不会影响防水性能，毕竟我经常会把手机直接放水龙头下面洗。。。系统和之前的S7相比，流畅了许多，这个要点赞'
+                                },
+                                {
+                                    title: '音质打开杜比很棒，业余听听无需音响了',
+                                    all: '关注这手机很久了，发了奖金果断出售，手机系统很流畅，触感也很棒；音质打开杜比很棒，业余听听无需音响了；拍照是亮点，照片很清晰，亮度高，讨人喜欢，噪点低，双摄像头无敌了，对于爱摄影的我来说真的超级实用，春天来了，带上相机?和s9+，感觉棒棒的；'
                                 }
                             ]
                         }
                     ]
-                },
-                greetings: [
-                    '我觉得是...',
-                    '我猜是这个...',
-                    '我想你说的是...',
-                    '是这个吗？'
-                ]
+                }
             }
+        },
+        beforeCreate () {
+            axios({
+                url: '/getImageListByItemId',
+                method: 'POST',
+                params: {
+                    itemId: [[${itemId}]]
+                }
+            })
+                .then(function (value) {
+                    this.basicImages = value.data.result.split("\",\"");
+                    // value.data.result.split("\",\"").forEach(function (item) {
+                    //     this.basicImages.push(item);
+                    //     console.log(item);
+                    // });
+                    console.log(value.data.result);
+                    console.log(app.basicImages);
+                })
+                .catch(function (reason) {
+                    console.log(reason);
+                })
         },
         computed: {
             greeting () {
@@ -300,27 +367,19 @@
                 if(app.keyword != null){
                     window.location.href = 'search?keyword=' + app.keyword;
                 }
+            },
+            getImageList () {
+
             }
         }
     });
-    // function sleep(ms) {
-    //     return new Promise(resolve => setTimeout(resolve, ms));
-    // }
 
-    // async function demo() {
-    //     console.log('Taking a break...');
-    //     await sleep(20000);
-    //     app.loading = false;
-    //     console.log('Two second later');
-    // }
 
-    // demo();
-    //
-    // 初始化 EChart 实例
+
     var totalPriceChart = echarts.init(document.getElementById('totalPriceChart'));
 
     // 指定图表的配置项和数据
-    var totalPriceChartOption = {
+    var totalVolumeChartOption = {
         title: {
             text: '历史总销量',
             left: 'center',
@@ -395,7 +454,7 @@
     };
 
     // 使用刚指定的配置项和数据显示图表。
-    totalPriceChart.setOption(totalPriceChartOption);
+    totalPriceChart.setOption(totalVolumeChartOption);
 
     var priceChart = echarts.init(document.getElementById('priceChart'));
 
@@ -436,6 +495,8 @@
         }
     };
     priceChart.setOption(priceChartOption);
+
+
 
     var latestPriceChart = echarts.init(document.getElementById('latestPriceChart'));
 

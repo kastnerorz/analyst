@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface PriceRepository extends JpaRepository<Price, String> {
-
+    List<Price> findPriceByItemId(String itemId);
 }
