@@ -1,12 +1,6 @@
 package cn.kastner.analyst.domain;
 
-
-import sun.plugin.dom.core.Text;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
@@ -17,30 +11,33 @@ public class Item {
 
     private String skuId;
 
-    private String cname;
+    private String zhName;
 
-    private String ename;
+    private String enName;
 
     private String model;
 
+    @ManyToOne
     private String category;
 
     @Column(columnDefinition = "TEXT")
     private String imageList;
 
-    private String brandId;
+    @ManyToOne
+    private Brand brand;
 
-    private String marketId;
+    @ManyToOne
+    private Market market;
 
-    private String venderId;
+    private String vendorId;
 
-    private String vender;
+    private String vendor;
 
     @Column(columnDefinition = "TEXT")
-    private String advan;
+    private String advance;
 
     @Column(columnDefinition = "TEXT")
-    private String disAdvan;
+    private String disAdvance;
 
     @Column(columnDefinition = "TEXT")
     private String keyFeature;
@@ -73,52 +70,28 @@ public class Item {
         this.itemId = itemId;
     }
 
-    public String getCname() {
-        return cname;
+    public String getSkuId() {
+        return skuId;
     }
 
-    public void setCname(String cname) {
-        this.cname = cname;
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
     }
 
-    public String getEname() {
-        return ename;
+    public String getZhName() {
+        return zhName;
     }
 
-    public void setEname(String ename) {
-        this.ename = ename;
+    public void setZhName(String zhName) {
+        this.zhName = zhName;
     }
 
-    public String getBrandId() {
-        return brandId;
+    public String getEnName() {
+        return enName;
     }
 
-    public void setBrandId(String brandId) {
-        this.brandId = brandId;
-    }
-
-    public String getAdvan() {
-        return advan;
-    }
-
-    public void setAdvan(String advan) {
-        this.advan = advan;
-    }
-
-    public String getDisAdvan() {
-        return disAdvan;
-    }
-
-    public void setDisAdvan(String disAdvan) {
-        this.disAdvan = disAdvan;
-    }
-
-    public String getKeyFeature() {
-        return keyFeature;
-    }
-
-    public void setKeyFeature(String keyFeature) {
-        this.keyFeature = keyFeature;
+    public void setEnName(String enName) {
+        this.enName = enName;
     }
 
     public String getModel() {
@@ -129,12 +102,52 @@ public class Item {
         this.model = model;
     }
 
-    public String getSkuId() {
-        return skuId;
+    public String getCategory() {
+        return category;
     }
 
-    public void setSkuId(String skuId) {
-        this.skuId = skuId;
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getImageList() {
+        return imageList;
+    }
+
+    public void setImageList(String imageList) {
+        this.imageList = imageList;
+    }
+
+    public Brand getBrand() {
+        return brand;
+    }
+
+    public void setBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public Market getMarket() {
+        return market;
+    }
+
+    public void setMarket(Market market) {
+        this.market = market;
+    }
+
+    public String getVendorId() {
+        return vendorId;
+    }
+
+    public void setVendorId(String vendorId) {
+        this.vendorId = vendorId;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
     }
 
     public int getCommentCount() {
@@ -201,43 +214,27 @@ public class Item {
         this.poorCountStr = poorCountStr;
     }
 
-    public String getMarketId() {
-        return marketId;
+    public String getAdvance() {
+        return advance;
     }
 
-    public void setMarketId(String marketId) {
-        this.marketId = marketId;
+    public void setAdvance(String advance) {
+        this.advance = advance;
     }
 
-    public String getVenderId() {
-        return venderId;
+    public String getDisAdvance() {
+        return disAdvance;
     }
 
-    public void setVenderId(String venderId) {
-        this.venderId = venderId;
+    public void setDisAdvance(String disAdvance) {
+        this.disAdvance = disAdvance;
     }
 
-    public String getVender() {
-        return vender;
+    public String getKeyFeature() {
+        return keyFeature;
     }
 
-    public void setVender(String vender) {
-        this.vender = vender;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getImageList() {
-        return imageList;
-    }
-
-    public void setImageList(String imageList) {
-        this.imageList = imageList;
+    public void setKeyFeature(String keyFeature) {
+        this.keyFeature = keyFeature;
     }
 }

@@ -1,7 +1,10 @@
 package cn.kastner.analyst.crawler;
+
 import cn.kastner.analyst.domain.CommentContent;
 import cn.kastner.analyst.domain.Item;
+import cn.kastner.analyst.domain.Market;
 import cn.kastner.analyst.domain.Price;
+import cn.kastner.analyst.repository.BrandRepository;
 import cn.kastner.analyst.repository.CommentContentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.repository.PriceRepository;
@@ -12,17 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +32,8 @@ import java.util.logging.Logger;
 @Service
 public class JdCrawler {
 
-    static String strClassName = JdCrawler.class.getName();
-    static Logger logger = Logger.getLogger(strClassName);
+    private static String strClassName = JdCrawler.class.getName();
+    private static Logger logger = Logger.getLogger(strClassName);
 
     @Autowired
     ItemRepository itemRepository;
@@ -46,7 +44,10 @@ public class JdCrawler {
     @Autowired
     PriceRepository priceRepository;
 
-    @InitBinder
+    @Autowired
+    BrandRepository brandRepository;
+
+  @InitBinder
     protected void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
@@ -56,7 +57,7 @@ public class JdCrawler {
      * @param url
      * @return itemId
      */
-    public String crawItemByUrl (String url) {
+    public String crawItemByUrl(String url) {
         Document doc = new Document("");
         String marketId = "1";
         String itemCname = "";
@@ -70,7 +71,7 @@ public class JdCrawler {
                     .get();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warning(String.valueOf(e.getStackTrace()));
         }
 
         // get itemCname from html title
@@ -89,9 +90,8 @@ public class JdCrawler {
         }
 
 
-
         // check if has item already
-        List<Item> items = itemRepository.findItemByCnameContaining(itemCname);
+        List<Item> items = itemRepository.findByZhName(itemCname);
         if (items.size() != 0) {
             item = items.get(0);
             return item.getItemId();
@@ -102,8 +102,9 @@ public class JdCrawler {
 
         String itemId = item.getItemId();
 
-        item.setMarketId(marketId);
-        item.setCname(itemCname);
+        Market market = new Market("京东");
+        item.setMarket(market);
+        item.setZhName(itemCname);
         item.setModel(itemModel);
 
 
@@ -118,16 +119,16 @@ public class JdCrawler {
             item.setSkuId(skuid);
         }
 
-        // get venderId
-        String venderId = "";
-        Pattern venderIdPattern = Pattern.compile("venderId:(\\d+),");
-        Matcher venderIdMatcher = venderIdPattern.matcher(doc.head().toString());
-        if (venderIdMatcher.find()) {
-            venderId = venderIdMatcher.group(1);
-            logger.info("Get  venderId from head: " + venderId);
-            item.setVenderId(venderId);
+        // get&set vendorId
+        String vendorId = "";
+        Pattern vendorIdPattern = Pattern.compile("vendorId:(\\d+),");
+        Matcher vendorIdMatcher = vendorIdPattern.matcher(doc.head().toString());
+        if (vendorIdMatcher.find()) {
+            vendorId = vendorIdMatcher.group(1);
+            logger.info("Get  vendorId from head: " + vendorId);
+            item.setVendorId(vendorId);
         } else {
-            logger.warning("no venderId");
+            logger.warning("no vendorId");
         }
 
         // get imageList\"
@@ -223,7 +224,7 @@ public class JdCrawler {
         try {
 //            URL stockUrl = new URL("https://c0.3.cn/stock?skuid=" + skuid +
 //                                    "&area=1_72_2799_0" +
-//                                    "&venderId=" + venderId +
+//                                    "&vendorId=" + vendorId +
 //                                    "&cat=" + cat +
 //                                    "&buyNum=1" +
 //                                    "&choseSuitSkuIds=" +
@@ -246,21 +247,18 @@ public class JdCrawler {
 //            stockDoc = Jsoup.parse(connection.getInputStream(), "GBK", "https://club.jd.com/comment/productCommentSummaries.action");
 
 
-
-
-
             Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + skuid +
-                                                                                        "&area=1_72_2799_0" +
-                                                                                        "&venderId=" + venderId +
-                                                                                        "&cat=" + cat +
-                                                                                        "&buyNum=1" +
-                                                                                        "&choseSuitSkuIds=" +
-                                                                                        "&extraParam={\"originid\":\"1\"}" +
-                                                                                        "&ch=1" +
-                                                                                        "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
-                                                                                        "&pdpin=" +
-                                                                                        "&detailedAdd=null" +
-                                                                                        "&callback=jQuery" + jQueryId)
+                    "&area=1_72_2799_0" +
+                    "&vendorId=" + vendorId +
+                    "&cat=" + cat +
+                    "&buyNum=1" +
+                    "&choseSuitSkuIds=" +
+                    "&extraParam={\"originid\":\"1\"}" +
+                    "&ch=1" +
+                    "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
+                    "&pdpin=" +
+                    "&detailedAdd=null" +
+                    "&callback=jQuery" + jQueryId)
                     .ignoreContentType(true)
                     .execute();
 
@@ -274,7 +272,7 @@ public class JdCrawler {
 //                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
 //                            .data("skuId", skuid)
 //                            .data("area", "1_72_2799_0")
-//                            .data("venderId", venderId)
+//                            .data("vendorId", vendorId)
 //                            .data("cat", cat)
 //                            .data("buyNum", "1")
 //                            .data("choseSuitSkuIds", "{\"originid\":\"1\"}")
@@ -297,11 +295,11 @@ public class JdCrawler {
         if (stockMatcher.find()) {
             JSONObject stock = new JSONObject(stockMatcher.group(1));
 
-            JSONObject selfDeliver = new JSONObject();
+            JSONObject selfDeliver;
             try {
                 selfDeliver = stock.getJSONObject("self_D");
                 String vender = selfDeliver.getString("vender");
-                item.setVender(vender);
+                item.setVendor(vender);
             } catch (Exception e) {
                 logger.info("get selfDeliver from D");
             }
@@ -309,7 +307,7 @@ public class JdCrawler {
             try {
                 selfDeliver = stock.getJSONObject("D");
                 String vender = selfDeliver.getString("vender");
-                item.setVender(vender);
+                item.setVendor(vender);
             } catch (Exception e) {
                 logger.info("get selfDeliver from self_D");
             }
@@ -329,742 +327,14 @@ public class JdCrawler {
             Date now = new Date();
             price.setDate(now);
             logger.info("price_id   ->" + price.getPriceId() + "\n" +
-                        "date       ->" + price.getDate() + "\n" +
-                        "item_id    ->" + price.getItemId() + "\n" +
-                        "market_id  ->" + price.getMarketId() + "\n" +
-                        "price      ->" + price.getPrice() + "\n" +
-                        "volume     ->" + price.getVolume());
+                    "date       ->" + price.getDate() + "\n" +
+                    "item_id    ->" + price.getItemId() + "\n" +
+                    "market_id  ->" + price.getMarketId() + "\n" +
+                    "price      ->" + price.getPrice() + "\n" +
+                    "volume     ->" + price.getVolume());
             priceRepository.save(price);
             logger.info("price has been saved.");
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         // get comments
@@ -1083,10 +353,10 @@ public class JdCrawler {
                         "&fold=1";
                 logger.info("Connecting to " + commentUrl);
                 Response commentDoc = Jsoup.connect(commentUrl)
-                        .header("accept","*/*")
-                        .header("accept-encoding","gzip, deflate, br")
-                        .header("accept-language","zh-CN,zh;q=0.9")
-                        .header("referer","https://item.jd.com/" + skuid + ".html")
+                        .header("accept", "*/*")
+                        .header("accept-encoding", "gzip, deflate, br")
+                        .header("accept-language", "zh-CN,zh;q=0.9")
+                        .header("referer", "https://item.jd.com/" + skuid + ".html")
                         .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
                         .execute();
                 commentStr = commentDoc.body();
@@ -1124,7 +394,6 @@ public class JdCrawler {
                     logger.info("[set]goodCountStr       ->" + item.getGoodCountStr());
 
 
-
                     int poorCount = productCommentsCount.getInt("poorCount");
                     item.setPoorCount(poorCount);
 
@@ -1158,11 +427,6 @@ public class JdCrawler {
             }
         }
 
-        item.setAdvan("null");
-        item.setDisAdvan("null");
-        item.setKeyFeature("null");
-        item.setEname("null");
-        item.setBrandId("null");
         logger.info("[check]commentCountStr    ->" + item.getCommentCountStr());
         logger.info("[check]generalCountStr    ->" + item.getGeneralCountStr());
         logger.info("[check]goodCountStr       ->" + item.getGoodCountStr());

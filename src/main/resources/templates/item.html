@@ -73,7 +73,7 @@
                     <!-- product based analyse card -->
                     <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
                         <div slot="header">
-                            <span>基本类别的分析 <span style="color: #909399">（价格区间：{{sessionInfo.price - 0.3 * sessionInfo.price}} ~ {{sessionInfo.price + 0.2 * sessionInfo.price}}）</span></span>
+                            <span>基本类别的分析 <span style="color: #909399">（价格区间：{{sessionInfo.price - 0.15 * sessionInfo.price}} ~ {{sessionInfo.price + 0.2 * sessionInfo.price}}）</span></span>
                         </div>
                         <div>
                         <el-row type="flex" style="align-items: center">
@@ -81,7 +81,7 @@
                                 <div style="border-right: 1px solid #DCDFE6; height: 150px; text-align: center;">
                                     <br />
                                     <span style="text-align: center;">归一化销量排位</span>
-                                    <h2 style="text-align: center; vertical-align: center; color:#409EFF; font-size: xx-large ">#4 <i class="el-icon-caret-top" style="color: #67C23A"></i></h2>
+                                    <h2 style="text-align: center; vertical-align: center; color:#409EFF; font-size: xx-large ">#{{rank}} <i :class="Math.round(Math.random()) ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" style="color: #67C23A"></i></h2>
                                     <!-- #F44336 #F44336 #FFEB3B #409EFF-->
                                 </div>
                             </el-col>
@@ -173,35 +173,35 @@
                     </el-card>
                     <!-- end main content -->
                 </el-col>
-                <el-col :span="7" :offset="1">
-                    <el-card>
-                        <div slot="header">
-                            <span>需求清单</span>
-                        </div>
-                        <div>
-                           <!--<el-row type="flex" style="flex-direction: row; flex-wrap: wrap;">-->
-                               <!--<el-tag v-for="tag in fulfilledTags"-->
-                                       <!--:key="tag.name"-->
-                                       <!--closable-->
-                                       <!--:type="success"></el-tag>-->
-                           <!--</el-row>-->
-                            <!--<el-row type="flex"-->
-                                    <!--justify="space-around"-->
-                                    <!--v-for="tag in unfulfilledTags"-->
-                                    <!--:key="tag.name"></el-row>-->
-                            <el-collapse v-model="activeDemandBlock">
-                                <el-collapse-item v-for="demand in demands">
-                                    <div slot="title">
-                                        {{demand.name}}：
-                                        <el-tag v-for="tag in demand.tags"
-                                                :key="tag.name"
-                                                closable></el-tag>
-                                    </div>
-                                </el-collapse-item>
-                            </el-collapse>
-                        </div>
-                    </el-card>
-                </el-col>
+                <!--<el-col :span="7" :offset="1">-->
+                    <!--<el-card>-->
+                        <!--<div slot="header">-->
+                            <!--<span>需求清单</span>-->
+                        <!--</div>-->
+                        <!--<div>-->
+                           <!--&lt;!&ndash;<el-row type="flex" style="flex-direction: row; flex-wrap: wrap;">&ndash;&gt;-->
+                               <!--&lt;!&ndash;<el-tag v-for="tag in fulfilledTags"&ndash;&gt;-->
+                                       <!--&lt;!&ndash;:key="tag.name"&ndash;&gt;-->
+                                       <!--&lt;!&ndash;closable&ndash;&gt;-->
+                                       <!--&lt;!&ndash;:type="success"></el-tag>&ndash;&gt;-->
+                           <!--&lt;!&ndash;</el-row>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<el-row type="flex"&ndash;&gt;-->
+                                    <!--&lt;!&ndash;justify="space-around"&ndash;&gt;-->
+                                    <!--&lt;!&ndash;v-for="tag in unfulfilledTags"&ndash;&gt;-->
+                                    <!--&lt;!&ndash;:key="tag.name"></el-row>&ndash;&gt;-->
+                            <!--<el-collapse v-model="activeDemandBlock">-->
+                                <!--<el-collapse-item v-for="demand in demands">-->
+                                    <!--<div slot="title">-->
+                                        <!--{{demand.name}}：-->
+                                        <!--<el-tag v-for="tag in demand.tags"-->
+                                                <!--:key="tag.name"-->
+                                                <!--closable></el-tag>-->
+                                    <!--</div>-->
+                                <!--</el-collapse-item>-->
+                            <!--</el-collapse>-->
+                        <!--</div>-->
+                    <!--</el-card>-->
+                <!--</el-col>-->
             </el-row>
 
         </el-main>
@@ -226,8 +226,10 @@
         el: '#app',
         data() {
             return {
+                itemId: [[${itemId}]],
                 keyword: [[${keyword}]],
                 inputLength: 10,
+                rank: Math.ceil(Math.random()*10),
                 headerInputShow: true,
                 headerButtonShow: true,
                 commentActiveNames: [],
@@ -242,30 +244,31 @@
                 itemInfo: {
                     sellerMarkets: ['jd'],
                     prices: [
-                        ["06-05",7999],
-                        ["06-06",7999],
-                        ["06-07",7899],
-                        ["06-08",7699],
-                        ["06-09",7999],
-                        ["06-10",8230],
-                        ["06-11",7600],
-                        ["06-12",7499],
-                        ["06-13",7799],
-                        ["06-14",7450],
-                        ["06-15",7399],
-                        ["06-16",7499],
-                        ["06-17",7200],
-                        ["06-18",7199],
-                        ["06-19",7199]
+                        ["04-05",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-06",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-07",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-08",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-09",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-10",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-11",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-12",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-13",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-14",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-15",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-16",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-17",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-18",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-19",[[${price}]] + Math.round(Math.random()*500)],
+                        ["04-21", [[${price}]]]
                     ],
                     latestPrices:[
-                        ["06-05",0],
-                        ["06-06",1],
-                        ["06-07",4],
-                        ["06-08",5],
-                        ["06-09",7],
-                        ["06-10",10],
-                        ["06-11",13]
+                        ["04-14",0 + Math.round(Math.random()*500)],
+                        ["04-15",1 + Math.round(Math.random()*500)],
+                        ["04-16",4 + Math.round(Math.random()*500)],
+                        ["04-17",5 + Math.round(Math.random()*500)],
+                        ["04-18",7 + Math.round(Math.random()*500)],
+                        ["04-19",10 + Math.round(Math.random()*500)],
+                        ["04-21",13 + Math.round(Math.random()*500)]
                     ],
                     keyFeatures: [
                         'Dolby Atmos speakers',
@@ -336,7 +339,7 @@
                 }
             }
         },
-        beforeCreate () {
+        created () {
             axios({
                 url: '/getImageListByItemId',
                 method: 'POST',
@@ -344,8 +347,8 @@
                     itemId: [[${itemId}]]
                 }
             })
-                .then(function (value) {
-                    this.basicImages = value.data.result.split("\",\"");
+                .then( value=> {
+                    this.itemInfo.basicImages.push(...value.data.result.split("\",\""));
                     // value.data.result.split("\",\"").forEach(function (item) {
                     //     this.basicImages.push(item);
                     //     console.log(item);
@@ -356,10 +359,14 @@
                 .catch(function (reason) {
                     console.log(reason);
                 })
+
         },
         computed: {
             greeting () {
                 return this.greetings[Math.floor(Math.random() * this.greetings.length)]
+            },
+            loading () {
+                return this.itemId !== '20936ea3-3355-4e94-8c01-ba7ec943338f';
             }
         },
         methods: {
@@ -484,8 +491,7 @@
             data: dateList
         },
         yAxis: {
-            splitLine: {show: false},
-            min: 6000
+            splitLine: {show: false}
         },
 
         series: {

@@ -16,8 +16,13 @@ public class Market {
 
     private String url;
 
-    public Market () {
+    public Market (String marketName) {
         marketId = UUID.randomUUID().toString();
+        if ("京东".equals(marketName)) {
+            url = "item.jd.com";
+        } else {
+            url = "";
+        }
     }
 
     public String getMarketId() {

@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, String> {
 
-    Item findItemByItemId(String itemId);
-    List<Item> findItemByCnameContaining(String Cname);
-    List<String> findAllByCnameContaining(String Cname);
+    Item findByItemId(String itemId);
+    List<Item> findALlByItemId(String itemId);
+    List<Item> findByZhName(String zhName);
+    List<Item> findAllByZhName(String zhName);
 }

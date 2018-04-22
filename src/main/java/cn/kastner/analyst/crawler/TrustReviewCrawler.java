@@ -12,7 +12,7 @@ public class TrustReviewCrawler {
     ItemRepository itemRepository;
 
     public void crawItemById (String itemId) {
-        Item item = itemRepository.findItemByItemId(itemId);
+        Item item = itemRepository.findByItemId(itemId);
         String itemModel = item.getModel();
     }
 }

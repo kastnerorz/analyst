@@ -1,6 +1,5 @@
 package cn.kastner.analyst.controller;
 
-import cn.kastner.analyst.crawler.JdCrawler;
 import cn.kastner.analyst.crawler.MainCrawler;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.Price;
@@ -43,9 +42,9 @@ public class HomeController {
             String itemId = mainCrawler.crawItemByUrl(keyword);
             model.addAttribute("itemId", itemId);
 
-            Item item = itemRepository.findItemByItemId(itemId);
+            Item item = itemRepository.findByItemId(itemId);
             String itemCode = item.getModel();
-            String cname = item.getCname();
+            String cname = item.getZhName();
             String imageList = item.getImageList();
             String primaryImage = imageList.split("\\\",\\\"")[0];
             model.addAttribute("primaryImage", primaryImage);
