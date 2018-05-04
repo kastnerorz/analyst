@@ -11,9 +11,10 @@ public class Price {
 
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String priceId;
 
-    private String itemId;
+    private Item item;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
@@ -21,7 +22,7 @@ public class Price {
     @Column(columnDefinition = "decimal(10,2)")
     private Double price;
 
-    private String marketId;
+    private Market market;
 
     private Long volume;
 
@@ -30,28 +31,12 @@ public class Price {
         priceId = UUID.randomUUID().toString();
     }
 
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
-
     public Double getPrice() {
         return price;
     }
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public String getMarketId() {
-        return marketId;
-    }
-
-    public void setMarketId(String marketId) {
-        this.marketId = marketId;
     }
 
     public Date getDate() {
@@ -76,5 +61,21 @@ public class Price {
 
     public void setPriceId(String priceId) {
         this.priceId = priceId;
+    }
+
+    public Market getMarket() {
+        return market;
+    }
+
+    public void setMarket(Market market) {
+        this.market = market;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
     }
 }

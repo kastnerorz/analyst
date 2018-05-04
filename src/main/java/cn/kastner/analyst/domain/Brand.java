@@ -1,9 +1,6 @@
 package cn.kastner.analyst.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
@@ -11,6 +8,7 @@ import java.util.UUID;
 public class Brand {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String brandId;
 
     private String brandZhName;
@@ -22,10 +20,6 @@ public class Brand {
 
     @Column(columnDefinition = "decimal(5,2)")
     private Float rate;
-
-    public Brand () {
-        brandId = UUID.randomUUID().toString();
-    }
 
     public String getBrandId() {
         return brandId;

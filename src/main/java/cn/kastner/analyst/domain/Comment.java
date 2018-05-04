@@ -1,8 +1,7 @@
 package cn.kastner.analyst.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -10,51 +9,65 @@ import java.util.UUID;
 public class Comment {
 
     @Id
-    private String commentId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private String contentId;
 
-    private String component;
+    @ManyToOne
+    private Feature feature;
 
-    private String feature;
+    @ManyToOne
+    private Item item;
 
-    private String itemId;
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
+    @Column(columnDefinition="BOOLEAN DEFAULT true")
+    private Boolean isGood;
 
 
 
-    public Comment () {
-        commentId = UUID.randomUUID().toString();
+    public Comment() {
+        isGood = true;
     }
 
-    public String getCommentId() {
-        return commentId;
+
+    public String getContentId() {
+        return contentId;
     }
 
-    public void setCommentId(String commentId) {
-        this.commentId = commentId;
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
     }
 
-    public String getComponent() {
-        return component;
-    }
-
-    public void setComponent(String component) {
-        this.component = component;
-    }
-
-    public String getFeature() {
+    public Feature getFeature() {
         return feature;
     }
 
-    public void setFeature(String feature) {
+    public void setFeature(Feature feature) {
         this.feature = feature;
     }
 
-    public String getItemId() {
-        return itemId;
+    public Item getItem() {
+        return item;
     }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
+    public void setItem(Item item) {
+        this.item = item;
     }
 
+    public String getContent() {
+        return content;
+    }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Boolean getGood() {
+        return isGood;
+    }
+
+    public void setGood(Boolean good) {
+        isGood = good;
+    }
 }

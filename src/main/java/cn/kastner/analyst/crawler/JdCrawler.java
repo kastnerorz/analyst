@@ -1,11 +1,11 @@
 package cn.kastner.analyst.crawler;
 
-import cn.kastner.analyst.domain.CommentContent;
+import cn.kastner.analyst.domain.Comment;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.Market;
 import cn.kastner.analyst.domain.Price;
 import cn.kastner.analyst.repository.BrandRepository;
-import cn.kastner.analyst.repository.CommentContentRepository;
+import cn.kastner.analyst.repository.CommentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.repository.PriceRepository;
 import org.jsoup.*;
@@ -39,13 +39,14 @@ public class JdCrawler {
     ItemRepository itemRepository;
 
     @Autowired
-    CommentContentRepository commentContentRepository;
+    CommentRepository commentRepository;
 
     @Autowired
     PriceRepository priceRepository;
 
     @Autowired
     BrandRepository brandRepository;
+
 
   @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -60,10 +61,9 @@ public class JdCrawler {
     public String crawItemByUrl(String url) {
         Document doc = new Document("");
         String marketId = "1";
-        String itemCname = "";
-        String itemModel = "";
         String commentVersion = "";
-        Item item;
+        Item item = new Item();
+
         try {
             logger.info("Connecting to base url ...");
             doc = Jsoup.connect(url)
@@ -78,20 +78,24 @@ public class JdCrawler {
         Pattern cnamePattern = Pattern.compile("(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
         Matcher cnameMatcher = cnamePattern.matcher(doc.title());
         if (cnameMatcher.find()) {
-            itemCname = cnameMatcher.group();
-            logger.info("Get Item Cname from title: " + itemCname);
+            String zhName = cnameMatcher.group();
+            item.setZhName(zhName);
+            logger.info("Get Item Cname from title: " + zhName);
         }
+
+
         // get itemModel from html title
         Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
         Matcher modelMatcher = modelPattern.matcher(doc.title());
         if (modelMatcher.find()) {
-            itemModel = modelMatcher.group(1);
-            logger.info("Get Item Model from title: " + itemModel);
+            String model = modelMatcher.group(1);
+            item.setModel(model);
+            logger.info("Get Item Model from title: " + model);
         }
 
 
         // check if has item already
-        List<Item> items = itemRepository.findByZhName(itemCname);
+        List<Item> items = itemRepository.findByZhName(item.getZhName());
         if (items.size() != 0) {
             item = items.get(0);
             return item.getItemId();
@@ -105,7 +109,7 @@ public class JdCrawler {
         Market market = new Market("京东");
         item.setMarket(market);
         item.setZhName(itemCname);
-        item.setModel(itemModel);
+        item.setModel(model);
 
 
         // analyse doc
@@ -405,18 +409,18 @@ public class JdCrawler {
                 JSONArray comments = comment.getJSONArray("comments");
                 for (int i = 0; i < comments.length(); i++) {
                     JSONObject cmt = comments.getJSONObject(i);
-                    CommentContent commentContent = new CommentContent();
+                    Comment commentContent = new Comment();
                     commentContent.setItemId(itemId);
 
                     String content = cmt.getString("content");
                     commentContent.setContent(content);
 
-//                    logger.info("comment_id     ->" + commentContent.getCommentId() + "\n" +
+//                    logger.info("comment_id     ->" + commentContent.getFeatureId() + "\n" +
 //                                "content        ->" + commentContent.getContent() + "\n" +
 //                                "is_good        ->" + commentContent.getGood() + "\n" +
 //                                "content_id     ->" + commentContent.getContentId() + "\n" +
 //                                "item_id        ->" + commentContent.getItemId());
-                    commentContentRepository.save(commentContent);
+                    commentRepository.save(commentContent);
                     logger.info("commentContent has been saved.");
                 }
             }
