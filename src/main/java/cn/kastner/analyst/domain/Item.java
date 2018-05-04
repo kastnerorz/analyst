@@ -1,13 +1,15 @@
 package cn.kastner.analyst.domain;
 
 import javax.persistence.*;
-import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Table(name = "item")
 public class Item {
+
     @Id
-    private String itemId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long itemId;
 
     private String skuId;
 
@@ -17,21 +19,37 @@ public class Item {
 
     private String model;
 
-    @ManyToOne
-    private String category;
+    private String vendorId;
+
+    private String vendor;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JoinColumn(name = "market_id")
+    private Market market;
+
 
     @Column(columnDefinition = "TEXT")
     private String imageList;
 
-    @ManyToOne
-    private Brand brand;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Feature> featureList;
 
-    @ManyToOne
-    private Market market;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Comment> commentList;
 
-    private String vendorId;
-
-    private String vendor;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Price> priceList;
 
     @Column(columnDefinition = "TEXT")
     private String advance;
@@ -58,15 +76,12 @@ public class Item {
 
     private String poorCountStr;
 
-    public Item () {
-        itemId = UUID.randomUUID().toString();
-    }
 
-    public String getItemId() {
+    public Long getItemId() {
         return itemId;
     }
 
-    public void setItemId(String itemId) {
+    public void setItemId(Long itemId) {
         this.itemId = itemId;
     }
 
@@ -102,11 +117,11 @@ public class Item {
         this.model = model;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
@@ -236,5 +251,29 @@ public class Item {
 
     public void setKeyFeature(String keyFeature) {
         this.keyFeature = keyFeature;
+    }
+
+    public List<Comment> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
+    }
+
+    public List<Feature> getFeatureList() {
+        return featureList;
+    }
+
+    public void setFeatureList(List<Feature> featureList) {
+        this.featureList = featureList;
+    }
+
+    public List<Price> getPriceList() {
+        return priceList;
+    }
+
+    public void setPriceList(List<Price> priceList) {
+        this.priceList = priceList;
     }
 }

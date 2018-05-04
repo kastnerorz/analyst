@@ -1,5 +1,6 @@
 package cn.kastner.analyst.crawler;
 
+import cn.kastner.analyst.domain.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +13,9 @@ public class MainCrawler {
     @Autowired
     TrustReviewCrawler trustReviewCrawler;
 
-    public String crawItemByUrl (String url) {
-        String itemId = jdCrawler.crawItemByUrl(url);
-        trustReviewCrawler.crawItemById(itemId);
-        return itemId;
+    public Item crawItemByUrl (String url) {
+        Item item = jdCrawler.crawItemByUrl(url);
+        trustReviewCrawler.crawItemById(item);
+        return item;
     }
 }

@@ -9,7 +9,7 @@ public class Brand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String brandId;
+    private Long brandId;
 
     private String brandZhName;
 
@@ -21,11 +21,11 @@ public class Brand {
     @Column(columnDefinition = "decimal(5,2)")
     private Float rate;
 
-    public String getBrandId() {
+    public Long getBrandId() {
         return brandId;
     }
 
-    public void setBrandId(String brandId) {
+    public void setBrandId(Long brandId) {
         this.brandId = brandId;
     }
 

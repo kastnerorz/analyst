@@ -1,35 +1,50 @@
 package cn.kastner.analyst.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.util.UUID;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "market")
 public class Market {
 
+
+
+    public enum Code {
+        JD,
+        TB,
+        TMALL,
+        DD
+    }
+
     @Id
-    private String marketId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long marketId;
 
     private String marketName;
 
     private String url;
 
-    public Market (String marketName) {
-        marketId = UUID.randomUUID().toString();
-        if ("京东".equals(marketName)) {
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Item> itemList;
+
+    public Market (Code code) {
+        if (Code.JD == code) {
+            marketName = "京东";
             url = "item.jd.com";
-        } else {
-            url = "";
+        } else if (Code.TB == code) {
+            marketName = "淘宝";
+            url = "item.taobao.com";
+        } else if (Code.TMALL == code) {
+            marketName = "天猫";
+            url = "detail.tmall.com";
         }
     }
 
-    public String getMarketId() {
+    public Long getMarketId() {
         return marketId;
     }
 
-    public void setMarketId(String marketId) {
+    public void setMarketId(Long marketId) {
         this.marketId = marketId;
     }
 
@@ -47,5 +62,12 @@ public class Market {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+    public List<Item> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<Item> itemList) {
+        this.itemList = itemList;
     }
 }

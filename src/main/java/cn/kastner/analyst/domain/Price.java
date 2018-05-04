@@ -12,8 +12,11 @@ public class Price {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String priceId;
+    private Long priceId;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JoinColumn(name = "item_id")
     private Item item;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -22,14 +25,13 @@ public class Price {
     @Column(columnDefinition = "decimal(10,2)")
     private Double price;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JoinColumn(name = "market_id")
     private Market market;
 
     private Long volume;
 
-    public Price () {
-        super();
-        priceId = UUID.randomUUID().toString();
-    }
 
     public Double getPrice() {
         return price;
@@ -55,11 +57,11 @@ public class Price {
         this.volume = volume;
     }
 
-    public String getPriceId() {
+    public Long getPriceId() {
         return priceId;
     }
 
-    public void setPriceId(String priceId) {
+    public void setPriceId(Long priceId) {
         this.priceId = priceId;
     }
 

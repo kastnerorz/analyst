@@ -39,10 +39,9 @@ public class HomeController {
 //        System.out.println(isMatch);
 
         if (isMatch) {
-            String itemId = mainCrawler.crawItemByUrl(keyword);
-            model.addAttribute("itemId", itemId);
+            Item item = mainCrawler.crawItemByUrl(keyword);
+            model.addAttribute("itemId", item.getItemId());
 
-            Item item = itemRepository.findByItemId(itemId);
             String itemCode = item.getModel();
             String cname = item.getZhName();
             String imageList = item.getImageList();
@@ -52,7 +51,7 @@ public class HomeController {
             model.addAttribute("itemCode", itemCode);
 
             Double price = (double) 0;
-            List<Price> prices = priceRepository.findPriceByItemId(itemId);
+            List<Price> prices = priceRepository.findPriceByItem(item);
             if (prices.size() != 0) {
                 price = prices.get(0).getPrice();
             }

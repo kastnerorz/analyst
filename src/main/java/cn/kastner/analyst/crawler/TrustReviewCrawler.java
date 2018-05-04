@@ -11,8 +11,7 @@ public class TrustReviewCrawler {
     @Autowired
     ItemRepository itemRepository;
 
-    public void crawItemById (String itemId) {
-        Item item = itemRepository.findByItemId(itemId);
+    public void crawItemById (Item item) {
         String itemModel = item.getModel();
     }
 }

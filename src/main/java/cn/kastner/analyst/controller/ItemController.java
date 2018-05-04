@@ -18,7 +18,7 @@ public class ItemController {
     ItemRepository itemRepository;
 
     @RequestMapping(value = "/getItemInfoByItemId")
-    public NetResult getItemInfoByItemId(@RequestParam String itemId) {
+    public NetResult getItemInfoByItemId(@RequestParam Long itemId) {
         NetResult netResult = new NetResult();
         Item item = itemRepository.findByItemId(itemId);
         if (item != null) {
@@ -47,7 +47,7 @@ public class ItemController {
     }
 
     @RequestMapping(value = "/getImageListByItemId")
-    public NetResult getImageListByItemId(@RequestParam String itemId) {
+    public NetResult getImageListByItemId(@RequestParam Long itemId) {
         NetResult netResult = new NetResult();
         Item item = itemRepository.findByItemId(itemId);
         if (item != null) {

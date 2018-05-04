@@ -10,12 +10,16 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String contentId;
+    private Long contentId;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JoinColumn(name = "feature_id")
     private Feature feature;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JoinColumn(name = "item_id")
     private Item item;
 
     @Column(columnDefinition = "TEXT")
@@ -31,11 +35,11 @@ public class Comment {
     }
 
 
-    public String getContentId() {
+    public Long getContentId() {
         return contentId;
     }
 
-    public void setContentId(String contentId) {
+    public void setContentId(Long contentId) {
         this.contentId = contentId;
     }
 

@@ -1,5 +1,6 @@
 package cn.kastner.analyst.crawler;
 
+import cn.kastner.analyst.domain.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CrawlerTest {
@@ -8,7 +9,7 @@ public class CrawlerTest {
     static JdCrawler jdCrawler;
 
     public static void main(String [] args) {
-        String itemId = jdCrawler.crawItemByUrl("http://item.jd.com/16580586466.html");
+        Item item = jdCrawler.crawItemByUrl("http://item.jd.com/16580586466.html");
 
 
     }

@@ -8,22 +8,22 @@ public class Feature {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String featureId;
+    private Long featureId;
 
     private String component;
 
     private String content;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JoinColumn(name = "item_id")
     private Item item;
 
-
-
-    public String getFeatureId() {
+    public Long getFeatureId() {
         return featureId;
     }
 
-    public void setFeatureId(String featureId) {
+    public void setFeatureId(Long featureId) {
         this.featureId = featureId;
     }
 
