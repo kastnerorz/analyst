@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.InitBinder;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -58,7 +60,6 @@ public class JdCrawler {
     public Item crawItemByUrl(String url) {
 
 
-        String marketId = "1";
         Item item = new Item();
         Market market = new Market(Market.Code.JD);
         item.setMarket(market);
@@ -159,11 +160,11 @@ public class JdCrawler {
 
 
         // get commentVersion from html head
-        String commentVersion = "";
         Pattern commentVersionPattern = Pattern.compile("commentVersion:\\'(.+)\\',");
         Matcher commentVersionMatcher = commentVersionPattern.matcher(doc.head().toString());
         if (commentVersionMatcher.find()) {
-            commentVersion = commentVersionMatcher.group(1);
+            String commentVersion = commentVersionMatcher.group(1);
+            item.setCommentVersion(commentVersion);
             logger.info("Get comment version from head: " + commentVersion);
         } else {
             logger.warning("no commentVersion");
@@ -174,20 +175,26 @@ public class JdCrawler {
         Matcher catMatcher = catPattern.matcher(doc.head().toString());
         if (catMatcher.find()) {
             String categoryStr = catMatcher.group(1);
-            Category category = new Category();
-            category.setCategoryStr(categoryStr);
             String[] cats = categoryStr.split(",");
+            Category categoryDb = categoryRepository.findByLevelOneAndAndLevelTwoAndAndLevelThree(
+                    Integer.parseInt(cats[0]),
+                    Integer.parseInt(cats[1]),
+                    Integer.parseInt(cats[2])
+            );
+            Category category;
+            if (null != categoryDb) {
+                category = categoryDb;
+            } else {
+                category = new Category();
+            }
+            category.setCategoryStr(categoryStr);
             category.setLevelOne(Integer.parseInt(cats[0]));
             category.setLevelTwo(Integer.parseInt(cats[1]));
             category.setLevelThree(Integer.parseInt(cats[2]));
-            Category categoryDb = categoryRepository.findByLevelOneAndAndLevelTwoAndAndLevelThree(
-                    category.getLevelOne(),
-                    category.getLevelTwo(),
-                    category.getLevelThree()
-            );
-            if (null == categoryDb) {
-                categoryRepository.save(category);
-            }
+
+//            if (null == categoryDb) {
+//                categoryRepository.save(category);
+//            }
             item.setCategory(category);
             logger.info("Get cat from head: " + categoryStr);
         } else {
@@ -325,8 +332,8 @@ public class JdCrawler {
             Long volume = (long) generalCount;
             price.setVolume(volume);
 
-            Date now = new Date();
-            price.setDate(now);
+
+            price.setDate(LocalDateTime.now());
             logger.info("price_id   ->" + price.getPriceId() + "\n" +
                     "date       ->" + price.getDate() + "\n" +
                     "item       ->" + price.getItem() + "\n" +
@@ -338,12 +345,19 @@ public class JdCrawler {
         }
 
 
+        itemRepository.save(item);
+        logger.info("item has been saved.");
+
+        return item;
+    }
+
+    public void crawItemComment (Item item) {
         // get comments
         String commentStr = "";
         for (int currentPage = 0; currentPage < 5; currentPage++) {
             try {
                 String commentUrl = "https://club.jd.com/comment/skuProductPageComments.action?" +
-                        "callback=fetchJSON_comment98vv" + commentVersion +
+                        "callback=fetchJSON_comment98vv" + item.getCommentVersion() +
                         "&productId=" + item.getSkuId() +
                         "&score=0" +
                         "&sortType=5" +
@@ -366,7 +380,7 @@ public class JdCrawler {
                 logger.info("Can't connect to http://club.jd.com/comment/skuProductPageComments.action");
                 e.printStackTrace();
             }
-            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv" + commentVersion + "\\((\\{.+\\})\\);");
+            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv" + item.getCommentVersion() + "\\((\\{.+\\})\\);");
             Matcher commentMatcher = commentPattern.matcher(commentStr);
             if (commentMatcher.find()) {
                 JSONObject comment = new JSONObject(commentMatcher.group(1));
@@ -380,7 +394,7 @@ public class JdCrawler {
                     item.setCommentCountStr(commentCountStr);
                     logger.info("[set]commentCountStr    ->" + item.getCommentCountStr());
 
-                    generalCount = productCommentsCount.getInt("generalCount");
+                    int generalCount = productCommentsCount.getInt("generalCount");
                     item.setGeneralCount(generalCount);
 
                     String generalCountStr = productCommentsCount.getString("generalCountStr");
@@ -416,6 +430,7 @@ public class JdCrawler {
 //                                "is_good        ->" + commentContent.getGood() + "\n" +
 //                                "content_id     ->" + commentContent.getContentId() + "\n" +
 //                                "item_id        ->" + commentContent.getItemId());
+                    commentContent.setCrawDate(LocalDate.now());
                     commentRepository.save(commentContent);
                     logger.info("commentContent has been saved.");
                 }
@@ -426,14 +441,11 @@ public class JdCrawler {
                 e.printStackTrace();
             }
         }
-
         logger.info("[check]commentCountStr    ->" + item.getCommentCountStr());
         logger.info("[check]generalCountStr    ->" + item.getGeneralCountStr());
         logger.info("[check]goodCountStr       ->" + item.getGoodCountStr());
         logger.info("[check]poorCountStr       ->" + item.getPoorCountStr());
+        item.setCrawDate(LocalDate.now());
         itemRepository.save(item);
-        logger.info("item has been saved.");
-
-        return item;
     }
 }

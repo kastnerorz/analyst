@@ -1,6 +1,7 @@
 package cn.kastner.analyst.domain;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -23,18 +24,20 @@ public class Item {
 
     private String vendor;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST,
-            CascadeType.MERGE})
+    private String commentVersion;
+
+    @ManyToOne(cascade = {CascadeType.MERGE,
+    CascadeType.PERSIST})
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST,
-            CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.MERGE,
+            CascadeType.PERSIST})
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST,
-            CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.MERGE,
+            CascadeType.PERSIST})
     @JoinColumn(name = "market_id")
     private Market market;
 
@@ -42,13 +45,13 @@ public class Item {
     @Column(columnDefinition = "TEXT")
     private String imageList;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<Feature> featureList;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<Comment> commentList;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<Price> priceList;
 
     @Column(columnDefinition = "TEXT")
@@ -75,6 +78,9 @@ public class Item {
     private int poorCount;
 
     private String poorCountStr;
+
+    @Temporal(TemporalType.DATE)
+    private LocalDate crawDate;
 
 
     public Long getItemId() {
@@ -275,5 +281,21 @@ public class Item {
 
     public void setPriceList(List<Price> priceList) {
         this.priceList = priceList;
+    }
+
+    public String getCommentVersion() {
+        return commentVersion;
+    }
+
+    public void setCommentVersion(String commentVersion) {
+        this.commentVersion = commentVersion;
+    }
+
+    public LocalDate getCrawDate() {
+        return crawDate;
+    }
+
+    public void setCrawDate(LocalDate crawDate) {
+        this.crawDate = crawDate;
     }
 }

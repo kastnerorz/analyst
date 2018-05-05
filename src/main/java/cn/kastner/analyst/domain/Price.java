@@ -1,9 +1,9 @@
 package cn.kastner.analyst.domain;
 
 
+
 import javax.persistence.*;
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "price")
@@ -20,7 +20,7 @@ public class Price {
     private Item item;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private LocalDateTime date;
 
     @Column(columnDefinition = "decimal(10,2)")
     private Double price;
@@ -41,11 +41,11 @@ public class Price {
         this.price = price;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

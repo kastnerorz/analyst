@@ -1,8 +1,7 @@
 package cn.kastner.analyst.domain;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "comment")
@@ -12,8 +11,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long contentId;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST,
-            CascadeType.MERGE})
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "feature_id")
     private Feature feature;
 
@@ -27,6 +25,9 @@ public class Comment {
 
     @Column(columnDefinition="BOOLEAN DEFAULT true")
     private Boolean isGood;
+
+    @Temporal(TemporalType.DATE)
+    private LocalDate crawDate;
 
 
 
@@ -73,5 +74,13 @@ public class Comment {
 
     public void setGood(Boolean good) {
         isGood = good;
+    }
+
+    public LocalDate getCrawDate() {
+        return crawDate;
+    }
+
+    public void setCrawDate(LocalDate crawDate) {
+        this.crawDate = crawDate;
     }
 }

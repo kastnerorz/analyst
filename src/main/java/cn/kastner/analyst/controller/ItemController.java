@@ -1,5 +1,6 @@
 package cn.kastner.analyst.controller;
 
+import cn.kastner.analyst.crawler.JdCrawler;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.util.NetResult;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -16,6 +18,12 @@ public class ItemController {
 
     @Autowired
     ItemRepository itemRepository;
+
+    @Autowired
+    NetResult netResult;
+
+    @Autowired
+    JdCrawler jdCrawler;
 
     @RequestMapping(value = "/getItemInfoByItemId")
     public NetResult getItemInfoByItemId(@RequestParam Long itemId) {
@@ -74,4 +82,15 @@ public class ItemController {
 //        netResult.status = -1;
 //        return netResult;
 //    }
+    @RequestMapping(value = "/getItemComments")
+    public NetResult getItemComments (@RequestParam Long itemId) {
+        Item item = itemRepository.findByItemId(itemId);
+
+        if (LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
+            jdCrawler.crawItemComment(item);
+        }
+
+
+        return netResult;
+    }
 }

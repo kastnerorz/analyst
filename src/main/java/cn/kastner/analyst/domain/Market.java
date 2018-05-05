@@ -24,7 +24,7 @@ public class Market {
 
     private String url;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "market", cascade = CascadeType.ALL)
     private List<Item> itemList;
 
     public Market (Code code) {
@@ -40,6 +40,9 @@ public class Market {
         }
     }
 
+    public Market () {
+
+    }
     public Long getMarketId() {
         return marketId;
     }

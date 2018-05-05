@@ -25,7 +25,7 @@ public class Category {
 
     private String levelThreeName;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
     private List<Item> itemList;
 
     public Long getCategoryId() {
