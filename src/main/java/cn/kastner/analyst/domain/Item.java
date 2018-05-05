@@ -79,7 +79,6 @@ public class Item {
 
     private String poorCountStr;
 
-    @Temporal(TemporalType.DATE)
     private LocalDate crawDate;
 
 

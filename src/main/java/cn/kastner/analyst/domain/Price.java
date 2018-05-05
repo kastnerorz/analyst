@@ -19,8 +19,7 @@ public class Price {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime date;
+    private LocalDateTime dateTime;
 
     @Column(columnDefinition = "decimal(10,2)")
     private Double price;
@@ -41,12 +40,12 @@ public class Price {
         this.price = price;
     }
 
-    public LocalDateTime getDate() {
-        return date;
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public Long getVolume() {

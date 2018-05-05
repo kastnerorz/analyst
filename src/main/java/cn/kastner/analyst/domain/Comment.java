@@ -26,7 +26,6 @@ public class Comment {
     @Column(columnDefinition="BOOLEAN DEFAULT true")
     private Boolean isGood;
 
-    @Temporal(TemporalType.DATE)
     private LocalDate crawDate;
 
 

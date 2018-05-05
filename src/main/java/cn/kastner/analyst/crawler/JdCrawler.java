@@ -333,9 +333,9 @@ public class JdCrawler {
             price.setVolume(volume);
 
 
-            price.setDate(LocalDateTime.now());
+            price.setDateTime(LocalDateTime.now());
             logger.info("price_id   ->" + price.getPriceId() + "\n" +
-                    "date       ->" + price.getDate() + "\n" +
+                    "date       ->" + price.getDateTime() + "\n" +
                     "item       ->" + price.getItem() + "\n" +
                     "market     ->" + price.getMarket() + "\n" +
                     "price      ->" + price.getPrice() + "\n" +
@@ -351,6 +351,9 @@ public class JdCrawler {
         return item;
     }
 
+    /**
+     * @param item
+     */
     public void crawItemComment (Item item) {
         // get comments
         String commentStr = "";

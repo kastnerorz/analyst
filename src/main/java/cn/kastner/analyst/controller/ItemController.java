@@ -1,7 +1,9 @@
 package cn.kastner.analyst.controller;
 
 import cn.kastner.analyst.crawler.JdCrawler;
+import cn.kastner.analyst.domain.Comment;
 import cn.kastner.analyst.domain.Item;
+import cn.kastner.analyst.repository.CommentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.util.NetResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ public class ItemController {
 
     @Autowired
     ItemRepository itemRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
     @Autowired
     NetResult netResult;
@@ -89,6 +94,8 @@ public class ItemController {
         if (LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
             jdCrawler.crawItemComment(item);
         }
+        netResult.status = 0;
+        netResult.result = commentRepository.findByCrawDateAfter(LocalDate.now().minusWeeks(1));
 
 
         return netResult;
