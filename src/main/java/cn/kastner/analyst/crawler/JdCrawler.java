@@ -93,7 +93,7 @@ public class JdCrawler {
 
             // TODO if timestamp is expired then craw again else return
 
-            return item;
+            return itemDb;
         }
 
 
