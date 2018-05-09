@@ -1,34 +1,32 @@
-package cn.kastner.analyst.crawler;
+package cn.kastner.analyst.service.crawler.impl;
 
 import cn.kastner.analyst.domain.*;
 import cn.kastner.analyst.repository.*;
-import org.jsoup.*;
-import org.jsoup.Connection.*;
+import cn.kastner.analyst.service.crawler.JdCrawlerService;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.json.JSONObject;
-import org.json.JSONArray;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.logging.Logger;
-
 
 @Service
-public class JdCrawler {
-
-    private static String strClassName = JdCrawler.class.getName();
+public class JdCrawlerServiceImpl implements JdCrawlerService {
+    private static String strClassName = JdCrawlerService.class.getName();
     private static Logger logger = Logger.getLogger(strClassName);
 
     @Autowired
@@ -47,7 +45,7 @@ public class JdCrawler {
     CategoryRepository categoryRepository;
 
 
-  @InitBinder
+    @InitBinder
     protected void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
@@ -57,6 +55,7 @@ public class JdCrawler {
      * @param url
      * @return itemId
      */
+    @Override
     public Item crawItemByUrl(String url) {
 
 
@@ -278,7 +277,7 @@ public class JdCrawler {
 //            connection.addRequestProperty("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
 //            stockDoc = Jsoup.parse(connection.getInputStream(), "GBK", "https://club.jd.com/comment/productCommentSummaries.action");
 
-            Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + item.getSkuId() +
+            Connection.Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + item.getSkuId() +
                     "&area=1_72_2799_0" +
                     "&vendorId=" + item.getVendorId() +
                     "&cat=" + item.getCategory().getCategoryStr() +
@@ -354,6 +353,7 @@ public class JdCrawler {
     /**
      * @param item
      */
+    @Override
     public void crawItemComment (Item item) {
         // get comments
         String commentStr = "";
@@ -370,7 +370,7 @@ public class JdCrawler {
                         "&rid=0" +
                         "&fold=1";
                 logger.info("Connecting to " + commentUrl);
-                Response commentDoc = Jsoup.connect(commentUrl)
+                Connection.Response commentDoc = Jsoup.connect(commentUrl)
                         .header("accept", "*/*")
                         .header("accept-encoding", "gzip, deflate, br")
                         .header("accept-language", "zh-CN,zh;q=0.9")

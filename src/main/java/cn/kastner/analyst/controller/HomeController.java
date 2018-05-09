@@ -1,6 +1,6 @@
 package cn.kastner.analyst.controller;
 
-import cn.kastner.analyst.crawler.MainCrawler;
+import cn.kastner.analyst.service.crawler.MainCrawlerService;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.Price;
 import cn.kastner.analyst.repository.ItemRepository;
@@ -24,7 +24,7 @@ public class HomeController {
     PriceRepository priceRepository;
 
     @Autowired
-    MainCrawler mainCrawler;
+    MainCrawlerService mainCrawlerService;
 
     @RequestMapping(value = "/index")
     public String index() {
@@ -39,7 +39,7 @@ public class HomeController {
 //        System.out.println(isMatch);
 
         if (isMatch) {
-            Item item = mainCrawler.crawItemByUrl(keyword);
+            Item item = mainCrawlerService.crawItemByUrl(keyword);
             model.addAttribute("itemId", item.getItemId());
 
             String itemCode = item.getModel();

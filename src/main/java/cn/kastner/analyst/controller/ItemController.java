@@ -1,7 +1,6 @@
 package cn.kastner.analyst.controller;
 
-import cn.kastner.analyst.crawler.JdCrawler;
-import cn.kastner.analyst.domain.Comment;
+import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.CommentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
@@ -28,7 +27,7 @@ public class ItemController {
     NetResult netResult;
 
     @Autowired
-    JdCrawler jdCrawler;
+    JdCrawlerService jdCrawlerService;
 
     @RequestMapping(value = "/getItemInfoByItemId")
     public NetResult getItemInfoByItemId(@RequestParam Long itemId) {
@@ -92,7 +91,7 @@ public class ItemController {
         Item item = itemRepository.findByItemId(itemId);
 
         if (LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
-            jdCrawler.crawItemComment(item);
+            jdCrawlerService.crawItemComment(item);
         }
         netResult.status = 0;
         netResult.result = commentRepository.findByCrawDateAfter(LocalDate.now().minusWeeks(1));
