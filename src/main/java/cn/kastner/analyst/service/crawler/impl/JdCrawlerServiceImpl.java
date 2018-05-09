@@ -26,23 +26,33 @@ import java.util.regex.Pattern;
 
 @Service
 public class JdCrawlerServiceImpl implements JdCrawlerService {
+
     private static String strClassName = JdCrawlerService.class.getName();
     private static Logger logger = Logger.getLogger(strClassName);
 
-    @Autowired
+    private final
     ItemRepository itemRepository;
 
-    @Autowired
+    private final
     CommentRepository commentRepository;
 
-    @Autowired
+    private final
     PriceRepository priceRepository;
 
-    @Autowired
+    private final
     BrandRepository brandRepository;
 
-    @Autowired
+    private final
     CategoryRepository categoryRepository;
+
+    @Autowired
+    public JdCrawlerServiceImpl(ItemRepository itemRepository, CommentRepository commentRepository, PriceRepository priceRepository, BrandRepository brandRepository, CategoryRepository categoryRepository) {
+        this.itemRepository = itemRepository;
+        this.commentRepository = commentRepository;
+        this.priceRepository = priceRepository;
+        this.brandRepository = brandRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
 
     @InitBinder

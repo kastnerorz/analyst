@@ -10,11 +10,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class MainCrawlerServiceImpl implements MainCrawlerService {
 
-    @Autowired
+    private final
     JdCrawlerService jdCrawlerService;
 
-    @Autowired
+    private final
     TrustReviewCrawlerService trustReviewCrawlerService;
+
+    @Autowired
+    public MainCrawlerServiceImpl(JdCrawlerService jdCrawlerService, TrustReviewCrawlerService trustReviewCrawlerService) {
+        this.jdCrawlerService = jdCrawlerService;
+        this.trustReviewCrawlerService = trustReviewCrawlerService;
+    }
 
     @Override
     public Item crawItemByUrl (String url) {
