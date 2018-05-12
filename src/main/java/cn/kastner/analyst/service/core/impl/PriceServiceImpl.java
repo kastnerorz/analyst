@@ -1,4 +1,43 @@
 package cn.kastner.analyst.service.core.impl;
 
-public class PriceServiceImpl {
+import cn.kastner.analyst.domain.Price;
+import cn.kastner.analyst.repository.PriceRepository;
+import cn.kastner.analyst.service.core.PriceService;
+
+import java.util.List;
+
+public class PriceServiceImpl implements PriceService {
+
+    final private PriceRepository priceRepository;
+
+    public PriceServiceImpl(PriceRepository priceRepository) {
+        this.priceRepository = priceRepository;
+    }
+
+    @Override
+    public Price insertByPrice(Price price) {
+        return priceRepository.save(price);
+    }
+
+    @Override
+    public Price findById(Long priceId) {
+        return priceRepository.findByPriceId(priceId);
+    }
+
+    @Override
+    public List<Price> findAll() {
+        return priceRepository.findAll();
+    }
+
+    @Override
+    public Price update(Price price) {
+        return priceRepository.save(price);
+    }
+
+    @Override
+    public Price delete(Long priceId) {
+        Price price = priceRepository.findByPriceId(priceId);
+        priceRepository.delete(price);
+        return price;
+    }
 }

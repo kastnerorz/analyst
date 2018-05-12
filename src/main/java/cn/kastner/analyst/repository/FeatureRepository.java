@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface FeatureRepository extends JpaRepository<Feature, Long>,
         JpaSpecificationExecutor<Feature> {
+    Feature findByFeatureId(Long featureId);
 }

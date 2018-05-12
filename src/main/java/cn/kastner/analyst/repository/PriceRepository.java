@@ -12,4 +12,6 @@ import java.util.List;
 public interface PriceRepository extends JpaRepository<Price, Long>,
         JpaSpecificationExecutor<Price> {
     List<Price> findPriceByItem(Item item);
+
+    Price findByPriceId(Long priceId);
 }
