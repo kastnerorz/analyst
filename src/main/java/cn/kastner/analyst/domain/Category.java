@@ -13,10 +13,13 @@ public class Category {
 
     private String categoryStr;
 
+    @Column(nullable = false)
     private int levelOne;
 
+    @Column(nullable = false)
     private int levelTwo;
 
+    @Column(nullable = false)
     private int levelThree;
 
     private String levelOneName;
