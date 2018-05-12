@@ -4,13 +4,20 @@ import cn.kastner.analyst.domain.Category;
 import cn.kastner.analyst.repository.CategoryRepository;
 import cn.kastner.analyst.service.core.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
+    final private
     CategoryRepository categoryRepository;
+
+    @Autowired
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
     public Category insertByCategory(Category category) {
