@@ -15,22 +15,6 @@ public interface BrandService {
     Brand insertByBrand(Brand brand);
 
     /**
-     * delete a brand
-     *
-     * @param brandId
-     * @return brand
-     */
-    Brand delete(Long brandId);
-
-    /**
-     * update a brand
-     *
-     * @param brandId
-     * @return brand
-     */
-    Brand update(Long brandId);
-
-    /**
      * retrieve a brand
      *
      * @param brandId
@@ -45,5 +29,21 @@ public interface BrandService {
      */
     List<Brand> findAll();
 
+
+    /**
+     * update a brand
+     *
+     * @param brand
+     * @return brand
+     */
+    Brand update(Brand brand);
+
+    /**
+     * delete a brand
+     *
+     * @param brandId
+     * @return brand
+     */
+    Brand delete(Long brandId);
 
 }

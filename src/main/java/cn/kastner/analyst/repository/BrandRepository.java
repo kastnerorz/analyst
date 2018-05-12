@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface BrandRepository extends JpaRepository<Brand,Long>,
         JpaSpecificationExecutor<Brand> {
     Brand findByBrandEnName(String brandEnName);
+    Brand findByBrandId(Long brandId);
 }

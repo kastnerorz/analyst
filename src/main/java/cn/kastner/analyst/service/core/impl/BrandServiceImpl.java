@@ -21,26 +21,32 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Brand insertByBrand(Brand brand) {
-        return null;
-    }
-
-    @Override
-    public Brand delete(Long brandId) {
-        return null;
-    }
-
-    @Override
-    public Brand update(Long brandId) {
-        return null;
+        return brandRepository.save(brand);
     }
 
     @Override
     public Brand findById(Long brandId) {
-        return null;
+        return brandRepository.findByBrandId(brandId);
     }
 
     @Override
     public List<Brand> findAll() {
-        return null;
+        return brandRepository.findAll();
     }
+
+    @Override
+    public Brand update(Brand brand) {
+        return brandRepository.save(brand);
+    }
+
+    @Override
+    public Brand delete(Long brandId) {
+        Brand brand = brandRepository.findByBrandId(brandId);
+        brandRepository.delete(brand);
+        return brand;
+    }
+
+
+
+
 }
