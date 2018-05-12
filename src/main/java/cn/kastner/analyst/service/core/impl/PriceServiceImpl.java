@@ -3,9 +3,11 @@ package cn.kastner.analyst.service.core.impl;
 import cn.kastner.analyst.domain.Price;
 import cn.kastner.analyst.repository.PriceRepository;
 import cn.kastner.analyst.service.core.PriceService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PriceServiceImpl implements PriceService {
 
     final private PriceRepository priceRepository;

@@ -3,9 +3,11 @@ package cn.kastner.analyst.service.core.impl;
 import cn.kastner.analyst.domain.Feature;
 import cn.kastner.analyst.repository.FeatureRepository;
 import cn.kastner.analyst.service.core.FeatureService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class FeatureServiceImpl implements FeatureService {
 
     final private FeatureRepository featureRepository;

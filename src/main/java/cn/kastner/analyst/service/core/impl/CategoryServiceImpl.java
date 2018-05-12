@@ -45,4 +45,9 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.delete(category);
         return category;
     }
+
+    @Override
+    public Category findByLevels(int level1, int level2, int level3) {
+        return categoryRepository.findByLevelOneAndAndLevelTwoAndAndLevelThree(level1, level2, level3);
+    }
 }

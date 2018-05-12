@@ -3,9 +3,11 @@ package cn.kastner.analyst.service.core.impl;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.service.core.ItemService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ItemServiceImpl implements ItemService {
 
     final private ItemRepository itemRepository;
@@ -22,6 +24,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item findById(Long itemId) {
         return itemRepository.findByItemId(itemId);
+    }
+
+    @Override
+    public Item findBySkuId(String skuId) {
+        return itemRepository.findBySkuId(skuId);
     }
 
     @Override

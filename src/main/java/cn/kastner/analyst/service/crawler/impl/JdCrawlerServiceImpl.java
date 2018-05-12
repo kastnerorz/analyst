@@ -2,6 +2,8 @@ package cn.kastner.analyst.service.crawler.impl;
 
 import cn.kastner.analyst.domain.*;
 import cn.kastner.analyst.repository.*;
+import cn.kastner.analyst.service.core.*;
+import cn.kastner.analyst.service.core.impl.*;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,27 +33,27 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     private static Logger logger = Logger.getLogger(strClassName);
 
     private final
-    ItemRepository itemRepository;
+    ItemService itemService;
 
     private final
-    CommentRepository commentRepository;
+    CommentService commentService;
 
     private final
-    PriceRepository priceRepository;
+    PriceService priceService;
 
     private final
-    BrandRepository brandRepository;
+    BrandService brandService;
 
     private final
-    CategoryRepository categoryRepository;
+    CategoryService categoryService;
 
     @Autowired
-    public JdCrawlerServiceImpl(ItemRepository itemRepository, CommentRepository commentRepository, PriceRepository priceRepository, BrandRepository brandRepository, CategoryRepository categoryRepository) {
-        this.itemRepository = itemRepository;
-        this.commentRepository = commentRepository;
-        this.priceRepository = priceRepository;
-        this.brandRepository = brandRepository;
-        this.categoryRepository = categoryRepository;
+    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService) {
+        this.itemService = itemService;
+        this.commentService = commentService;
+        this.priceService = priceService;
+        this.brandService = brandService;
+        this.categoryService = categoryService;
     }
 
 
@@ -97,7 +99,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
 
         // check if has item already
-        Item itemDb = itemRepository.findBySkuId(item.getSkuId());
+        Item itemDb = itemService.findBySkuId(item.getSkuId());
         if (null != itemDb) {
 
             // TODO if timestamp is expired then craw again else return
@@ -185,7 +187,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         if (catMatcher.find()) {
             String categoryStr = catMatcher.group(1);
             String[] cats = categoryStr.split(",");
-            Category categoryDb = categoryRepository.findByLevelOneAndAndLevelTwoAndAndLevelThree(
+            Category categoryDb = categoryService.findByLevels(
                     Integer.parseInt(cats[0]),
                     Integer.parseInt(cats[1]),
                     Integer.parseInt(cats[2])
@@ -202,7 +204,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             category.setLevelThree(Integer.parseInt(cats[2]));
 
 //            if (null == categoryDb) {
-//                categoryRepository.save(category);
+//                categoryService.save(category);
 //            }
             item.setCategory(category);
             logger.info("Get cat from head: " + categoryStr);
@@ -349,12 +351,12 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                     "market     ->" + price.getMarket() + "\n" +
                     "price      ->" + price.getPrice() + "\n" +
                     "volume     ->" + price.getVolume());
-            priceRepository.save(price);
+            priceService.insertByPrice(price);
             logger.info("price has been saved.");
         }
 
 
-        itemRepository.save(item);
+        itemService.insertByItem(item);
         logger.info("item has been saved.");
 
         return item;
@@ -444,7 +446,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 //                                "content_id     ->" + commentContent.getCommentId() + "\n" +
 //                                "item_id        ->" + commentContent.getItemId());
                     commentContent.setCrawDate(LocalDate.now());
-                    commentRepository.save(commentContent);
+                    commentService.insertByComment(commentContent);
                     logger.info("commentContent has been saved.");
                 }
             }
@@ -459,6 +461,6 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         logger.info("[check]goodCountStr       ->" + item.getGoodCountStr());
         logger.info("[check]poorCountStr       ->" + item.getPoorCountStr());
         item.setCrawDate(LocalDate.now());
-        itemRepository.save(item);
+        itemService.update(item);
     }
 }

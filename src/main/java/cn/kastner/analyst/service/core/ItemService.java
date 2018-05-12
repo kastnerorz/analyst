@@ -23,6 +23,12 @@ public interface ItemService {
     Item findById(Long itemId);
 
     /**
+     * @param skuId
+     * @return
+     */
+    Item findBySkuId(String skuId);
+
+    /**
      * retrieve all categories
      *
      * @return
@@ -44,4 +50,6 @@ public interface ItemService {
      * @return item deleted
      */
     Item delete(Long itemId);
+
+
 }
