@@ -441,7 +441,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 //                    logger.info("comment_id     ->" + commentContent.getFeatureId() + "\n" +
 //                                "content        ->" + commentContent.getContent() + "\n" +
 //                                "is_good        ->" + commentContent.getGood() + "\n" +
-//                                "content_id     ->" + commentContent.getContentId() + "\n" +
+//                                "content_id     ->" + commentContent.getCommentId() + "\n" +
 //                                "item_id        ->" + commentContent.getItemId());
                     commentContent.setCrawDate(LocalDate.now());
                     commentRepository.save(commentContent);

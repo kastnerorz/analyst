@@ -9,7 +9,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long contentId;
+    private Long commentId;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "feature_id")
@@ -35,12 +35,12 @@ public class Comment {
     }
 
 
-    public Long getContentId() {
-        return contentId;
+    public Long getCommentId() {
+        return commentId;
     }
 
-    public void setContentId(Long contentId) {
-        this.contentId = contentId;
+    public void setCommentId(Long commentId) {
+        this.commentId = commentId;
     }
 
     public Feature getFeature() {

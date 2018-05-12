@@ -10,4 +10,5 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long>,
         JpaSpecificationExecutor<Comment> {
     List<Comment> findByCrawDateAfter(LocalDate crawDate);
+    Comment findByCommentId(Long commentId);
 }
