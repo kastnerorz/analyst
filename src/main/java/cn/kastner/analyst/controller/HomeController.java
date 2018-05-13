@@ -5,6 +5,7 @@ import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.Price;
 import cn.kastner.analyst.repository.ItemRepository;
 import cn.kastner.analyst.repository.PriceRepository;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +33,7 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/search")
-    public String search(@RequestParam String keyword, Model model) {
+    public String search(@RequestParam String keyword, Model model) throws JSONException {
         model.addAttribute("keyword", keyword);
         Boolean isMatch = Pattern.matches(".*https?.*", keyword);
 //        System.out.println(keyword);

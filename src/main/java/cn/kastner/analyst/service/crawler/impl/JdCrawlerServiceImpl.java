@@ -6,6 +6,7 @@ import cn.kastner.analyst.service.core.*;
 import cn.kastner.analyst.service.core.impl.*;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -68,7 +69,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @return itemId
      */
     @Override
-    public Item crawItemByUrl(String url) {
+    public Item crawItemByUrl(String url) throws Exception {
 
 
         Item item = new Item();
@@ -366,7 +367,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @param item
      */
     @Override
-    public void crawItemComment (Item item) {
+    public void crawItemComment (Item item) throws Exception {
         // get comments
         String commentStr = "";
         for (int currentPage = 0; currentPage < 5; currentPage++) {

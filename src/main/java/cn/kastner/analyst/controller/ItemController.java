@@ -1,10 +1,10 @@
 package cn.kastner.analyst.controller;
-
-import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.CommentRepository;
 import cn.kastner.analyst.repository.ItemRepository;
+import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.util.NetResult;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -87,11 +87,15 @@ public class ItemController {
 //        return netResult;
 //    }
     @RequestMapping(value = "/getItemComments")
-    public NetResult getItemComments (@RequestParam Long itemId) {
+    public NetResult getItemComments (@RequestParam Long itemId){
         Item item = itemRepository.findByItemId(itemId);
 
         if (LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
-            jdCrawlerService.crawItemComment(item);
+            try {
+                jdCrawlerService.crawItemComment(item);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         netResult.status = 0;
         netResult.result = commentRepository.findByCrawDateAfter(LocalDate.now().minusWeeks(1));

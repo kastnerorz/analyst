@@ -4,6 +4,7 @@ import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
 import cn.kastner.analyst.service.crawler.TrustReviewCrawlerService;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class MainCrawlerServiceImpl implements MainCrawlerService {
     }
 
     @Override
-    public Item crawItemByUrl (String url) {
+    public Item crawItemByUrl (String url) throws JSONException {
         Item item = jdCrawlerService.crawItemByUrl(url);
         trustReviewCrawlerService.crawItemById(item);
         return item;
