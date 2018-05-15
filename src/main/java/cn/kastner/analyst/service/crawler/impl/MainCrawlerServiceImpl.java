@@ -24,8 +24,13 @@ public class MainCrawlerServiceImpl implements MainCrawlerService {
     }
 
     @Override
-    public Item crawItemByUrl (String url) throws JSONException {
-        Item item = jdCrawlerService.crawItemByUrl(url);
+    public Item crawItemByUrl (String url){
+        Item item = null;
+        try {
+            item = jdCrawlerService.crawItemByUrl(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         trustReviewCrawlerService.crawItemById(item);
         return item;
     }
