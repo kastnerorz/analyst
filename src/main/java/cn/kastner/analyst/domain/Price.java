@@ -16,7 +16,6 @@ public class Price {
 
     @ManyToOne(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE})
-    @JoinColumn(name = "item_id")
     private Item item;
 
     private LocalDateTime dateTime;
@@ -26,7 +25,6 @@ public class Price {
 
     @ManyToOne(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE})
-    @JoinColumn(name = "market_id")
     private Market market;
 
     private Long volume;

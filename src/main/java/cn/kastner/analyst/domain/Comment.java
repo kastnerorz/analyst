@@ -12,12 +12,10 @@ public class Comment {
     private Long commentId;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "feature_id")
     private Feature feature;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE})
-    @JoinColumn(name = "item_id")
     private Item item;
 
     @Column(columnDefinition = "TEXT")

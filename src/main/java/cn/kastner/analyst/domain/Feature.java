@@ -16,7 +16,6 @@ public class Feature {
 
     @ManyToOne(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE})
-    @JoinColumn(name = "item_id")
     private Item item;
 
     public Long getFeatureId() {

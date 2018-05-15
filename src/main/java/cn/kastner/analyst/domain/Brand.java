@@ -1,6 +1,7 @@
 package cn.kastner.analyst.domain;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,6 +21,9 @@ public class Brand {
 
     @Column(columnDefinition = "decimal(5,2)")
     private Float rate;
+
+    @OneToMany(mappedBy = "brand")
+    private List<Item> itemList;
 
     public Long getBrandId() {
         return brandId;
@@ -59,5 +63,13 @@ public class Brand {
 
     public void setBrandEnName(String brandEnName) {
         this.brandEnName = brandEnName;
+    }
+
+    public List<Item> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<Item> itemList) {
+        this.itemList = itemList;
     }
 }

@@ -28,17 +28,14 @@ public class Item {
 
     @ManyToOne(cascade = {CascadeType.MERGE,
     CascadeType.PERSIST})
-    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne(cascade = {CascadeType.MERGE,
             CascadeType.PERSIST})
-    @JoinColumn(name = "brand_id")
     private Brand brand;
 
     @ManyToOne(cascade = {CascadeType.MERGE,
             CascadeType.PERSIST})
-    @JoinColumn(name = "market_id")
     private Market market;
 
 

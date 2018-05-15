@@ -266,30 +266,6 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         String stockStr = "";
         int pduid = 1901035936;
         try {
-//            URL stockUrl = new URL("https://c0.3.cn/stock?skuid=" + skuid +
-//                                    "&area=1_72_2799_0" +
-//                                    "&vendorId=" + vendorId +
-//                                    "&cat=" + cat +
-//                                    "&buyNum=1" +
-//                                    "&choseSuitSkuIds=" +
-//                                    "&extraParam={\"originid\":\"1\"}" +
-//                                    "&ch=1" +
-//                                    "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
-//                                    "&pdpin=" +
-//                                    "&detailedAdd=null" +
-//                                    "&callback=jQuery" + jQueryId);
-//            HttpsURLConnection connection = (HttpsURLConnection)stockUrl.openConnection();
-//            connection.addRequestProperty("contentType", "text");
-//            connection.setRequestMethod("GET");
-//            connection.addRequestProperty("accept", "*/*");
-//            connection.addRequestProperty("accept-encoding", "gzip, deflate, br");
-//            connection.addRequestProperty("accept-language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7");
-//            connection.addRequestProperty("Connection", "keep-alive");
-//            connection.addRequestProperty("Host", "c0.3.cn");
-//            connection.addRequestProperty("referer", "https://item.jd.com/" + itemId + ".html");
-//            connection.addRequestProperty("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
-//            stockDoc = Jsoup.parse(connection.getInputStream(), "GBK", "https://club.jd.com/comment/productCommentSummaries.action");
-
             Connection.Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + item.getSkuId() +
                     "&area=1_72_2799_0" +
                     "&vendorId=" + item.getVendorId() +
