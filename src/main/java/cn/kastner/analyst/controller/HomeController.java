@@ -46,8 +46,7 @@ public class HomeController {
             String itemCode = item.getModel();
             String cname = item.getZhName();
             String imageList = item.getImageList();
-            System.out.println(imageList);
-            String primaryImage = imageList.split("\\\",\\\"")[0];
+            String primaryImage = imageList.split(",")[0];
             model.addAttribute("primaryImage", primaryImage);
             model.addAttribute("cname", cname);
             model.addAttribute("itemCode", itemCode);

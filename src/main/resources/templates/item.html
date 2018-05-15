@@ -347,7 +347,8 @@
                 }
             })
                 .then( value=> {
-                    this.itemInfo.basicImages.push(...value.data.result.split("\",\""));
+                    this.$set(this.itemInfo, 'basicImages', value.data.result.split(","))
+                    // this.itemInfo.basicImages.push(...value.data.result.split(","));
                     // value.data.result.split("\",\"").forEach(function (item) {
                     //     this.basicImages.push(item);
                     //     console.log(item);

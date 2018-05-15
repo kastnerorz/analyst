@@ -16,12 +16,14 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.thymeleaf.util.StringUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -160,10 +162,10 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         Pattern imageListPattern = Pattern.compile("imageList: \\[\\\"(.+)\\\"\\]");
         Matcher imageListMatcher = imageListPattern.matcher(doc.head().toString());
         if (imageListMatcher.find()) {
-            String imageList = imageListMatcher.group(1);
-
-            // TODO deal with imageList
-
+            String imageListStr = imageListMatcher.group(1);
+            String imageList = StringUtils.join(
+                    imageListStr.split("\",\""), ","
+            ) ;
             item.setImageList(imageList);
             logger.info("Get  imageList from head: " + imageList);
         } else {
@@ -204,9 +206,32 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             category.setLevelTwo(Integer.parseInt(cats[1]));
             category.setLevelThree(Integer.parseInt(cats[2]));
 
-//            if (null == categoryDb) {
-//                categoryService.save(category);
-//            }
+
+            // get level1 name
+            Pattern level1Pattern = Pattern.compile("mbNav-1\">(.*)</a>");
+            Matcher level1Matcher = level1Pattern.matcher(doc.toString());
+            if (level1Matcher.find()) {
+                String level1 = level1Matcher.group(1);
+                category.setLevelOneName(level1);
+            }
+
+            // get level2 name
+            Pattern level2Pattern = Pattern.compile("mbNav-2\">(.*)</a>");
+            Matcher level2Matcher = level2Pattern.matcher(doc.toString());
+            if (level2Matcher.find()) {
+                String level2 = level2Matcher.group(1);
+                category.setLevelTwoName(level2);
+            }
+
+            // get level3 name
+            Pattern level3Pattern = Pattern.compile("mbNav-3\">(.*)</a>");
+            Matcher level3Matcher = level3Pattern.matcher(doc.toString());
+            if (level3Matcher.find()) {
+                String level3 = level3Matcher.group(1);
+                category.setLevelThreeName(level3);
+            }
+
+
             item.setCategory(category);
             logger.info("Get cat from head: " + categoryStr);
         } else {
