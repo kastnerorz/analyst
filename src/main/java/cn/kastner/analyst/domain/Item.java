@@ -1,5 +1,7 @@
 package cn.kastner.analyst.domain;
 
+import org.hibernate.annotations.CollectionId;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -77,6 +79,9 @@ public class Item {
     private String poorCountStr;
 
     private LocalDate crawDate;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean isSelfSell;
 
 
     public Long getItemId() {
@@ -293,5 +298,13 @@ public class Item {
 
     public void setCrawDate(LocalDate crawDate) {
         this.crawDate = crawDate;
+    }
+
+    public Boolean getSelfSell() {
+        return isSelfSell;
+    }
+
+    public void setSelfSell(Boolean selfSell) {
+        isSelfSell = selfSell;
     }
 }
