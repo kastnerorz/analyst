@@ -155,17 +155,15 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
         // get imageList
 
-        Pattern imageListPattern = Pattern.compile("imageList: \\[\\\"(.+)\\\"\\]");
-        Matcher imageListMatcher = imageListPattern.matcher(doc.head().toString());
-        if (imageListMatcher.find()) {
-            String imageListStr = imageListMatcher.group(1);
+        String imageListStr = finder.find(doc.head().toString(), "imageList: \\\\[\\\\\\\"(.+)\\\\\\\"\\\\]", 1);
+        if (imageListStr == null) {
+            logger.warning("no imageList");
+        } else {
             String imageList = StringUtils.join(
                     imageListStr.split("\",\""), ","
             ) ;
             item.setImageList(imageList);
             logger.info("Get  imageList from head: " + imageList);
-        } else {
-            logger.warning("no imageList");
         }
 
 
