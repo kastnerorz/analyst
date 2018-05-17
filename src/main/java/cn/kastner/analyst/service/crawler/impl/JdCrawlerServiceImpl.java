@@ -180,6 +180,15 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             logger.warning("no commentVersion");
         }
 
+        // get vendor
+        String vendor = finder.find(doc.toString(), "dianpuname1\">(.*)</a>", 1);
+        if (vendor == null) {
+            logger.warning("no vendor");
+        } else {
+            item.setVendor(vendor);
+            logger.info("Get vendor: " + vendor);
+        }
+
         // get category
         Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
         Matcher catMatcher = catPattern.matcher(doc.head().toString());
@@ -312,22 +321,22 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         if (stockMatcher.find()) {
             JSONObject stock = new JSONObject(stockMatcher.group(1));
 
-            JSONObject selfDeliver;
-            try {
-                selfDeliver = stock.getJSONObject("self_D");
-                String vender = selfDeliver.getString("vender");
-                item.setVendor(vender);
-            } catch (Exception e) {
-                logger.info("get selfDeliver from D");
-            }
-
-            try {
-                selfDeliver = stock.getJSONObject("D");
-                String vender = selfDeliver.getString("vender");
-                item.setVendor(vender);
-            } catch (Exception e) {
-                logger.info("get selfDeliver from self_D");
-            }
+//            JSONObject selfDeliver;
+//            try {
+//                selfDeliver = stock.getJSONObject("self_D");
+//                String vender = selfDeliver.getString("vender");
+//                item.setVendor(vender);
+//            } catch (Exception e) {
+//                logger.info("get selfDeliver from D");
+//            }
+//
+//            try {
+//                selfDeliver = stock.getJSONObject("D");
+//                String vender = selfDeliver.getString("vender");
+//                item.setVendor(vender);
+//            } catch (Exception e) {
+//                logger.info("get selfDeliver from self_D");
+//            }
 
 
             JSONObject jdPrice = stock.getJSONObject("jdPrice");
