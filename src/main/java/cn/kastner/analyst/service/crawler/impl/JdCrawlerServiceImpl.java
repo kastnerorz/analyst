@@ -1,12 +1,10 @@
 package cn.kastner.analyst.service.crawler.impl;
 
 import cn.kastner.analyst.domain.*;
-import cn.kastner.analyst.repository.*;
 import cn.kastner.analyst.service.core.*;
-import cn.kastner.analyst.service.core.impl.*;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
+import cn.kastner.analyst.util.crawler.Finder;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -23,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -50,13 +47,16 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     private final
     CategoryService categoryService;
 
+    private final Finder finder;
+
     @Autowired
-    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService) {
+    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, Finder finder) {
         this.itemService = itemService;
         this.commentService = commentService;
         this.priceService = priceService;
         this.brandService = brandService;
         this.categoryService = categoryService;
+        this.finder = finder;
     }
 
 
@@ -90,15 +90,14 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
 
         // get skuid
-        Pattern skuidPattern = Pattern.compile("skuid: (\\d*),");
-        Matcher skuidMatcher = skuidPattern.matcher(doc.head().toString());
-        if (skuidMatcher.find()) {
-            String skuid = skuidMatcher.group(1);
+        String skuid = finder.find(doc.head().toString(), "skuid: (\\d*),", 1);
+        if (skuid == null) {
+            logger.warning("can't get skuid");
+        } else {
             item.setSkuId(skuid);
             logger.info("Get skuid from head: " + skuid);
-        } else {
-            logger.warning("can't get skuid");
         }
+
 
 
         // check if has item already
@@ -112,16 +111,13 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
 
         // get itemCname from html title
-        Pattern cnamePattern = Pattern.compile("(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
-        Matcher cnameMatcher = cnamePattern.matcher(doc.title());
-        if (cnameMatcher.find()) {
-            String zhName = cnameMatcher.group();
+        String zhName = finder.find(doc.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
+        if (zhName == null) {
+            logger.warning("Can't get item zhName");
+        } else {
             item.setZhName(zhName);
             logger.info("Get Item zhName from title: " + zhName);
-        } else {
-            logger.warning("Can't get item zhName");
         }
-
 
         // get itemModel from html title
         Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
