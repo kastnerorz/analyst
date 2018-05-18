@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Service;
@@ -109,6 +111,29 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             return itemDb;
         }
 
+        // get select color
+        Elements itemSelect = doc.getElementsByClass("item  selected  ");
+        String color = itemSelect.get(0).getElementsByTag("i").get(0).text();
+        if (color != null) {
+            item.setColor(color);
+        }
+
+        // get brand
+        String brandStr = doc.getElementById("parameter-brand")
+                .getElementsByTag("a")
+                .get(0)
+                .text();
+        if (brandStr == null) {
+            logger.warning("no brand");
+        } else {
+            Brand brand = new Brand();
+            String brandZhName = finder.find(brandStr, "(.*)（.*）", 1);
+            String brandEnName = finder.find(brandStr, ".*（(.*)）", 1);
+            brand.setBrandZhName(brandZhName);
+            brand.setBrandEnName(brandEnName);
+            brandService.insertByBrand(brand);
+            item.setBrand(brand);
+        }
 
         // get itemCname from html title
         String zhName = finder.find(doc.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
@@ -155,7 +180,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
         // get imageList
 
-        String imageListStr = finder.find(doc.head().toString(), "imageList: \\\\[\\\\\\\"(.+)\\\\\\\"\\\\]", 1);
+        String imageListStr = finder.find(doc.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
         if (imageListStr == null) {
             logger.warning("no imageList");
         } else {
@@ -164,6 +189,14 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             ) ;
             item.setImageList(imageList);
             logger.info("Get  imageList from head: " + imageList);
+        }
+
+        // check if self selling
+        Element selfSelling = doc.getElementsByClass("u-jd").get(0);
+        if (selfSelling == null) {
+            item.setSelfSell(false);
+        } else {
+            item.setSelfSell(true);
         }
 
 
@@ -179,7 +212,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
 
         // get vendor
-        String vendor = finder.find(doc.toString(), "dianpuname1\">(.*)</a>", 1);
+        String vendor = finder.find(doc.toString(), "dianpuname.*\">(.*)</a>", 1);
         if (vendor == null) {
             logger.warning("no vendor");
         } else {

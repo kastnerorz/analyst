@@ -80,6 +80,8 @@ public class Item {
 
     private LocalDate crawDate;
 
+    private String color;
+
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean isSelfSell;
 
@@ -306,5 +308,13 @@ public class Item {
 
     public void setSelfSell(Boolean selfSell) {
         isSelfSell = selfSell;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
