@@ -100,14 +100,9 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             logger.info("Get skuid from head: " + skuid);
         }
 
-
-
         // check if has item already
         Item itemDb = itemService.findBySkuId(item.getSkuId());
         if (null != itemDb) {
-
-            // TODO if timestamp is expired then craw again else return
-
             return itemDb;
         }
 

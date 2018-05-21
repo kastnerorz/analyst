@@ -239,7 +239,7 @@
                 fulfilledTags: [
                     ''
                 ],
-                loading: true,
+                loading: false,
                 itemInfo: {
                     sellerMarkets: ['jd'],
                     prices: [
@@ -348,35 +348,40 @@
             })
                 .then( value=> {
                     this.$set(this.itemInfo, 'basicImages', value.data.result.split(","))
-                    // this.itemInfo.basicImages.push(...value.data.result.split(","));
-                    // value.data.result.split("\",\"").forEach(function (item) {
-                    //     this.basicImages.push(item);
-                    //     console.log(item);
-                    // });
-                    console.log(value.data.result);
-                    console.log(app.basicImages);
                 })
                 .catch(function (reason) {
                     console.log(reason);
+                });
+            axios.interceptors.request.use(config => {
+                this.loading = true
+                return config
+            })
+            axios({
+                url: '/getItemComments',
+                method: 'POST',
+                params: {
+                    itemId: [[${itemId}]]
+                }
+            })
+
+                .then(res => {
+                    this.loading = false
+                    this.comments = res.data.result
+                    console.log(res.data.result)
                 })
+                .catch(err => {
+                    this.$message.error(err)
+                })
+
 
         },
         computed: {
-            greeting () {
-                return this.greetings[Math.floor(Math.random() * this.greetings.length)]
-            },
-            loading () {
-                return this.itemId !== '20936ea3-3355-4e94-8c01-ba7ec943338f';
-            }
         },
         methods: {
             search () {
                 if(app.keyword != null){
                     window.location.href = 'search?keyword=' + app.keyword;
                 }
-            },
-            getImageList () {
-
             }
         }
     });

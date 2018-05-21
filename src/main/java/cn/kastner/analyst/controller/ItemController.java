@@ -89,8 +89,13 @@ public class ItemController {
     @RequestMapping(value = "/getItemComments")
     public NetResult getItemComments (@RequestParam Long itemId){
         Item item = itemRepository.findByItemId(itemId);
-
-        if (LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
+        if (item.getCrawDate() == null) {
+            try {
+                jdCrawlerService.crawItemComment(item);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
             try {
                 jdCrawlerService.crawItemComment(item);
             } catch (Exception e) {
