@@ -34,6 +34,7 @@ body {
     font-weight: 400;
     font-size: 12px;
     padding: 0;
+    text-align: center;
     /*border-radius: 1rem;
     border: 1px solid #e1e3e8;*/
 }
@@ -62,5 +63,5 @@ body {
 }
 
 .box-card {
-    width: 320px;
+    width: 100%;
 }

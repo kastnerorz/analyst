@@ -12,54 +12,46 @@
         <el-container>
             <el-header></el-header>
             <el-main>
-                <el-row type="flex" class="row-bg" justify="center">
-                    <el-row :span="12">
-                        <el-col :span="10">
-                            <img src="imgs/dolphin.png" height="140">
-                        </el-col>
-                        <el-col :span="8">
-                            <img src="imgs/name.png" height="140">
-                        </el-col>
-                    </el-row>
+                <el-row type="flex" class="row-bg" justify="center" align="middle">
+                    <el-col :xs="6" :sm="4" :md="4" :lg="4" :xl="2">
+                        <img src="imgs/dolphin.png" width="100%">
+                    </el-col>
+                    <el-col :xs="18" :sm="10" :md="10" :lg="10" :xl="6">
+                        <img src="imgs/name.png" width="100%">
+                    </el-col>
                 </el-row>
                 <el-row type="flex" class="row-bg" justify="center">
-                    <el-col :span="18">
+                    <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
                         <p style="font-size:20px;color:#999;font-weight:bold">基于大数据的细节分析，公正呈现好与坏，助您更好选购你所需要的</p>
                     </el-col>
                 </el-row>
-                <el-row type="flex" class="row-bg" justify="center" :gutter="20">
-                    <el-col :span="1">
+                <el-row type="flex" class="row-bg" justify="center" :gutter="20" >
+                    <el-col :xs="2" :sm="2" :md="1" :lg="1" :xl="1">
                         <p>图标</p>
                     </el-col>
-                    <el-col :span="9">
+                    <el-col :xs="16" :sm="16" :md="12" :lg="12" :xl="10" justify="left">
                         <el-input placeholder="请输入内容" prefix-icon="el-icon-search" v-model="keyword" @keyup.native.enter="search"></el-input>
                     </el-col>
-                    <el-col :span="1">
+                    <el-col :xs="2" :sm="2" :md="1" :lg="1" :xl="1" justify="left">
                         <el-button type="primary" @click="search" :loading="isLoading" icon="el-icon-search" >搜索</el-button>
                     </el-col>
                 </el-row>
-                <el-row  type="flex" class="row-bg three-tips" justify="center" :gutter="12">
-                    <el-col :span="4">
-                        <el-card shadow="always" class="teach">
-                            在电商平台进入商品页面
-                        </el-card>
-                    </el-col>
-                    <el-col :span="5">
-                        <el-card shadow="always" class="teach">
+                <el-row  type="flex" class="row-bg three-tips" justify="center" align="middle" :gutter="12">
+                    <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" >
+                        <el-card class="teach" shadow="never" align="middle" >
+                            在电商平商品页面
+                            <span><img src="imgs/array.png" height="20" style="margin-bottom: -5px"></span>
                             复制链接、商品名、类别名进入搜索框
-                        </el-card>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-card shadow="always" class="teach">
+                            <span><img src="imgs/array.png" height="20" style="margin-bottom: -5px"></span>
                             点击搜索，等待商品报告
                         </el-card>
                     </el-col>
                 </el-row>
-                <el-row type="flex" class="row-bg three-tips" justify="center" :gutter="10">
-                    <el-col :span="6">
+                <el-row type="flex" class="row-bg three-tips"  justify="space-around" :gutter="10">
+                    <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="4">
                         <el-card class="box-card" justify="left" shadow="hover">
                             <div slot="header" class="clearfix">
-                                <span>搜索次数最多电商</span>
+                                <span>搜索最多电商</span>
                                 <img src="imgs/smile.png" height="25">
                             </div>
                             <div v-for="o in 4" :key="o" class="text item">
@@ -67,7 +59,7 @@
                             </div>
                         </el-card>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="4">
                         <el-card class="box-card" justify="left" shadow="hover">
                             <div slot="header" class="clearfix">
                                 <span>最新搜索商品</span>
@@ -78,10 +70,10 @@
                             </div>
                         </el-card>
                     </el-col>
-                    <el-col :span="6">
+                    <el-col  :xs="24" :sm="24" :md="8" :lg="8" :xl="4">
                         <el-card class="box-card" justify="left" shadow="hover">
                             <div slot="header" class="clearfix">
-                                <span>最热类别</span>
+                                <span>最热商品类别</span>
                                 <img src="imgs/fire.png" height="25">
                             </div>
                             <div v-for="o in 4" :key="o" class="text item">
