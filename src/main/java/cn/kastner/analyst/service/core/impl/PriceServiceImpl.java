@@ -1,10 +1,12 @@
 package cn.kastner.analyst.service.core.impl;
 
+import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.core.Price;
 import cn.kastner.analyst.repository.core.PriceRepository;
 import cn.kastner.analyst.service.core.PriceService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,8 +29,8 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public List<Price> findAll() {
-        return priceRepository.findAll();
+    public List<Price> findByItemAndCrawDateTime(Item item, LocalDateTime crawDateTime) {
+        return priceRepository.findPricesByItemAndCrawDateTimeAfter(item, crawDateTime);
     }
 
     @Override

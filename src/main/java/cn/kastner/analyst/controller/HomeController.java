@@ -1,5 +1,7 @@
 package cn.kastner.analyst.controller;
 
+import cn.kastner.analyst.service.core.ItemService;
+import cn.kastner.analyst.service.core.PriceService;
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
 import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.core.Price;
@@ -12,20 +14,28 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.*;
 
 @Controller
 public class HomeController {
 
-    @Autowired
-    ItemRepository itemRepository;
+    private final
+    ItemService itemService;
 
-    @Autowired
-    PriceRepository priceRepository;
+    private final
+    PriceService priceService;
 
-    @Autowired
+    private final
     MainCrawlerService mainCrawlerService;
+
+    @Autowired
+    public HomeController(ItemService itemService, PriceService priceService, MainCrawlerService mainCrawlerService) {
+        this.itemService = itemService;
+        this.priceService = priceService;
+        this.mainCrawlerService = mainCrawlerService;
+    }
 
     @RequestMapping(value = "/index")
     public String index() {
@@ -52,7 +62,7 @@ public class HomeController {
             model.addAttribute("itemCode", itemCode);
 
             Double price = (double) 0;
-            List<Price> prices = priceRepository.findPriceByItem(item);
+            List<Price> prices = priceService.findByItemAndCrawDateTime(item, LocalDateTime.now().minusWeeks(1));
             if (prices.size() != 0) {
                 price = prices.get(0).getPrice();
             }

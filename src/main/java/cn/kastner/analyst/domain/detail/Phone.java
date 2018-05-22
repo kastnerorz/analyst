@@ -1,4 +1,7 @@
 package cn.kastner.analyst.domain.detail;
 
-public class phone {
+import javax.persistence.Entity;
+
+@Entity
+public class Phone {
 }

@@ -21,7 +21,7 @@ public class Price {
     @JsonIgnore
     private Item item;
 
-    private LocalDateTime dateTime;
+    private LocalDateTime crawDateTime;
 
     @Column(columnDefinition = "decimal(10,2)")
     private Double price;
@@ -41,12 +41,12 @@ public class Price {
         this.price = price;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getCrawDateTime() {
+        return crawDateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setCrawDateTime(LocalDateTime crawDateTime) {
+        this.crawDateTime = crawDateTime;
     }
 
     public Long getVolume() {

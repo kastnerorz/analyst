@@ -387,9 +387,9 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             price.setVolume(volume);
 
 
-            price.setDateTime(LocalDateTime.now());
+            price.setCrawDateTime(LocalDateTime.now());
             logger.info("price_id   ->" + price.getPriceId() + "\n" +
-                    "date       ->" + price.getDateTime() + "\n" +
+                    "date       ->" + price.getCrawDateTime() + "\n" +
                     "item       ->" + price.getItem() + "\n" +
                     "market     ->" + price.getMarket() + "\n" +
                     "price      ->" + price.getPrice() + "\n" +

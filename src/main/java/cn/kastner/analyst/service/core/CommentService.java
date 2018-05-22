@@ -1,7 +1,9 @@
 package cn.kastner.analyst.service.core;
 
 import cn.kastner.analyst.domain.core.Comment;
+import cn.kastner.analyst.domain.core.Item;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface CommentService {
@@ -28,6 +30,8 @@ public interface CommentService {
      * @return
      */
     List<Comment> findAll();
+
+    List<Comment> findByItemAndCrawDateAfter(Item item, LocalDate crawDate);
 
     /**
      * update a comment by id

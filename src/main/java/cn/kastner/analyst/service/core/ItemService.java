@@ -28,6 +28,8 @@ public interface ItemService {
      */
     Item findBySkuId(String skuId);
 
+    List<Item> findByZhName(String zhName);
+
     /**
      * retrieve all categories
      *

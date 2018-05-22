@@ -1,7 +1,9 @@
 package cn.kastner.analyst.service.core;
 
+import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.core.Price;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PriceService {
@@ -23,11 +25,11 @@ public interface PriceService {
     Price findById(Long priceId);
 
     /**
-     * retrieve all categories
+     * retrieve all prices by Item
      *
      * @return
      */
-    List<Price> findAll();
+    List<Price> findByItemAndCrawDateTime(Item item, LocalDateTime crawDateTime);
 
     /**
      * update a price by id

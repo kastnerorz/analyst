@@ -32,6 +32,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public List<Item> findByZhName(String zhName) {
+        return itemRepository.findAllByZhName(zhName);
+    }
+
+    @Override
     public List<Item> findAll() {
         return itemRepository.findAll();
     }

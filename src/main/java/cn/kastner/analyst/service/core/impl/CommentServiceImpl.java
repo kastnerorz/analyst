@@ -1,10 +1,12 @@
 package cn.kastner.analyst.service.core.impl;
 
 import cn.kastner.analyst.domain.core.Comment;
+import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.repository.core.CommentRepository;
 import cn.kastner.analyst.service.core.CommentService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,6 +31,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<Comment> findAll() {
         return commentRepository.findAll();
+    }
+
+    @Override
+    public List<Comment> findByItemAndCrawDateAfter(Item item, LocalDate crawDate) {
+        return commentRepository.findByItemAndCrawDateAfter(item, crawDate);
     }
 
     @Override

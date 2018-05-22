@@ -2,6 +2,8 @@ package cn.kastner.analyst.controller;
 import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.repository.core.CommentRepository;
 import cn.kastner.analyst.repository.core.ItemRepository;
+import cn.kastner.analyst.service.core.CommentService;
+import cn.kastner.analyst.service.core.ItemService;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.util.NetResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,22 +18,30 @@ import java.util.List;
 @RestController
 public class ItemController {
 
-    @Autowired
-    ItemRepository itemRepository;
+    private final
+    ItemService itemService;
 
-    @Autowired
-    CommentRepository commentRepository;
+    private final
+    CommentService commentService;
 
-    @Autowired
+    private final
     NetResult netResult;
 
-    @Autowired
+    private final
     JdCrawlerService jdCrawlerService;
+
+    @Autowired
+    public ItemController(ItemService itemService, CommentService commentService, NetResult netResult, JdCrawlerService jdCrawlerService) {
+        this.itemService = itemService;
+        this.commentService = commentService;
+        this.netResult = netResult;
+        this.jdCrawlerService = jdCrawlerService;
+    }
 
     @RequestMapping(value = "/getItemInfoByItemId")
     public NetResult getItemInfoByItemId(@RequestParam Long itemId) {
         NetResult netResult = new NetResult();
-        Item item = itemRepository.findByItemId(itemId);
+        Item item = itemService.findById(itemId);
         if (item != null) {
             netResult.result = item;
             netResult.status = 0;
@@ -46,7 +56,7 @@ public class ItemController {
     @RequestMapping(value = "/getItemInfoByCname")
     public NetResult getItemInfoByCname(@RequestParam String zhName) {
         NetResult netResult = new NetResult();
-        List<Item> items = itemRepository.findAllByZhName(zhName);
+        List<Item> items = itemService.findByZhName(zhName);
         if (items != null) {
             netResult.result = items;
             netResult.status = 0;
@@ -60,7 +70,7 @@ public class ItemController {
     @RequestMapping(value = "/getImageListByItemId")
     public NetResult getImageListByItemId(@RequestParam Long itemId) {
         NetResult netResult = new NetResult();
-        Item item = itemRepository.findByItemId(itemId);
+        Item item = itemService.findById(itemId);
         if (item != null) {
             String imageList = item.getImageList();
             netResult.result = imageList;
@@ -75,7 +85,7 @@ public class ItemController {
 //    @RequestMapping(value = "/test")
 //    public NetResult test(@RequestParam String cname) {
 //        NetResult netResult = new NetResult();
-//        List<String> cnames = itemRepository.findAllByCnameContaining(cname);
+//        List<String> cnames = itemService.findAllByCnameContaining(cname);
 //        if (cnames != null) {
 //            netResult.result = cnames;
 //            netResult.status = 0;
@@ -87,7 +97,7 @@ public class ItemController {
 //    }
     @RequestMapping(value = "/getItemComments")
     public NetResult getItemComments (@RequestParam Long itemId){
-        Item item = itemRepository.findByItemId(itemId);
+        Item item = itemService.findById(itemId);
         if (item.getCrawDate() == null) {
             try {
                 jdCrawlerService.crawItemComment(item);
@@ -102,7 +112,7 @@ public class ItemController {
             }
         }
         netResult.status = 0;
-        netResult.result = commentRepository.findByCrawDateAfter(LocalDate.now().minusWeeks(1));
+        netResult.result = commentService.findByItemAndCrawDateAfter(item, LocalDate.now().minusWeeks(1));
 
 
         return netResult;
