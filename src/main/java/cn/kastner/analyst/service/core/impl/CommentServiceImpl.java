@@ -1,9 +1,7 @@
 package cn.kastner.analyst.service.core.impl;
 
-import cn.kastner.analyst.domain.Category;
-import cn.kastner.analyst.domain.Comment;
-import cn.kastner.analyst.repository.CommentRepository;
-import cn.kastner.analyst.service.core.CategoryService;
+import cn.kastner.analyst.domain.core.Comment;
+import cn.kastner.analyst.repository.core.CommentRepository;
 import cn.kastner.analyst.service.core.CommentService;
 import org.springframework.stereotype.Service;
 

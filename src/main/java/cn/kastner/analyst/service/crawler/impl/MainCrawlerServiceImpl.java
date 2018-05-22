@@ -1,10 +1,9 @@
 package cn.kastner.analyst.service.crawler.impl;
 
-import cn.kastner.analyst.domain.Item;
+import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
 import cn.kastner.analyst.service.crawler.TrustReviewCrawlerService;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

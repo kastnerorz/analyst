@@ -1,4 +1,4 @@
-package cn.kastner.analyst.domain;
+package cn.kastner.analyst.domain.core;
 
 import javax.persistence.*;
 import java.util.List;

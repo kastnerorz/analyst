@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.core;
 
-import cn.kastner.analyst.domain.Brand;
+import cn.kastner.analyst.domain.core.Brand;
 
 import java.util.List;
 
@@ -28,6 +28,12 @@ public interface BrandService {
      * @return brand list
      */
     List<Brand> findAll();
+
+    /**
+     * @param enName 品牌英文名
+     * @return brand
+     */
+    Brand findByEnName(String enName);
 
 
     /**

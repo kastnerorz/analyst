@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.core;
 
-import cn.kastner.analyst.domain.Price;
+import cn.kastner.analyst.domain.core.Price;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package cn.kastner.analyst.domain;
+package cn.kastner.analyst.domain.core;
 
 import javax.persistence.*;
 import java.util.List;
@@ -8,6 +8,13 @@ import java.util.List;
 public class Market {
 
 
+    public Code getCode() {
+        return code;
+    }
+
+    public void setCode(Code code) {
+        this.code = code;
+    }
 
     public enum Code {
         JD,
@@ -23,6 +30,8 @@ public class Market {
     private String marketName;
 
     private String url;
+
+    private Code code;
 
     @OneToMany(mappedBy = "market", cascade = CascadeType.ALL)
     private List<Item> itemList;

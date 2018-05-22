@@ -1,10 +1,10 @@
 package cn.kastner.analyst.controller;
 
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
-import cn.kastner.analyst.domain.Item;
-import cn.kastner.analyst.domain.Price;
-import cn.kastner.analyst.repository.ItemRepository;
-import cn.kastner.analyst.repository.PriceRepository;
+import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.core.Price;
+import cn.kastner.analyst.repository.core.ItemRepository;
+import cn.kastner.analyst.repository.core.PriceRepository;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

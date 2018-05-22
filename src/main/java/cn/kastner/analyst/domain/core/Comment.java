@@ -1,4 +1,6 @@
-package cn.kastner.analyst.domain;
+package cn.kastner.analyst.domain.core;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,10 +14,12 @@ public class Comment {
     private Long commentId;
 
     @ManyToOne(cascade = CascadeType.MERGE)
+    @JsonIgnore
     private Feature feature;
 
     @ManyToOne(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE})
+    @JsonIgnore
     private Item item;
 
     @Column(columnDefinition = "TEXT")

@@ -1,4 +1,6 @@
-package cn.kastner.analyst.domain;
+package cn.kastner.analyst.domain.core;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -16,6 +18,7 @@ public class Feature {
 
     @ManyToOne(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE})
+    @JsonIgnore
     private Item item;
 
     public Long getFeatureId() {

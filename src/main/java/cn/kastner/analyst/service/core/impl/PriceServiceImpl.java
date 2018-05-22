@@ -1,7 +1,7 @@
 package cn.kastner.analyst.service.core.impl;
 
-import cn.kastner.analyst.domain.Price;
-import cn.kastner.analyst.repository.PriceRepository;
+import cn.kastner.analyst.domain.core.Price;
+import cn.kastner.analyst.repository.core.PriceRepository;
 import cn.kastner.analyst.service.core.PriceService;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,7 @@
 package cn.kastner.analyst.service.crawler.impl;
 
-import cn.kastner.analyst.domain.*;
+import cn.kastner.analyst.domain.core.*;
+import cn.kastner.analyst.repository.core.MarketRepository;
 import cn.kastner.analyst.service.core.*;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.util.crawler.Finder;
@@ -49,15 +50,18 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     private final
     CategoryService categoryService;
 
+    private final MarketRepository marketRepository;
+
     private final Finder finder;
 
     @Autowired
-    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, Finder finder) {
+    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, Finder finder) {
         this.itemService = itemService;
         this.commentService = commentService;
         this.priceService = priceService;
         this.brandService = brandService;
         this.categoryService = categoryService;
+        this.marketRepository = marketRepository;
         this.finder = finder;
     }
 
@@ -77,7 +81,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
 
         Item item = new Item();
-        Market market = new Market(Market.Code.JD);
+        Market market = marketRepository.findByCode(Market.Code.JD);
         item.setMarket(market);
 
         Document doc = new Document("");
@@ -121,13 +125,19 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         if (brandStr == null) {
             logger.warning("no brand");
         } else {
-            Brand brand = new Brand();
             String brandZhName = finder.find(brandStr, "(.*)（.*）", 1);
             String brandEnName = finder.find(brandStr, ".*（(.*)）", 1);
-            brand.setBrandZhName(brandZhName);
-            brand.setBrandEnName(brandEnName);
-            brandService.insertByBrand(brand);
-            item.setBrand(brand);
+            Brand brandDb = brandService.findByEnName(brandEnName);
+            if (brandDb == null) {
+                Brand brand = new Brand();
+                brand.setBrandZhName(brandZhName);
+                brand.setBrandEnName(brandEnName);
+                brandService.insertByBrand(brand);
+                item.setBrand(brand);
+            } else {
+                item.setBrand(brandDb);
+            }
+
         }
 
         // get itemCname from html title

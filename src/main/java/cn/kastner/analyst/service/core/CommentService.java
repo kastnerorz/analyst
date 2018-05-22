@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.core;
 
-import cn.kastner.analyst.domain.Comment;
+import cn.kastner.analyst.domain.core.Comment;
 
 import java.util.List;
 

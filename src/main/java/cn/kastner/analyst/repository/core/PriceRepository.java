@@ -1,7 +1,7 @@
-package cn.kastner.analyst.repository;
+package cn.kastner.analyst.repository.core;
 
-import cn.kastner.analyst.domain.Item;
-import cn.kastner.analyst.domain.Price;
+import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.core.Price;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

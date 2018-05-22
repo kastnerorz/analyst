@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.core;
 
-import cn.kastner.analyst.domain.Category;
+import cn.kastner.analyst.domain.core.Category;
 
 import java.util.List;
 

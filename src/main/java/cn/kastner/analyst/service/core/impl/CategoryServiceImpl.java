@@ -1,7 +1,7 @@
 package cn.kastner.analyst.service.core.impl;
 
-import cn.kastner.analyst.domain.Category;
-import cn.kastner.analyst.repository.CategoryRepository;
+import cn.kastner.analyst.domain.core.Category;
+import cn.kastner.analyst.repository.core.CategoryRepository;
 import cn.kastner.analyst.service.core.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

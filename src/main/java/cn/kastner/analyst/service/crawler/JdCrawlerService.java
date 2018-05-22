@@ -1,7 +1,6 @@
 package cn.kastner.analyst.service.crawler;
 
-import cn.kastner.analyst.domain.*;
-import org.json.JSONException;
+import cn.kastner.analyst.domain.core.Item;
 
 
 public interface JdCrawlerService {

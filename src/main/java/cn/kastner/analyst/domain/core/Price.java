@@ -1,6 +1,8 @@
-package cn.kastner.analyst.domain;
+package cn.kastner.analyst.domain.core;
 
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,6 +18,7 @@ public class Price {
 
     @ManyToOne(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE})
+    @JsonIgnore
     private Item item;
 
     private LocalDateTime dateTime;

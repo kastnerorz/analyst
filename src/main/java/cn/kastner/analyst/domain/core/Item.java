@@ -1,6 +1,4 @@
-package cn.kastner.analyst.domain;
-
-import org.hibernate.annotations.CollectionId;
+package cn.kastner.analyst.domain.core;
 
 import javax.persistence.*;
 import java.time.LocalDate;
