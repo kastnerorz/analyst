@@ -352,10 +352,7 @@
                 .catch(function (reason) {
                     console.log(reason);
                 });
-            axios.interceptors.request.use(config => {
-                this.loading = true
-                return config
-            })
+            this.loading = true
             axios({
                 url: '/getItemComments',
                 method: 'POST',
@@ -370,6 +367,7 @@
                     console.log(res.data.result)
                 })
                 .catch(err => {
+                    this.loading = false
                     this.$message.error(err)
                 })
 
