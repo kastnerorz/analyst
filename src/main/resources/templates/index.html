@@ -12,13 +12,16 @@
         <el-container>
             <el-header></el-header>
             <el-main>
-                <el-row type="flex" class="row-bg" justify="center" align="middle">
-                    <el-col :xs="6" :sm="4" :md="4" :lg="4" :xl="2">
-                        <img src="imgs/dolphin.png" width="100%">
+                <el-row type="flex" class="row-bg" justify="center">
+                    <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                        <img src="imgs/logo2.png" width="100%">
                     </el-col>
-                    <el-col :xs="18" :sm="10" :md="10" :lg="10" :xl="6">
-                        <img src="imgs/name.png" width="100%">
-                    </el-col>
+                    <!--<el-col :xs="8" :sm="6" :md="6" :lg="4" :xl="6">-->
+                        <!--<img src="imgs/logo.png" width="100%">-->
+                    <!--</el-col>-->
+                    <!--<el-col :xs="14" :sm="8" :md="8" :lg="8" :xl="8">-->
+                        <!--<img src="imgs/nameZh.png" width="100%">-->
+                    <!--</el-col>-->
                 </el-row>
                 <el-row type="flex" class="row-bg" justify="center">
                     <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
@@ -26,8 +29,8 @@
                     </el-col>
                 </el-row>
                 <el-row type="flex" class="row-bg" justify="center" :gutter="20" >
-                    <el-col :xs="2" :sm="2" :md="1" :lg="1" :xl="1">
-                        <p>图标</p>
+                    <el-col :xs="2" :sm="2" :md="1" :lg="1" :xl="1" align="middle" style="padding-top: 6px;">
+                        <img :src="type" alt=""  width="25px">
                     </el-col>
                     <el-col :xs="16" :sm="16" :md="12" :lg="12" :xl="10" justify="left">
                         <el-input placeholder="请输入内容" prefix-icon="el-icon-search" v-model="keyword" @keyup.native.enter="search"></el-input>
@@ -37,13 +40,23 @@
                     </el-col>
                 </el-row>
                 <el-row  type="flex" class="row-bg three-tips" justify="center" align="middle" :gutter="12">
-                    <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" >
+                    <el-col :xs="16" :sm="16" :md="16" :lg="16" :xl="16" >
                         <el-card class="teach" shadow="never" align="middle" >
-                            在电商平商品页面
-                            <span><img src="imgs/array.png" height="20" style="margin-bottom: -5px"></span>
-                            复制链接、商品名、类别名进入搜索框
-                            <span><img src="imgs/array.png" height="20" style="margin-bottom: -5px"></span>
-                            点击搜索，等待商品报告
+                            <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                                电商平台的商品页面
+                            </el-col>
+                            <el-col :xs="1" :sm="1" :md="1" :lg="1" :xl="1">
+                                <img src="imgs/array.png" height="20" style="margin-bottom: -5px">
+                            </el-col>
+                            <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10">
+                                复制链接、商品名、类别名进入搜索框
+                            </el-col>
+                            <el-col :xs="1" :sm="1" :md="1" :lg="1" :xl="1">
+                                <img src="imgs/array.png" height="20" style="margin-bottom: -5px">
+                            </el-col>
+                            <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                                搜索并等待商品报告
+                            </el-col>
                         </el-card>
                     </el-col>
                 </el-row>
@@ -52,7 +65,7 @@
                         <el-card class="box-card" justify="left" shadow="hover">
                             <div slot="header" class="clearfix">
                                 <span>搜索最多电商</span>
-                                <img src="imgs/smile.png" height="25">
+                                <img src="imgs/smile.png" style="height:20px;margin-bottom: -3px;">
                             </div>
                             <div v-for="o in 4" :key="o" class="text item">
                                 {{'列表内容 ' + o }}
@@ -63,7 +76,7 @@
                         <el-card class="box-card" justify="left" shadow="hover">
                             <div slot="header" class="clearfix">
                                 <span>最新搜索商品</span>
-                                <img src="imgs/search.png" height="25">
+                                <img src="imgs/search.png" style="height:20px;margin-bottom: -3px;">
                             </div>
                             <div v-for="o in 4" :key="o" class="text item">
                                 {{'列表内容 ' + o }}
@@ -74,7 +87,7 @@
                         <el-card class="box-card" justify="left" shadow="hover">
                             <div slot="header" class="clearfix">
                                 <span>最热商品类别</span>
-                                <img src="imgs/fire.png" height="25">
+                                <img src="imgs/fire.png" style="height:20px;margin-bottom: -3px;">
                             </div>
                             <div v-for="o in 4" :key="o" class="text item">
                                 {{'列表内容 ' + o }}
@@ -104,8 +117,12 @@
         },
         methods: {
             search: function() {
-                if(app.keyword != null){
+                var patrn=/[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
+                if(!patrn.exec(app.keyword)) {
                     window.location.href = 'search?keyword=' + app.keyword;
+                }
+                else if(patrn.exec(app.keyword)){
+                    alert('跳转到类别页面');
                 }
                 // $.ajax({
                 //     url: '/search',
@@ -127,6 +144,19 @@
                 //         app.isLoading = false
                 //     }
                 // });
+            }
+        },
+        computed:{
+            type () {
+                if (this.keyword.search('jd') !== -1) {
+                    return 'imgs/jd.png'
+                }else if (this.keyword.search('taobao') !== -1) {
+                    return 'imgs/taobao.png'
+                }else if (this.keyword.search('tmall') !== -1) {
+                    return 'imgs/tmall.png'
+                }else {
+                    return 'imgs/default.png'
+                }
             }
         }
     })
