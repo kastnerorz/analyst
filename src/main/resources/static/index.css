@@ -25,7 +25,7 @@ body {
     background: white;
     z-index: 999;
     text-align: center;
-    border: 1rem solid #579ef8;
+    border: 1rem solid #409EFF;
     border-radius: 1.5rem;
 }
 
@@ -33,7 +33,7 @@ body {
     color: #888;
     font-weight: 400;
     font-size: 12px;
-    padding: 0;
+    padding: 0 0 20px 0;
     text-align: center;
     /*border-radius: 1rem;
     border: 1px solid #e1e3e8;*/
@@ -55,7 +55,6 @@ body {
 .clearfix:before,
 .clearfix:after {
     position: absolute;
-    display: inline;
     content: "";
 }
 .clearfix:after {
