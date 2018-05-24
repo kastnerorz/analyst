@@ -19,19 +19,18 @@ public class PhoneDetail {
     /**
      * 所属商品
      */
-//    @OneToOne
+    @OneToOne
     private Item item;
 
     /**
      * 获取时间
      */
-    @Temporal(TemporalType.DATE)
     private LocalDate crawDate;
 
     /**
      * 品牌
      */
-    @OneToMany(mappedBy = "phoneDetail")
+    @ManyToOne
     private Brand brand;
 
     /**
@@ -42,7 +41,6 @@ public class PhoneDetail {
     /**
      * 发布日期
      */
-    @Temporal(TemporalType.DATE)
     private LocalDate released;
 
     /**

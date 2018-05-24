@@ -1,5 +1,7 @@
 package cn.kastner.analyst.domain.core;
 
+import cn.kastner.analyst.domain.detail.PhoneDetail;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -23,6 +25,9 @@ public class Brand {
 
     @OneToMany(mappedBy = "brand")
     private List<Item> itemList;
+
+    @OneToMany
+    private List<PhoneDetail> phoneDetailList;
 
     public Long getBrandId() {
         return brandId;
