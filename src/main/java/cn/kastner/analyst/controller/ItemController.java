@@ -69,11 +69,9 @@ public class ItemController {
 
     @RequestMapping(value = "/getImageListByItemId")
     public NetResult getImageListByItemId(@RequestParam Long itemId) {
-        NetResult netResult = new NetResult();
         Item item = itemService.findById(itemId);
         if (item != null) {
-            String imageList = item.getImageList();
-            netResult.result = imageList;
+            netResult.result = item.getImageList();
             netResult.status = 0;
             return netResult;
         }
