@@ -6,6 +6,9 @@ import cn.kastner.analyst.service.crawler.TrustReviewCrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Trust Review 爬虫服务实现
+ */
 @Service
 public class TrustReviewCrawlerServiceImpl implements TrustReviewCrawlerService {
 

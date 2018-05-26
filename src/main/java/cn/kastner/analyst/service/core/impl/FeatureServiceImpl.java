@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public class FeatureServiceImpl implements FeatureService {
 
-    final private FeatureRepository featureRepository;
+    private final FeatureRepository featureRepository;
 
     public FeatureServiceImpl(FeatureRepository featureRepository) {
         this.featureRepository = featureRepository;

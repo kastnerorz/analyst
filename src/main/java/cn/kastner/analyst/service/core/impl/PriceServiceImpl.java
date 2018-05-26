@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class PriceServiceImpl implements PriceService {
 
-    final private PriceRepository priceRepository;
+    private final PriceRepository priceRepository;
 
     public PriceServiceImpl(PriceRepository priceRepository) {
         this.priceRepository = priceRepository;

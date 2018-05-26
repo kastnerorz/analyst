@@ -5,8 +5,6 @@ import cn.kastner.analyst.service.core.PriceService;
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
 import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.core.Price;
-import cn.kastner.analyst.repository.core.ItemRepository;
-import cn.kastner.analyst.repository.core.PriceRepository;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,8 +44,6 @@ public class HomeController {
     public String search(@RequestParam String keyword, Model model) throws JSONException {
         model.addAttribute("keyword", keyword);
         Boolean isMatch = Pattern.matches(".*https?.*", keyword);
-//        System.out.println(keyword);
-//        System.out.println(isMatch);
 
         if (isMatch) {
             Item item = mainCrawlerService.crawItemByUrl(keyword);
@@ -63,7 +59,7 @@ public class HomeController {
 
             Double price = (double) 0;
             List<Price> prices = priceService.findByItemAndCrawDateTime(item, LocalDateTime.now().minusWeeks(1));
-            if (prices.size() != 0) {
+            if (!prices.isEmpty()) {
                 price = prices.get(0).getPrice();
             }
             model.addAttribute("price", price);

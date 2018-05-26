@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public class ItemServiceImpl implements ItemService {
 
-    final private ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
 
     public ItemServiceImpl(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;

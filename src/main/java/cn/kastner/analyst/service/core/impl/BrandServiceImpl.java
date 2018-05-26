@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class BrandServiceImpl implements BrandService {
 
-    final private
+    private final
     BrandRepository brandRepository;
 
     @Autowired

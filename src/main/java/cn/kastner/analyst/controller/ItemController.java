@@ -1,7 +1,5 @@
 package cn.kastner.analyst.controller;
 import cn.kastner.analyst.domain.core.Item;
-import cn.kastner.analyst.repository.core.CommentRepository;
-import cn.kastner.analyst.repository.core.ItemRepository;
 import cn.kastner.analyst.service.core.CommentService;
 import cn.kastner.analyst.service.core.ItemService;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
@@ -40,14 +38,13 @@ public class ItemController {
 
     @RequestMapping(value = "/getItemInfoByItemId")
     public NetResult getItemInfoByItemId(@RequestParam Long itemId) {
-        NetResult netResult = new NetResult();
         Item item = itemService.findById(itemId);
         if (item != null) {
-            netResult.result = item;
+            netResult.data = item;
             netResult.status = 0;
             return netResult;
         }
-        netResult.result = "No such Item!";
+        netResult.message = "No such Item!";
         netResult.status = -1;
         return netResult;
 
@@ -55,14 +52,13 @@ public class ItemController {
 
     @RequestMapping(value = "/getItemInfoByCname")
     public NetResult getItemInfoByCname(@RequestParam String zhName) {
-        NetResult netResult = new NetResult();
         List<Item> items = itemService.findByZhName(zhName);
         if (items != null) {
-            netResult.result = items;
+            netResult.data = items;
             netResult.status = 0;
             return netResult;
         }
-        netResult.result = "No such Items!";
+        netResult.message = "No such Items!";
         netResult.status = -1;
         return netResult;
     }
@@ -71,11 +67,11 @@ public class ItemController {
     public NetResult getImageListByItemId(@RequestParam Long itemId) {
         Item item = itemService.findById(itemId);
         if (item != null) {
-            netResult.result = item.getImageList();
+            netResult.data = item.getImageList();
             netResult.status = 0;
             return netResult;
         }
-        netResult.result = "No such Item!";
+        netResult.message = "No such Item!";
         netResult.status = -1;
         return netResult;
     }
@@ -96,13 +92,7 @@ public class ItemController {
     @RequestMapping(value = "/getItemComments")
     public NetResult getItemComments (@RequestParam Long itemId){
         Item item = itemService.findById(itemId);
-        if (item.getCrawDate() == null) {
-            try {
-                jdCrawlerService.crawItemComment(item);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
+        if (item.getCrawDate() == null || LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
             try {
                 jdCrawlerService.crawItemComment(item);
             } catch (Exception e) {
@@ -110,7 +100,7 @@ public class ItemController {
             }
         }
         netResult.status = 0;
-        netResult.result = commentService.findByItemAndCrawDateAfter(item, LocalDate.now().minusWeeks(1));
+        netResult.data = commentService.findByItemAndCrawDateAfter(item, LocalDate.now().minusWeeks(1));
 
 
         return netResult;

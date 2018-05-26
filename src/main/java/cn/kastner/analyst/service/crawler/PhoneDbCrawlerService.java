@@ -2,6 +2,9 @@ package cn.kastner.analyst.service.crawler;
 
 import cn.kastner.analyst.domain.core.Item;
 
+/**
+ * PhoneDB 爬虫服务
+ */
 public interface PhoneDbCrawlerService {
 
     /**

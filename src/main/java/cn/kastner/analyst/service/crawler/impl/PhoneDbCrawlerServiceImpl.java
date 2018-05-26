@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+/**
+ * PhoneDB 爬虫服务实现
+ */
 public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
 
     private static String strClassName = PhoneDbCrawlerServiceImpl.class.getName();

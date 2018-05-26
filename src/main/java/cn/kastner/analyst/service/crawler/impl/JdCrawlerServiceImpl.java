@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.thymeleaf.util.StringUtils;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +30,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 京东爬虫服务实现
+ */
 @Service
 public class JdCrawlerServiceImpl implements JdCrawlerService {
 
@@ -101,7 +105,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             logger.warning("can't get skuid");
         } else {
             item.setSkuId(skuid);
-            logger.info("Get skuid from head: " + skuid);
+            logger.info(MessageFormat.format("Get skuid from head: {0}", skuid));
         }
 
         // check if has item already
@@ -199,9 +203,9 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         // check if self selling
         Element selfSelling = doc.getElementsByClass("u-jd").get(0);
         if (selfSelling == null) {
-            item.setSelfSell(false);
+            item.setIsSelfSell(false);
         } else {
-            item.setSelfSell(true);
+            item.setIsSelfSell(true);
         }
 
 
