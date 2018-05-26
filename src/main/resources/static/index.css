@@ -14,7 +14,6 @@ body {
     box-sizing: border-box;
 }
 
-
 .home {
     box-sizing: border-box;
     width: 100%;
@@ -55,8 +54,9 @@ body {
 .clearfix:before,
 .clearfix:after {
     position: absolute;
-    content: "";
+    content: " ";
 }
+
 .clearfix:after {
     clear: both
 }
