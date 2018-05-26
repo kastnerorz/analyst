@@ -84,6 +84,8 @@ public class Item {
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean isSelfSell;
 
+    private String rom;
+
     public Long getItemId() {
         return itemId;
     }
@@ -314,5 +316,13 @@ public class Item {
 
     public void setIsSelfSell(Boolean selfSell) {
         isSelfSell = selfSell;
+    }
+
+    public String getRom() {
+        return rom;
+    }
+
+    public void setRom(String rom) {
+        this.rom = rom;
     }
 }

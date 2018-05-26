@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 @Service
 public class Finder {
 
-    public String find (String doc, String regex, int group) {
+    public String getString(String doc, String regex, int group) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(doc);
         if (matcher.find()) {
@@ -18,11 +18,21 @@ public class Finder {
         }
     }
 
-    public String find (String doc, String regex) {
+    public String getString(String doc, String regex) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(doc);
         if (matcher.find()) {
             return matcher.group();
+        } else {
+            return null;
+        }
+    }
+
+    public Double getDouble(String doc, int group) {
+        Pattern pattern = Pattern.compile("^(\\d*\\.?\\d* ).*");
+        Matcher matcher = pattern.matcher(doc);
+        if (matcher.find()) {
+            return Double.parseDouble(matcher.group(group));
         } else {
             return null;
         }

@@ -1,12 +1,19 @@
 package cn.kastner.analyst.service.crawler.impl;
 
+import cn.kastner.analyst.domain.core.Brand;
 import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.detail.PhoneDetail;
+import cn.kastner.analyst.service.core.BrandService;
 import cn.kastner.analyst.service.crawler.PhoneDbCrawlerService;
+import cn.kastner.analyst.util.crawler.Finder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -18,16 +25,29 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
     private static String strClassName = PhoneDbCrawlerServiceImpl.class.getName();
     private static Logger logger = Logger.getLogger(strClassName);
 
+    private Item item;
+
+    @Autowired
+    private final BrandService brandService;
+    private final Finder finder;
+
+    public PhoneDbCrawlerServiceImpl(BrandService brandService, Finder finder) {
+        this.brandService = brandService;
+        this.finder = finder;
+    }
+
+
     /**
      * PhoneDB 爬虫主函数
-     * @param model 型号
-     * @param rom   存储空间
-     * @return Item 对象
+     * @param item 商品对象
+     * @return Item 商品对象
      */
     @Override
-    public Item crawByModelAndRom(String model, String rom) {
-        String url = searchByModelAndRom(model, rom);
-        return crawDetails(url);
+    public Item crawByItem(Item item) {
+        this.item = item;
+        String url = searchByModelAndRom(item.getModel(), item.getRom());
+        crawDetails(url);
+        return item;
     }
 
     /**
@@ -62,10 +82,74 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
 
     /**
      * @param url PhoneDB详情链接
-     * @return Item 对象
      */
     @Override
-    public Item crawDetails(String url) {
-        return null;
+    public void crawDetails(String url) {
+        HashMap<String , String> headers = new HashMap<>();
+        Document doc = new Document("http://phonedb.net");
+        try {
+            doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
+                            "AppleWebKit/537.36 (KHTML, like Gecko)" +
+                            "Chrome/66.0.3359.181 Safari/537.36")
+                    .headers(headers)
+                    .post();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Element dataTableEl = doc.getElementsByTag("table").get(0);
+        Elements dataTrEls = dataTableEl.getElementsByTag("tr");
+
+        PhoneDetail phoneDetail = new PhoneDetail();
+        phoneDetail.setItem(item);
+        phoneDetail.setCrawDate(LocalDate.now());
+        // TODO RamClock
+        for(Element el: dataTrEls) {
+            Elements dataTdEls = el.getElementsByTag("td");
+            String attr = dataTdEls.text();
+            String val = dataTableEl.text();
+
+            if (attr.equals("Brand")) {
+                Brand brandDb = brandService.findByEnName(attr);
+                if (brandDb == null) {
+                    Brand brand = new Brand();
+                    brand.setBrandEnName(val);
+                    phoneDetail.setBrand(brand);
+                } else {
+                    phoneDetail.setBrand(brandDb);
+                }
+            } else if (attr.equals("Model")) {
+                phoneDetail.setModel(val);
+            } else if (attr.equals("Released")) {
+//                phoneDetail.setReleased(val);
+                // TODO handle date (year, month)
+            } else if (attr.equals("Additional Features")){
+                phoneDetail.setAddlFeatures(val);
+            } else if (attr.equals("Mobile Operator")) {
+                phoneDetail.setOperator(val);
+            } else if (attr.equals("Width")) {
+                phoneDetail.setWidth(finder.getDouble(val, 1));
+            } else if (attr.equals("Height")) {
+                phoneDetail.setHeight(finder.getDouble(val, 1));
+            } else if (attr.equals("Depth")) {
+                phoneDetail.setDepth(finder.getDouble(val, 1));
+            } else if (attr.equals("Mass")) {
+                phoneDetail.setMass(finder.getDouble(val, 1));
+            } else if (attr.equals("Platform")) {
+                phoneDetail.setPlatform(val);
+            } else if (attr.equals("Operating System")) {
+                phoneDetail.setOs(val);
+            } else if (attr.equals("Software Extras")) {
+                phoneDetail.setSwExtras(val);
+            } else if (attr.equals("CPU Clock")) {
+                phoneDetail.setCpuClock(finder.getDouble(val, 1));
+            } else if (attr.equals("RAM Type")) {
+                phoneDetail.setRamType(val);
+            } else if (attr.equals("RAM Capacity")) {
+                phoneDetail.setRamCapacity(finder.getDouble(val, 1));
+            } else if (attr.equals("Non-volatile Memory Type")) {
+                phoneDetail.setRomType(val);
+            }
+        }
     }
 }

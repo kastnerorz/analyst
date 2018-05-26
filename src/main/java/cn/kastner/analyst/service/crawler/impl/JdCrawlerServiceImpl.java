@@ -100,7 +100,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
 
         // get skuid
-        String skuid = finder.find(doc.head().toString(), "skuid: (\\d*),", 1);
+        String skuid = finder.getString(doc.head().toString(), "skuid: (\\d*),", 1);
         if (skuid == null) {
             logger.warning("can't get skuid");
         } else {
@@ -129,8 +129,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         if (brandStr == null) {
             logger.warning("no brand");
         } else {
-            String brandZhName = finder.find(brandStr, "(.*)（.*）", 1);
-            String brandEnName = finder.find(brandStr, ".*（(.*)）", 1);
+            String brandZhName = finder.getString(brandStr, "(.*)（.*）", 1);
+            String brandEnName = finder.getString(brandStr, ".*（(.*)）", 1);
             Brand brandDb = brandService.findByEnName(brandEnName);
             if (brandDb == null) {
                 Brand brand = new Brand();
@@ -145,7 +145,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
 
         // get itemCname from html title
-        String zhName = finder.find(doc.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
+        String zhName = finder.getString(doc.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
         if (zhName == null) {
             logger.warning("Can't get item zhName");
         } else {
@@ -189,7 +189,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
         // get imageList
 
-        String imageListStr = finder.find(doc.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
+        String imageListStr = finder.getString(doc.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
         if (imageListStr == null) {
             logger.warning("no imageList");
         } else {
@@ -221,7 +221,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
 
         // get vendor
-        String vendor = finder.find(doc.toString(), "dianpuname.*\">(.*)</a>", 1);
+        String vendor = finder.getString(doc.toString(), "dianpuname.*\">(.*)</a>", 1);
         if (vendor == null) {
             logger.warning("no vendor");
         } else {
