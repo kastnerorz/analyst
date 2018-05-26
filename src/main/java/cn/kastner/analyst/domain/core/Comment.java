@@ -1,14 +1,12 @@
 package cn.kastner.analyst.domain.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "comment")
-@Data
 public class Comment {
 
     @Id
@@ -31,4 +29,52 @@ public class Comment {
     private Boolean isGood;
 
     private LocalDate crawDate;
+
+    public Long getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(Long commentId) {
+        this.commentId = commentId;
+    }
+
+    public Feature getFeature() {
+        return feature;
+    }
+
+    public void setFeature(Feature feature) {
+        this.feature = feature;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Boolean getGood() {
+        return isGood;
+    }
+
+    public void setGood(Boolean good) {
+        isGood = good;
+    }
+
+    public LocalDate getCrawDate() {
+        return crawDate;
+    }
+
+    public void setCrawDate(LocalDate crawDate) {
+        this.crawDate = crawDate;
+    }
 }

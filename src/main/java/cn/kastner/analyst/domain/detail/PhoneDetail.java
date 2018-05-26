@@ -2,14 +2,12 @@ package cn.kastner.analyst.domain.detail;
 
 import cn.kastner.analyst.domain.core.Brand;
 import cn.kastner.analyst.domain.core.Item;
-import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "phoneDetail")
-@Data
 public class PhoneDetail {
 
     /**
@@ -260,4 +258,364 @@ public class PhoneDetail {
      * 数组
      */
     private String addSensors;
+
+    public Long getPhoneDetailId() {
+        return phoneDetailId;
+    }
+
+    public void setPhoneDetailId(Long phoneDetailId) {
+        this.phoneDetailId = phoneDetailId;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public LocalDate getCrawDate() {
+        return crawDate;
+    }
+
+    public void setCrawDate(LocalDate crawDate) {
+        this.crawDate = crawDate;
+    }
+
+    public Brand getBrand() {
+        return brand;
+    }
+
+    public void setBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public LocalDate getReleased() {
+        return released;
+    }
+
+    public void setReleased(LocalDate released) {
+        this.released = released;
+    }
+
+    public String getAddlFeatures() {
+        return addlFeatures;
+    }
+
+    public void setAddlFeatures(String addlFeatures) {
+        this.addlFeatures = addlFeatures;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
+    public Long getWidth() {
+        return width;
+    }
+
+    public void setWidth(Long width) {
+        this.width = width;
+    }
+
+    public Long getHeight() {
+        return height;
+    }
+
+    public void setHeight(Long height) {
+        this.height = height;
+    }
+
+    public Long getMass() {
+        return mass;
+    }
+
+    public void setMass(Long mass) {
+        this.mass = mass;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public String getSwExtras() {
+        return swExtras;
+    }
+
+    public void setSwExtras(String swExtras) {
+        this.swExtras = swExtras;
+    }
+
+    public String getCpu() {
+        return cpu;
+    }
+
+    public void setCpu(String cpu) {
+        this.cpu = cpu;
+    }
+
+    public Long getCpuClock() {
+        return cpuClock;
+    }
+
+    public void setCpuClock(Long cpuClock) {
+        this.cpuClock = cpuClock;
+    }
+
+    public String getRam() {
+        return ram;
+    }
+
+    public void setRam(String ram) {
+        this.ram = ram;
+    }
+
+    public Long getRamClock() {
+        return ramClock;
+    }
+
+    public void setRamClock(Long ramClock) {
+        this.ramClock = ramClock;
+    }
+
+    public Long getRamCapacity() {
+        return ramCapacity;
+    }
+
+    public void setRamCapacity(Long ramCapacity) {
+        this.ramCapacity = ramCapacity;
+    }
+
+    public String getRomType() {
+        return romType;
+    }
+
+    public void setRomType(String romType) {
+        this.romType = romType;
+    }
+
+    public Long getRomCapacity() {
+        return romCapacity;
+    }
+
+    public void setRomCapacity(Long romCapacity) {
+        this.romCapacity = romCapacity;
+    }
+
+    public Long getFreeRomCapacity() {
+        return freeRomCapacity;
+    }
+
+    public void setFreeRomCapacity(Long freeRomCapacity) {
+        this.freeRomCapacity = freeRomCapacity;
+    }
+
+    public int getWideRez() {
+        return wideRez;
+    }
+
+    public void setWideRez(int wideRez) {
+        this.wideRez = wideRez;
+    }
+
+    public int getLongRez() {
+        return longRez;
+    }
+
+    public void setLongRez(int longRez) {
+        this.longRez = longRez;
+    }
+
+    public int getDispDiagonal() {
+        return dispDiagonal;
+    }
+
+    public void setDispDiagonal(int dispDiagonal) {
+        this.dispDiagonal = dispDiagonal;
+    }
+
+    public int getDispAreaUtilization() {
+        return dispAreaUtilization;
+    }
+
+    public void setDispAreaUtilization(int dispAreaUtilization) {
+        this.dispAreaUtilization = dispAreaUtilization;
+    }
+
+    public int getPxDensity() {
+        return pxDensity;
+    }
+
+    public void setPxDensity(int pxDensity) {
+        this.pxDensity = pxDensity;
+    }
+
+    public String getDispType() {
+        return dispType;
+    }
+
+    public void setDispType(String dispType) {
+        this.dispType = dispType;
+    }
+
+    public String getgController() {
+        return gController;
+    }
+
+    public void setgController(String gController) {
+        this.gController = gController;
+    }
+
+    public String getUsb() {
+        return usb;
+    }
+
+    public void setUsb(String usb) {
+        this.usb = usb;
+    }
+
+    public String getUsbConnector() {
+        return usbConnector;
+    }
+
+    public void setUsbConnector(String usbConnector) {
+        this.usbConnector = usbConnector;
+    }
+
+    public String getBluetooth() {
+        return bluetooth;
+    }
+
+    public void setBluetooth(String bluetooth) {
+        this.bluetooth = bluetooth;
+    }
+
+    public String getNfc() {
+        return nfc;
+    }
+
+    public void setNfc(String nfc) {
+        this.nfc = nfc;
+    }
+
+    public String getNumOfEffPixels() {
+        return numOfEffPixels;
+    }
+
+    public void setNumOfEffPixels(String numOfEffPixels) {
+        this.numOfEffPixels = numOfEffPixels;
+    }
+
+    public String getAperture() {
+        return aperture;
+    }
+
+    public void setAperture(String aperture) {
+        this.aperture = aperture;
+    }
+
+    public String getFocus() {
+        return focus;
+    }
+
+    public void setFocus(String focus) {
+        this.focus = focus;
+    }
+
+    public String getFlash() {
+        return flash;
+    }
+
+    public void setFlash(String flash) {
+        this.flash = flash;
+    }
+
+    public String getCamExFunctions() {
+        return camExFunctions;
+    }
+
+    public void setCamExFunctions(String camExFunctions) {
+        this.camExFunctions = camExFunctions;
+    }
+
+    public String getNumOfPixels2() {
+        return numOfPixels2;
+    }
+
+    public void setNumOfPixels2(String numOfPixels2) {
+        this.numOfPixels2 = numOfPixels2;
+    }
+
+    public String getAperture2() {
+        return aperture2;
+    }
+
+    public void setAperture2(String aperture2) {
+        this.aperture2 = aperture2;
+    }
+
+    public String getCamExFunctions2() {
+        return camExFunctions2;
+    }
+
+    public void setCamExFunctions2(String camExFunctions2) {
+        this.camExFunctions2 = camExFunctions2;
+    }
+
+    public int getBatteryCap() {
+        return batteryCap;
+    }
+
+    public void setBatteryCap(int batteryCap) {
+        this.batteryCap = batteryCap;
+    }
+
+    public int getTalkTime() {
+        return talkTime;
+    }
+
+    public void setTalkTime(int talkTime) {
+        this.talkTime = talkTime;
+    }
+
+    public String getWrlssCharging() {
+        return wrlssCharging;
+    }
+
+    public void setWrlssCharging(String wrlssCharging) {
+        this.wrlssCharging = wrlssCharging;
+    }
+
+    public String getProtection() {
+        return protection;
+    }
+
+    public void setProtection(String protection) {
+        this.protection = protection;
+    }
+
+    public String getAddSensors() {
+        return addSensors;
+    }
+
+    public void setAddSensors(String addSensors) {
+        this.addSensors = addSensors;
+    }
 }

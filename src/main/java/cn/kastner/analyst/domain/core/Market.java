@@ -1,13 +1,11 @@
 package cn.kastner.analyst.domain.core;
 
-import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "market")
-@Data
 public class Market {
 
 
@@ -17,6 +15,38 @@ public class Market {
 
     public void setCode(Code code) {
         this.code = code;
+    }
+
+    public Long getMarketId() {
+        return marketId;
+    }
+
+    public void setMarketId(Long marketId) {
+        this.marketId = marketId;
+    }
+
+    public String getMarketName() {
+        return marketName;
+    }
+
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public List<Item> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<Item> itemList) {
+        this.itemList = itemList;
     }
 
     public enum Code {
