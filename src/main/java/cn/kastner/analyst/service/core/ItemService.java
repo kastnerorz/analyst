@@ -53,5 +53,5 @@ public interface ItemService {
      */
     Item delete(Long itemId);
 
-
+    List<Item> findByCategoryId(Long categoryId);
 }

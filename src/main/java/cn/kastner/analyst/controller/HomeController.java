@@ -1,5 +1,7 @@
 package cn.kastner.analyst.controller;
 
+import cn.kastner.analyst.domain.core.Category;
+import cn.kastner.analyst.service.core.CategoryService;
 import cn.kastner.analyst.service.core.ItemService;
 import cn.kastner.analyst.service.core.PriceService;
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
@@ -28,11 +30,15 @@ public class HomeController {
     private final
     MainCrawlerService mainCrawlerService;
 
+    private final
+    CategoryService categoryService;
+
     @Autowired
-    public HomeController(ItemService itemService, PriceService priceService, MainCrawlerService mainCrawlerService) {
+    public HomeController(ItemService itemService, PriceService priceService, CategoryService categoryService, MainCrawlerService mainCrawlerService) {
         this.itemService = itemService;
         this.priceService = priceService;
         this.mainCrawlerService = mainCrawlerService;
+        this.categoryService = categoryService;
     }
 
     @RequestMapping(value = "/index")
@@ -40,10 +46,6 @@ public class HomeController {
         return "index";
     }
 
-    @RequestMapping(value = "/category")
-    public String category() {
-        return "category";
-    }
 
     @RequestMapping(value = "/search")
     public String search(@RequestParam String keyword, Model model) throws JSONException {
@@ -74,5 +76,37 @@ public class HomeController {
         return "itemList";
     }
 
+    @RequestMapping(value = "/category")
+    public String category(@RequestParam String keyword, Model model) {
+        model.addAttribute("keyword", keyword);
+        Category category = categoryService.findByLevelName(keyword);
+        model.addAttribute("category", category.getCategoryId());
+        System.out.print(keyword);
+        Long categoryId = category.getCategoryId();
+        System.out.print(categoryId);
+        String itemZhName;
+        Double price = (double) 0;
+        List<Item> items = itemService.findByCategoryId(categoryId);
+        if (!items.isEmpty()) {
+            for (int i = 0; i < 5; i++) {   //set i
+                Item item=items.get(i);
+                itemZhName = item.getZhName();   //get name
+                List<Price> prices=priceService.findByItemAndCrawDateTime(item,LocalDateTime.now().minusWeeks(1));
+                if(!prices.isEmpty()){
+                    price=prices.get(0).getPrice();  //get price
+                }
+                String imageList = item.getImageList();
+                String primaryImage = imageList.split(",")[0];  //get photo
+//                System.out.print(itemZhName);
+//                System.out.print(price);
+                model.addAttribute("itemZhName", itemZhName);
+                model.addAttribute("price",price);
+                model.addAttribute("primaryImage", primaryImage);
+            }
+
+        }
+
+        return "category";
+    }
 }
 

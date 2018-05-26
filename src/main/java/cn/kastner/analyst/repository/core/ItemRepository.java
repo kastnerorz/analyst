@@ -14,4 +14,6 @@ public interface ItemRepository extends JpaRepository<Item, Long>,
     List<Item> findByZhName(String zhName);
     List<Item> findAllByZhName(String zhName);
     Item findBySkuId(String skuId);
+    List<Item>  findAllByCategoryCategoryId(Long categoryId);
+//    List<Item>  findAllByCategoryIs()
 }

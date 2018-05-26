@@ -46,4 +46,6 @@ public interface CategoryService {
     Category delete(Long categoryId);
 
     Category findByLevels(int level1, int level2, int level3);
+
+    Category findByLevelName(String name);
 }

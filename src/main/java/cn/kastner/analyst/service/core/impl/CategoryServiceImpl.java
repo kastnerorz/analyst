@@ -4,6 +4,8 @@ import cn.kastner.analyst.domain.core.Category;
 import cn.kastner.analyst.repository.core.CategoryRepository;
 import cn.kastner.analyst.service.core.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,4 +52,12 @@ public class CategoryServiceImpl implements CategoryService {
     public Category findByLevels(int level1, int level2, int level3) {
         return categoryRepository.findByLevelOneAndAndLevelTwoAndAndLevelThree(level1, level2, level3);
     }
+
+    @Override
+    public Category findByLevelName(String name){
+        return categoryRepository.findByLevelOneNameOrLevelTwoNameOrLevelThreeName(name,name,name);
+    }
+
+
+
 }
