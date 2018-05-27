@@ -116,7 +116,7 @@
                     window.location.href = 'search?keyword=' + app.keyword;
                 }
                 else if(patrn.exec(app.keyword)){
-                    alert('跳转到类别页面');
+                    window.location.href = 'category?keyword=' + app.keyword;
                 }
                 // $.ajax({
                 //     url: '/search',
