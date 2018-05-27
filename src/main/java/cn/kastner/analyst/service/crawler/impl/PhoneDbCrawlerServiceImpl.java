@@ -5,6 +5,7 @@ import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.detail.PhoneDetail;
 import cn.kastner.analyst.service.core.BrandService;
 import cn.kastner.analyst.service.crawler.PhoneDbCrawlerService;
+import cn.kastner.analyst.service.detail.PhoneDetailService;
 import cn.kastner.analyst.util.crawler.Finder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,10 +31,12 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
     @Autowired
     private final BrandService brandService;
     private final Finder finder;
+    private final PhoneDetailService phoneDetailService;
 
-    public PhoneDbCrawlerServiceImpl(BrandService brandService, Finder finder) {
+    public PhoneDbCrawlerServiceImpl(BrandService brandService, Finder finder, PhoneDetailService phoneDetailService) {
         this.brandService = brandService;
         this.finder = finder;
+        this.phoneDetailService = phoneDetailService;
     }
 
 
@@ -103,11 +106,12 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
         PhoneDetail phoneDetail = new PhoneDetail();
         phoneDetail.setItem(item);
         phoneDetail.setCrawDate(LocalDate.now());
-        // TODO RamClock
+        int index = 0;
         for(Element el: dataTrEls) {
+            index++;
             Elements dataTdEls = el.getElementsByTag("td");
-            String attr = dataTdEls.text();
-            String val = dataTableEl.text();
+            String attr = dataTdEls.get(0).text();
+            String val = dataTdEls.get(1).text();
 
             if (attr.equals("Brand")) {
                 Brand brandDb = brandService.findByEnName(attr);
@@ -121,7 +125,6 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
             } else if (attr.equals("Model")) {
                 phoneDetail.setModel(val);
             } else if (attr.equals("Released")) {
-//                phoneDetail.setReleased(val);
                 // TODO handle date (year, month)
             } else if (attr.equals("Additional Features")){
                 phoneDetail.setAddlFeatures(val);
@@ -145,11 +148,68 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
                 phoneDetail.setCpuClock(finder.getDouble(val, 1));
             } else if (attr.equals("RAM Type")) {
                 phoneDetail.setRamType(val);
+                Element ramClkTrEl = dataTrEls.get(index + 1);
+                Elements ramClkTdEls = ramClkTrEl.getElementsByTag("td");
+                phoneDetail.setRamCapacity(finder.getDouble(ramClkTdEls.get(1).text(), 1));
             } else if (attr.equals("RAM Capacity")) {
                 phoneDetail.setRamCapacity(finder.getDouble(val, 1));
             } else if (attr.equals("Non-volatile Memory Type")) {
                 phoneDetail.setRomType(val);
+            } else if (attr.equals("Non-volatile Memory Capacity")) {
+                phoneDetail.setRomCapacity(finder.getDouble(val, 1));
+            } else if (attr.equals("Display Resolution")) {
+                phoneDetail.setWideRez(finder.getDouble(val, 1).intValue());
+                phoneDetail.setLongRez(finder.getDouble(val, 2).intValue());
+            } else if (attr.equals("Display Diagonal")) {
+                Element dispDiagonalTrEl = dataTrEls.get(index + 1);
+                Elements dispDiagonalTdEls = dispDiagonalTrEl.getElementsByTag("td");
+                phoneDetail.setDispDiagonal(finder.getDouble(dispDiagonalTdEls.get(1).text(), 1));
+            } else if (attr.equals("Display Area Utilization")) {
+                phoneDetail.setDispAreaUtilization(finder.getDouble(val, 1).intValue());
+            } else if (attr.equals("Pixel Density")) {
+                phoneDetail.setPxDensity(finder.getDouble(val, 1).intValue());
+            } else if (attr.equals("Display Subtype")) {
+                phoneDetail.setDispType(val);
+            } else if (attr.equals("Graphical Controller")) {
+                phoneDetail.setgController(val);
+            } else if (attr.equals("USB Connector")) {
+                phoneDetail.setUsb(val);
+            } else if (attr.equals("Bluetooth")) {
+                phoneDetail.setBluetooth(val);
+            } else if (attr.equals("NFC")) {
+                if (val.equals("No")) {
+                    phoneDetail.setNfc(false);
+                } else {
+                    phoneDetail.setNfc(true);
+                }
+            } else if (attr.equals("Number of effective pixels")) {
+                phoneDetail.setNumOfEffPixels(val);
+            } else if (attr.equals("Aperture (W)")) {
+                phoneDetail.setAperture(val);
+            } else if (attr.equals("Focus")) {
+                phoneDetail.setFocus(val);
+            } else if (attr.equals("Flash")) {
+                phoneDetail.setFlash(val);
+            } else if (attr.equals("Camera Extra Functions")) {
+                phoneDetail.setCamExFunctions(val);
+            } else if (attr.equals("Secondary Number of pixels")) {
+                phoneDetail.setNumOfPixels2(val);
+            } else if (attr.equals("Secondary Aperture (W)")) {
+                phoneDetail.setAperture2(val);
+            } else if (attr.equals("Secondary Camera Extra Functions")) {
+                phoneDetail.setCamExFunctions2(val);
+            } else if (attr.equals("Nominal Battery Capacity")) {
+                phoneDetail.setBatteryCap(finder.getDouble(val, 1).intValue());
+            } else if (attr.equals("Wireless Charging")) {
+                phoneDetail.setWrlssCharging(val);
+            } else if (attr.equals("Protection from solid materials")) {
+                phoneDetail.setProtection("IP" + finder.getDouble(val, 1).intValue());
+            } else if (attr.equals("Protection from liquids")) {
+                phoneDetail.setProtection(phoneDetail.getProtection() + finder.getDouble(val, 1).intValue());
+            } else if (attr.equals("Additional sensors")) {
+                phoneDetail.setAddSensors(val);
             }
         }
+        phoneDetailService.insertByPhoneDetail(phoneDetail);
     }
 }
