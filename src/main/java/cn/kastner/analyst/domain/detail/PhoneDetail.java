@@ -57,24 +57,35 @@ public class PhoneDetail {
      * 宽度
      * 单位 mm
      */
-    private Long width;
+    private Double width;
 
     /**
      * 高度
      * 单位 mm
      */
-    private Long height;
+    private Double height;
+
+    /**
+     * 厚度
+     * 单位 mm
+     */
+    private Double depth;
 
     /**
      * 质量
      * 单位 g
      */
-    private Long mass;
+    private Double mass;
 
     /**
      * 平台
      */
     private String platform;
+
+    /**
+     * 操作系统
+     */
+    private String os;
 
     /**
      * 其他软件（Software Extra）
@@ -90,24 +101,24 @@ public class PhoneDetail {
      * cpu 时钟频率
      * 单位 MHZ
      */
-    private Long cpuClock;
+    private Double cpuClock;
 
     /**
      * ram 类型
      */
-    private String ram;
+    private String ramType;
 
     /**
      * ram 时钟频率
      * 单位 MHZ
      */
-    private Long ramClock;
+    private Double ramClock;
 
     /**
      * ram 容量
      * 单位 MB
      */
-    private Long ramCapacity;
+    private Double ramCapacity;
 
     /**
      * rom 类型
@@ -118,13 +129,13 @@ public class PhoneDetail {
      * rom 容量
      * 单位 MB
      */
-    private Long romCapacity;
+    private Double romCapacity;
 
     /**
      * 可用 rom 容量
      * 单位 MB
      */
-    private Long freeRomCapacity;
+    private Double freeRomCapacity;
 
     /**
      * 宽分辨率（Wide Resolution）
@@ -132,7 +143,7 @@ public class PhoneDetail {
     private int wideRez;
 
     /**
-     * 长分辨率（Long Resolution）
+     * 长分辨率（Double Resolution）
      */
     private int longRez;
 
@@ -323,27 +334,27 @@ public class PhoneDetail {
         this.operator = operator;
     }
 
-    public Long getWidth() {
+    public Double getWidth() {
         return width;
     }
 
-    public void setWidth(Long width) {
+    public void setWidth(Double width) {
         this.width = width;
     }
 
-    public Long getHeight() {
+    public Double getHeight() {
         return height;
     }
 
-    public void setHeight(Long height) {
+    public void setHeight(Double height) {
         this.height = height;
     }
 
-    public Long getMass() {
+    public Double getMass() {
         return mass;
     }
 
-    public void setMass(Long mass) {
+    public void setMass(Double mass) {
         this.mass = mass;
     }
 
@@ -371,35 +382,35 @@ public class PhoneDetail {
         this.cpu = cpu;
     }
 
-    public Long getCpuClock() {
+    public Double getCpuClock() {
         return cpuClock;
     }
 
-    public void setCpuClock(Long cpuClock) {
+    public void setCpuClock(Double cpuClock) {
         this.cpuClock = cpuClock;
     }
 
-    public String getRam() {
-        return ram;
+    public String getRamType() {
+        return ramType;
     }
 
-    public void setRam(String ram) {
-        this.ram = ram;
+    public void setRamType(String ramType) {
+        this.ramType = ramType;
     }
 
-    public Long getRamClock() {
+    public Double getRamClock() {
         return ramClock;
     }
 
-    public void setRamClock(Long ramClock) {
+    public void setRamClock(Double ramClock) {
         this.ramClock = ramClock;
     }
 
-    public Long getRamCapacity() {
+    public Double getRamCapacity() {
         return ramCapacity;
     }
 
-    public void setRamCapacity(Long ramCapacity) {
+    public void setRamCapacity(Double ramCapacity) {
         this.ramCapacity = ramCapacity;
     }
 
@@ -411,19 +422,19 @@ public class PhoneDetail {
         this.romType = romType;
     }
 
-    public Long getRomCapacity() {
+    public Double getRomCapacity() {
         return romCapacity;
     }
 
-    public void setRomCapacity(Long romCapacity) {
+    public void setRomCapacity(Double romCapacity) {
         this.romCapacity = romCapacity;
     }
 
-    public Long getFreeRomCapacity() {
+    public Double getFreeRomCapacity() {
         return freeRomCapacity;
     }
 
-    public void setFreeRomCapacity(Long freeRomCapacity) {
+    public void setFreeRomCapacity(Double freeRomCapacity) {
         this.freeRomCapacity = freeRomCapacity;
     }
 
@@ -617,5 +628,21 @@ public class PhoneDetail {
 
     public void setAddSensors(String addSensors) {
         this.addSensors = addSensors;
+    }
+
+    public Double getDepth() {
+        return depth;
+    }
+
+    public void setDepth(Double depth) {
+        this.depth = depth;
+    }
+
+    public String getOs() {
+        return os;
+    }
+
+    public void setOs(String os) {
+        this.os = os;
     }
 }

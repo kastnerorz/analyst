@@ -8,11 +8,10 @@ import cn.kastner.analyst.domain.core.Item;
 public interface PhoneDbCrawlerService {
 
     /**
-     * @param model 型号
-     * @param rom 存储空间
+     * @param item 商品
      * @return 商品对象
      */
-    Item crawByModelAndRom (String model, String rom);
+    Item crawByItem (Item item);
 
     /**
      * @param model 型号
@@ -23,7 +22,6 @@ public interface PhoneDbCrawlerService {
 
     /**
      * @param url PhoneDB详情链接
-     * @return 商品对象
      */
-    Item crawDetails (String url);
+    void crawDetails (String url);
 }
