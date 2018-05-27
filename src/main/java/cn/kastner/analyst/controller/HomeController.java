@@ -53,11 +53,6 @@ public class HomeController {
         return "index";
     }
 
-    @RequestMapping(value = "/report")
-    public String report() {
-        return "report";
-    }
-
 
     @RequestMapping(value = "/search")
     public String search(@RequestParam String keyword, Model model) throws JSONException {
@@ -77,7 +72,7 @@ public class HomeController {
             model.addAttribute("itemCode", itemCode);
 
             Double price = (double) 0;
-            List<Price> prices = priceService.findByItemAndCrawDateTime(item, LocalDateTime.now().minusWeeks(1));
+            List<Price> prices = priceService.findByItemAndCrawDateTimeAfter(item, LocalDateTime.now().minusWeeks(1));
             if (!prices.isEmpty()) {
                 price = prices.get(0).getPrice();
             }
@@ -96,7 +91,7 @@ public class HomeController {
                     Item item = items.get(i);
                     itemId=item.getItemId();
                     itemZhName = item.getZhName();   //get name
-                    List<Price> prices = priceService.findByItemAndCrawDateTime(item, LocalDateTime.now().minusWeeks(1));
+                    List<Price> prices = priceService.findByItemAndCrawDateTimeAfter(item, LocalDateTime.now().minusWeeks(1));
                     if (!prices.isEmpty()) {
                         price = prices.get(0).getPrice();  //get price
                     }

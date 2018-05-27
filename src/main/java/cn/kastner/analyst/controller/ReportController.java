@@ -36,8 +36,8 @@ public class ReportController {
         this.netResult = netResult;
     }
 
-    @RequestMapping(value = "/getSaleFrontTenByCategoryId")
-    public NetResult getSaleFrontTenByCategoryId(@RequestParam Long categoryId) {
+    @RequestMapping(value = "/getSaleTopTenByCategoryId")
+    public NetResult getSaleTopTenByCategoryId(@RequestParam Long categoryId) {
         List<Brand> brands = brandService.findAll();   //All brand
         Long brandId = (long) 0;
         String brandName;
