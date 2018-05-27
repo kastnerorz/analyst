@@ -57,7 +57,7 @@ public class ReportController {
             tmp.put("brandName", brandName);
             tmp.put("brandSale", brandSale);
             tmp.put("brandId", brandId);
-            tmp.put("itemNum",items.size());
+            tmp.put("itemNum", items.size());
             data.add(tmp);
 //            System.out.println(brand.getBrandZhName() + "的销售总量" + brandSale);
         }
@@ -72,5 +72,47 @@ public class ReportController {
         return netResult;
     }
 
+    @RequestMapping(value = "/getItemNumByPriceDis")
+    public NetResult getItemNumByPriceDis(@RequestParam Long categoryId) {    //一个类别下按价格区间统计所有的item
+        List<Brand> brands = brandService.findAll();
+        Long brandId;
+        Double min = (double) 0;
+        Double max = (double) 1000;
+        List<HashMap<String, Object>> data = new ArrayList<>();
+        while (min > 5999) {    //根据每个区间遍历所有brand下的item总数
+            Long sum = (long) 0;
+            for (Brand brand : brands) {    //遍历每个brand得到该区间下的item
+                brandId = brand.getBrandId();
+                List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
+                if (!items.isEmpty()) {
+                    List<Price> prices = priceService.findPriceListByPriceAndItem(min, max, items);
+                    sum = sum + prices.size();
+                }
+            }
+            HashMap<String, Object> tmp = new HashMap<>();
+            tmp.put("price", min);
+            tmp.put("sum", sum);
+            data.add(tmp);
+            min = min + 1000;
+            max = max + 1000;
+        }
+        Long sum = (long) 0;
+        for (Brand brand : brands) {
+            brandId = brand.getBrandId();
+            List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
+            if (!items.isEmpty()) {
+                List<Price> prices = priceService.findPriceListByPriceMin(min, items);
+                sum = sum + prices.size();
+            }
+        }
+        HashMap<String, Object> tmp = new HashMap<>();
+        tmp.put("price", min);
+        tmp.put("sum", sum);
+        data.add(tmp);
 
+        netResult.data = data;
+        netResult.status = 0;
+        return netResult;
+
+    }
 }

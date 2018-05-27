@@ -3,6 +3,7 @@ package cn.kastner.analyst.service.core;
 import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.core.Price;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public interface PriceService {
      */
     Price update(Price price);
 
-    /**
+    /**hibernate_sequence
      * delete a price by id
      *
      * @param priceId
@@ -54,4 +55,9 @@ public interface PriceService {
      */
     Price delete(Long priceId);
 
+    List<Price> findPriceListByPriceDistrict(Double min, Double max);
+
+    List<Price> findPriceListByPriceAndItem(Double min,Double max,List item);
+
+    List<Price>  findPriceListByPriceMin(Double min,List item);
 }

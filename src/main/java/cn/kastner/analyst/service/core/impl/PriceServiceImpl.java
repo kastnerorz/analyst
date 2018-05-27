@@ -6,6 +6,7 @@ import cn.kastner.analyst.repository.core.PriceRepository;
 import cn.kastner.analyst.service.core.PriceService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -48,6 +49,22 @@ public class PriceServiceImpl implements PriceService {
         Price price = priceRepository.findByPriceId(priceId);
         priceRepository.delete(price);
         return price;
+    }
+
+    @Override
+    public List<Price> findPriceListByPriceDistrict(Double min, Double max){
+        return priceRepository.findAllByPriceBetween(min,max);
+    }
+
+    @Override
+    public List<Price> findPriceListByPriceAndItem(Double min,Double max,List item){
+        return priceRepository.findAllByPriceBetweenAndItemItemIdIn(min,max,item);
+    }
+
+    @Override
+    public List<Price> findPriceListByPriceMin(Double min ,List item){
+        return priceRepository.findAllByPriceGreaterThanAndItemItemIdIn(min,item);
+
     }
 
 }
