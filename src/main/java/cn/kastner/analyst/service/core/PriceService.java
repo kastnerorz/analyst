@@ -46,4 +46,6 @@ public interface PriceService {
      * @return price deleted
      */
     Price delete(Long priceId);
+
+    List<Price> findByItemId(Long itemId);
 }

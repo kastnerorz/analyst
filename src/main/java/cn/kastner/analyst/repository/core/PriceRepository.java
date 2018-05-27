@@ -15,4 +15,5 @@ public interface PriceRepository extends JpaRepository<Price, Long>,
     List<Price> findPricesByItem(Item item);
     List<Price> findPricesByItemAndCrawDateTimeAfter(Item item, LocalDateTime crawDateTime);
     Price findByPriceId(Long priceId);
+    List<Price> findByItemItemId(Long itemId);
 }

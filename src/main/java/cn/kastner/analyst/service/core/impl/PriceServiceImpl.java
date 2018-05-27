@@ -44,4 +44,9 @@ public class PriceServiceImpl implements PriceService {
         priceRepository.delete(price);
         return price;
     }
+
+   @Override
+    public List<Price> findByItemId(Long itemId){
+        return priceRepository.findByItemItemId(itemId);
+   }
 }

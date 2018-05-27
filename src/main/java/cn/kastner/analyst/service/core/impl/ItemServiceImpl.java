@@ -57,4 +57,10 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> findByCategoryId(Long categoryId){
         return itemRepository.findAllByCategoryCategoryId(categoryId);
     }
+
+    @Override
+    public List<Item> findByBrandIdAndCategoryId(Long brandId,Long categoryId){
+        return itemRepository.findAllByBrandBrandIdAndCategoryCategoryId(brandId,categoryId);
+    }
 }
+
