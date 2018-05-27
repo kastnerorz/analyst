@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class ReportController {
@@ -36,8 +34,8 @@ public class ReportController {
         this.netResult = netResult;
     }
 
-    @RequestMapping(value = "/getSaleTopTenByCategoryId")
-    public NetResult getSaleTopTenByCategoryId(@RequestParam Long categoryId) {
+    @RequestMapping(value = "/getTopTenSaleAndItemNumByCategoryId")
+    public NetResult getTopTenSaleAndItemNumByCategoryId(@RequestParam Long categoryId) {
         List<Brand> brands = brandService.findAll();   //All brand
         Long brandId = (long) 0;
         String brandName;
@@ -59,11 +57,20 @@ public class ReportController {
             tmp.put("brandName", brandName);
             tmp.put("brandSale", brandSale);
             tmp.put("brandId", brandId);
+            tmp.put("itemNum",items.size());
             data.add(tmp);
-            System.out.println(brand.getBrandZhName() + "的销售总量" + brandSale);
+//            System.out.println(brand.getBrandZhName() + "的销售总量" + brandSale);
         }
+        data.sort(new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                return (int) ((long) o2.get("brandSale") - (long) o1.get("brandSale"));
+            }
+        });
         netResult.data = data;
-        netResult.status=0;
+        netResult.status = 0;
         return netResult;
     }
+
+
 }

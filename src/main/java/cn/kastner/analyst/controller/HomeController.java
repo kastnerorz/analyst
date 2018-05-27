@@ -106,7 +106,7 @@ public class HomeController {
                 }
                 return "category";
             }
-            return "categoryList";
+            return null;
         }
         return "itemList";
     }
