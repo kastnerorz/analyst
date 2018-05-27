@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,18 +22,18 @@ import java.util.logging.Logger;
 /**
  * PhoneDB 爬虫服务实现
  */
+@Service
 public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
 
     private static String strClassName = PhoneDbCrawlerServiceImpl.class.getName();
     private static Logger logger = Logger.getLogger(strClassName);
 
     private Item item;
-
-    @Autowired
     private final BrandService brandService;
     private final Finder finder;
     private final PhoneDetailService phoneDetailService;
 
+    @Autowired
     public PhoneDbCrawlerServiceImpl(BrandService brandService, Finder finder, PhoneDetailService phoneDetailService) {
         this.brandService = brandService;
         this.finder = finder;

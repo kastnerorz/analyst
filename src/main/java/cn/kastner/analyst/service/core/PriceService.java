@@ -29,7 +29,14 @@ public interface PriceService {
      *
      * @return
      */
-    List<Price> findByItemAndCrawDateTime(Item item, LocalDateTime crawDateTime);
+    List<Price> findByItemAndCrawDateTimeAfter(Item item, LocalDateTime crawDateTime);
+
+    /**
+     * 根据商品查找所有价格
+     * @param item
+     * @return
+     */
+    List<Price> findByItem(Item item);
 
     /**
      * update a price by id
@@ -47,5 +54,4 @@ public interface PriceService {
      */
     Price delete(Long priceId);
 
-    List<Price> findByItemId(Long itemId);
 }

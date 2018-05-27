@@ -46,11 +46,9 @@ public class ReportController {
             brandId = brand.getBrandId();
             brandName = brand.getBrandZhName();
             List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
-            Long itemId = (long) 0;
             Long brandSale = (long) 0;
             for (Item item : items) {
-                itemId = item.getItemId();
-                List<Price> prices = priceService.findByItemId(itemId);
+                List<Price> prices = priceService.findByItem(item);
                 Long sum = (long) 0;
                 for (Price price : prices) {
                     sum = sum + price.getVolume();
