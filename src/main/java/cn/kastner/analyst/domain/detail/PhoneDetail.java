@@ -151,7 +151,7 @@ public class PhoneDetail {
      * 屏幕尺寸（Display Diagonal）
      * 单位英寸（inch）
      */
-    private int dispDiagonal;
+    private Double dispDiagonal;
 
     /**
      * 屏占比（Display Area Utilization）
@@ -194,7 +194,7 @@ public class PhoneDetail {
      * NFC
      * 注意：分 NFC (A) 和 NFC (B)
      */
-    private String nfc;
+    private Boolean nfc;
 
     /**
      * 有效像素数（Number of Effective Pixels）
@@ -454,11 +454,11 @@ public class PhoneDetail {
         this.longRez = longRez;
     }
 
-    public int getDispDiagonal() {
+    public Double getDispDiagonal() {
         return dispDiagonal;
     }
 
-    public void setDispDiagonal(int dispDiagonal) {
+    public void setDispDiagonal(Double dispDiagonal) {
         this.dispDiagonal = dispDiagonal;
     }
 
@@ -518,11 +518,11 @@ public class PhoneDetail {
         this.bluetooth = bluetooth;
     }
 
-    public String getNfc() {
+    public Boolean getNfc() {
         return nfc;
     }
 
-    public void setNfc(String nfc) {
+    public void setNfc(Boolean nfc) {
         this.nfc = nfc;
     }
 

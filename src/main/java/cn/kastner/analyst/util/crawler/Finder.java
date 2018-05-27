@@ -29,7 +29,7 @@ public class Finder {
     }
 
     public Double getDouble(String doc, int group) {
-        Pattern pattern = Pattern.compile("^(\\d*\\.?\\d* ).*");
+        Pattern pattern = Pattern.compile("([1-9]\\d*\\.?\\d*|0\\.?\\d*[1-9]\\d*)");
         Matcher matcher = pattern.matcher(doc);
         if (matcher.find()) {
             return Double.parseDouble(matcher.group(group));
