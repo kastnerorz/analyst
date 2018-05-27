@@ -3,6 +3,7 @@ package cn.kastner.analyst.service.crawler.impl;
 import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
+import cn.kastner.analyst.service.crawler.PhoneDbCrawlerService;
 import cn.kastner.analyst.service.crawler.TrustReviewCrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,13 @@ public class MainCrawlerServiceImpl implements MainCrawlerService {
     private final
     TrustReviewCrawlerService trustReviewCrawlerService;
 
+    private final PhoneDbCrawlerService phoneDbCrawlerService;
+
     @Autowired
-    public MainCrawlerServiceImpl(JdCrawlerService jdCrawlerService, TrustReviewCrawlerService trustReviewCrawlerService) {
+    public MainCrawlerServiceImpl(JdCrawlerService jdCrawlerService, TrustReviewCrawlerService trustReviewCrawlerService, PhoneDbCrawlerService phoneDbCrawlerService) {
         this.jdCrawlerService = jdCrawlerService;
         this.trustReviewCrawlerService = trustReviewCrawlerService;
+        this.phoneDbCrawlerService = phoneDbCrawlerService;
     }
 
     @Override
@@ -33,7 +37,12 @@ public class MainCrawlerServiceImpl implements MainCrawlerService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        trustReviewCrawlerService.crawItemById(item);
+        if (item != null) {
+            if (item.getCategory().getLevelThreeName().equals("手机")) {
+                phoneDbCrawlerService.crawByItem(item);
+            }
+            trustReviewCrawlerService.crawByItem(item);
+        }
         return item;
     }
 }

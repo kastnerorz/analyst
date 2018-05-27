@@ -54,4 +54,6 @@ public interface ItemService {
     Item delete(Long itemId);
 
     List<Item> findByCategoryId(Long categoryId);
+
+    List<Item> findByBrandIdAndCategoryId(Long brandId,Long categoryId);
 }

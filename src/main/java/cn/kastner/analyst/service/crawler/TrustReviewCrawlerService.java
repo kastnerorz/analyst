@@ -12,5 +12,5 @@ public interface TrustReviewCrawlerService {
     /**
      * @param item 商品对象
      */
-    void crawItemById (Item item);
+    void crawByItem (Item item);
 }

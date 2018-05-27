@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface PriceRepository extends JpaRepository<Price, Long>,
         JpaSpecificationExecutor<Price> {
-    List<Price> findPricesByItem(Item item);
-    List<Price> findPricesByItemAndCrawDateTimeAfter(Item item, LocalDateTime crawDateTime);
+    List<Price> findByItem(Item item);
+    List<Price> findByItemAndCrawDateTimeAfter(Item item, LocalDateTime crawDateTime);
     Price findByPriceId(Long priceId);
 }

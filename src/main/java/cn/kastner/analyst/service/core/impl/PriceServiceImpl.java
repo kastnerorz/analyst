@@ -29,8 +29,13 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public List<Price> findByItemAndCrawDateTime(Item item, LocalDateTime crawDateTime) {
-        return priceRepository.findPricesByItemAndCrawDateTimeAfter(item, crawDateTime);
+    public List<Price> findByItemAndCrawDateTimeAfter(Item item, LocalDateTime crawDateTime) {
+        return priceRepository.findByItemAndCrawDateTimeAfter(item, crawDateTime);
+    }
+
+    @Override
+    public List<Price> findByItem(Item item) {
+        return priceRepository.findByItem(item);
     }
 
     @Override
@@ -44,4 +49,5 @@ public class PriceServiceImpl implements PriceService {
         priceRepository.delete(price);
         return price;
     }
+
 }
