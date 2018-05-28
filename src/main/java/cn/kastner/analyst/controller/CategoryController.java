@@ -67,5 +67,13 @@ public class CategoryController {
         }
     }
 
+    @RequestMapping(value="getNeedListByCategoryId")
+    public NetResult getNeedListCategory(@RequestParam Long categoryId){
+
+
+
+        return netResult;
+    }
+
 
 }

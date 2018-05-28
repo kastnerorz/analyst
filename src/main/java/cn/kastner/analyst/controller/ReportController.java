@@ -179,5 +179,12 @@ public class ReportController {
         return netResult;
     }
 
+    @RequestMapping(value="/getFocusByCategoryId")
+    public NetResult getFocusByCategoryId(@RequestParam Long categoryId){
+
+
+
+        return netResult;
+    }
 
 }
