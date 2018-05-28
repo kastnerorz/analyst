@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <!-- import CSS -->
-    <meta charset="UTF-8">
-    <!-- import CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> <!-- #409EFF -->
-    <title>category</title>
+    <title>类别</title>
 </head>
 <body>
 <div id="app">
@@ -18,7 +16,7 @@
                         <el-col :span="4">
                             <span style="color:#409EFF;font-size: 30px;height: 40px;">智购</span>
                         </el-col>
-                        <el-col :span='inputLength'>
+                        <el-col :span="10">
                             <el-input prefix-icon="el-icon-search" placeholder="请输入内容" v-model="keyword" @keyup.native.enter="search" clearable></el-input>
                         </el-col>
                         <el-col :span="2" :offset="6">
@@ -31,110 +29,66 @@
                 </el-col>
             </el-row>
         </el-header>
-
         <el-main>
-            <el-row type="flex"  justify="center">
-                <el-col :span="18" >
+            <el-row type="flex">
+
+                <el-col :span="12" :offset="4">
+                    <p>您想找的是...</p>
                     <!-- main content -->
-                    <!-- 关键词 -->
-                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;" justify="center" >
-
-                        <!-- card header part -->
-                        <div slot="header">
-                            <span>该类别下大家都在关注</span>
-                            <el-button type="text" style="float: right;padding: 2px">报错</el-button>
-                        </div>
-
-                        <!-- card body part -->
-                        <div>
-                            <el-row>
-                                <el-col :span="12" justify="center" >
-                                    <div id="attention" style="width:100%;height:300px;">
-
+                    <el-row type="flex" style="flex-direction: row; flex-wrap: wrap" :gutter="5">
+                        <el-col :span="8" :key="o" v-for="(o, index) in 5">
+                            <el-card :body-style="{ padding: '0px' }" justify="center" style="margin-bottom: 20px;">
+                                <img src="../imgs/s8.png" class="image" width="100px">
+                                <div style="padding: 14px;">
+                                    <span>三星S8</span>
+                                    <div class="bottom clearfix">
+                                        <el-button type="text" class="button">查看分析</el-button>
                                     </div>
-                                </el-col>
-                                <el-col :span="12">
-                                    <div id="hot" style="width:100%;height:300px;">
-
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </el-card>
-
-
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-row>
                     <!-- basic info card -->
-                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;" justify="center">
 
-                        <!-- card header part -->
+                    <!-- end main content -->
+                </el-col>
+                <el-col :span="7" :offset="1">
+                    <div style="padding:20px 20px 20px 0">
+                        <el-button type="primary" class="button">生成{{ keyword }}类别报告</el-button>
+                    </div>
+                    <el-card>
                         <div slot="header">
-                            <span>销量前十的{{ category }}品牌</span>
-                            <el-button type="text" style="float: right;padding: 2px">报错</el-button>
+                            <span>需求清单</span>
                         </div>
-
-                        <!-- card body part -->
                         <div>
-                            <el-row>
-                                <el-col :span="24">
-                                    <div id="topTenBrand" style="width:100%;height:300px;">
-
+                            <!--<el-row type="flex" style="flex-direction: row; flex-wrap: wrap;">-->
+                            <!--<el-tag v-for="tag in fulfilledTags"-->
+                            <!--:key="tag.name"-->
+                            <!--closable-->
+                            <!--:type="success"></el-tag>-->
+                            <!--</el-row>-->
+                            <!--<el-row type="flex"-->
+                            <!--justify="space-around"-->
+                            <!--v-for="tag in unfulfilledTags"-->
+                            <!--:key="tag.name"></el-row>-->
+                            <el-collapse v-model="activeDemandBlock">
+                                <el-collapse-item v-for="demand in demands">
+                                    <div slot="title">
+                                        {{demand.name}}：
+                                        <el-tag v-for="tag in demand.tags"
+                                                :key="tag.name"
+                                                closable></el-tag>
                                     </div>
-                                </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="3" align="middle" style="padding-top:150px">
-                                    <p style="color: rgba(0,0,0,0.95)">排名前十品牌<br>商品种类数</p>
-                                </el-col>
-                                <el-col :span="9" justify="center">
-                                    <div id="saleNumber" style="width:100%;height:350px;">
-                                    </div>
-                                </el-col>
-                            </el-row>
+                                </el-collapse-item>
+                            </el-collapse>
                         </div>
                     </el-card>
-
-                    <!-- basic info card -->
-                    <el-card :body-style="{padding: '20px'}" style="margin-bottom: 50px;">
-                        <!-- card header part -->
-                        <div slot="header">
-                            <span>按价格区分{{category}}下商品数</span>
-                            <el-button type="text" style="float: right;padding: 2px">报错</el-button>
-                        </div>
-
-                        <!-- card body part -->
-                        <div>
-                            <el-row>
-                                <el-col :span="24">
-                                    <div id="priceChart" style="width:100%;height:400px;">
-
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </el-card>
-
                 </el-col>
             </el-row>
         </el-main>
+        <el-footer>
 
-            <!--</el-row>-->
-            <!--<el-row type="flex" class="row-bg">-->
-                <!--<el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">-->
-                    <!--销量前10的店铺所卖手机的平均价格-->
-                <!--</el-col>-->
-            <!--</el-row>-->
-            <!--<el-row type="flex" class="row-bg">-->
-                <!--<el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">-->
-                    <!--在不同价格的手机数目（1000-1200：多少人次）-->
-                <!--</el-col>-->
-            <!--</el-row>-->
-            <!--<el-row type="flex" class="row-bg">-->
-                <!--<el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">-->
-                    <!--地域相关的-->
-                <!--</el-col>-->
-            <!--</el-row>-->
-
-        <el-footer></el-footer>
+        </el-footer>
     </el-container>
 </div>
 </body>
@@ -144,596 +98,43 @@
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-<!-- import ECharts -->
-<script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.js"></script>
-<script src="http://data-visual.cn/datav/src/js/echarts/extension/echarts-wordcloud.min.js"></script>
+
 <script th:inline="javascript">
-    let app = new Vue({
+    var app = new Vue({
         el: '#app',
-        data: function() {
+        data() {
             return {
-                inputLength: 10,
-                headerInputShow: true,
-                headerButtonShow: true,
-                keyword: '',
-                category: '手机'
+                keyword: [[${keyword}]],
+                items: []
             }
+        },
+        computed: {
+
         },
         methods: {
-        },
-        computed:{
+            search () {
+                if(app.keyword != null){
+                    window.location.href = 'search?keyword=' + app.keyword;
+                }
+            },
+            report () {
+                window.location.href = 'report?keyword=' + app.keyword;
+            }
+        }
+    });
+    axios({
+        url: '/search',
+        method: 'post',
+        params: {
+            keyword: [[${keyword}]]
         }
     })
-
-    // 关键词
-    let attention = echarts.init(document.getElementById('attention'));
-    attentionOption = {
-        title:{
-            // text:"搜索关键词热度 ",
-            // link:'https://github.com/ecomfe/echarts-wordcloud',
-            // subtext: 'data-visual.cn',
-            // sublink:'http://data-visual.cn',
-        },
-        tooltip: {},
-        series: [{
-            type: 'wordCloud',
-            gridSize: 30,
-            sizeRange: [12, 50],
-            rotationRange: [0, 0],
-            shape: 'rectangle',
-            textStyle: {
-                normal: {
-                    color: function() {
-                        return '#409EFF'
-                        // return 'rgb(' + [
-                        //     Math.round(50+Math.random() * 40),
-                        //     Math.round(138+Math.random() * 60),
-                        //     Math.round(235+Math.random() * 60)
-                        // ].join(',') + ')';
-                    }
-                },
-                emphasis: {
-                    shadowBlur: 10,
-                    shadowColor: '#999'
-                }
-            },
-            data: [{
-                name: '手机',
-                value: 10000,
-                textStyle: {
-                    normal: {
-                        color: '#0054b6'
-                    },
-                    emphasis: {
-                        color: '#409EFF'
-                    }
-                }
-            }, {
-                name: '全网通',
-                value: 6181
-            }, {
-                name: '双卡',
-                value: 4386
-            }, {
-                name: '64GB',
-                value: 4055
-            }, {
-                name: '4G',
-                value: 2467
-            }, {
-                name: '小米',
-                value: 2244
-            }, {
-                name: '苹果',
-                value: 2244
-            }, {
-                name: '华为',
-                value: 2244
-            }, {
-                name: '电信',
-                value: 1112
-            }, {
-                name: '移动',
-                value: 965
-            }, {
-                name: '联通',
-                value: 847
-            }, {
-                name: '金色',
-                value: 582
-            }, {
-                name: '学生',
-                value: 555
-            }, {
-                name: '老人机',
-                value: 550
-            }, {
-                name: '32GB',
-                value: 462
-            }, {
-                name: '双摄',
-                value: 366
-            }, {
-                name: '指纹',
-                value: 360
-            }]
-        }]
-    };
-    attention.setOption(attentionOption);
-
-    // 关键词热度
-    let hot = echarts.init(document.getElementById('hot'));
-
-    let myData = ['全网通', '双卡', '64GB']
-    let lineData = [100, 100, 100]
-    let thisYearData = {
-        1: [77, 66, 55]
-    }
-    let timeLineData = [1]
-    let background = "#fff"; // 背景
-
-    let option = {
-        baseOption: {
-            backgroundColor: background,
-            timeline: {
-                show: false,
-                top: 0,
-                data: []
-            },
-            legend : {
-                top : '5%',
-                left : '31%',
-                itemWidth : 22,
-                itemHeight : 22,
-                itemGap: 343,
-                icon : 'horizontal',
-                textStyle : {
-                    color : '#999',
-                    fontSize : 20,
-                },
-                data: ['']
-            },
-            grid: [{
-                show: false,
-                left: '5%',
-                top: '10%',
-                bottom: '8%',
-                containLabel: true,
-                width: '37%'
-            }, {
-                show: false,
-                left: '10%',
-                top: '10%',
-                bottom: '8%',
-                width: '0%'
-            }, {
-                show: false,
-                left: '20%',
-                top: '10%',
-                bottom: '8%',
-                containLabel: true,
-                width: '50%'
-            }],
-            xAxis: [{
-                type: 'value',
-                inverse: true,
-                axisLine: {
-                    show: false
-                },
-                axisTick: {
-                    show: false
-                },
-                position: 'top',
-                axisLabel: {
-                    show: false
-                },
-                splitLine: {
-                    show: false
-                }
-            }, {
-                gridIndex: 1,
-                show: false
-            }, {
-                gridIndex: 2,
-                axisLine: {
-                    show: false
-                },
-                axisTick: {
-                    show: false
-                },
-                position: 'top',
-                axisLabel: {
-                    show: false
-                },
-                splitLine: {
-                    show: false
-                }
-            }],
-            yAxis: [{
-                type: 'category',
-                inverse: true,
-                position: 'right',
-                axisLine: {
-                    show: false
-                },
-                axisTick: {
-                    show: false
-                },
-                axisLabel: {
-                    show: false
-                },
-                data: myData
-            }, {
-                gridIndex: 1,
-                type: 'category',
-                inverse: true,
-                position: 'left',
-                axisLine: {
-                    show: false
-                },
-                axisTick: {
-                    show: false
-                },
-                axisLabel: {
-                    show: true,
-                    textStyle: {
-                        color: 'rgba(0,0,0,0.95)',
-                        fontSize: 20
-                    }
-
-                },
-                data: myData.map(function(value) {
-                    return {
-                        value: value,
-                        textStyle: {
-                            align: 'center'
-                        }
-                    }
-                })
-            }, {
-                gridIndex: 2,
-                type: 'category',
-                inverse: true,
-                position: 'left',
-                axisLine: {
-                    show: false
-                },
-                axisTick: {
-                    show: false
-                },
-                axisLabel: {
-                    show: false
-
-                },
-                data: myData
-            }],
-            series: []
-
-        },
-        options: []
-    }
-
-    option.baseOption.timeline.data.push(timeLineData[0])
-    option.options.push({
-        series: [
-            {
-                type: 'pictorialBar',
-                xAxisIndex: 2,
-                yAxisIndex: 2,
-                symbol: 'rect',
-                itemStyle: {
-                    normal: {
-                        color: 'rgba(64,158,255,0.27)'
-                    }
-                },
-                barWidth: 10,
-                symbolRepeat: true,
-                symbolSize: 14,
-                data: lineData,
-                barGap: '-100%',
-                barCategoryGap: 0,
-                label: {
-                    normal: {
-                        show: false,
-                        formatter: (series) => {
-                            return thisYearData[timeLineData[0]][series.dataIndex] + '%'
-                        },
-                        position: 'insideTopRight',
-                        textStyle:{
-                            color: 'rgba(0,0,0,0.95)',
-                            fontSize: 20,
-                        },
-                        offset: [0, -35],
-                    }
-                },
-                z: -100,
-                animationEasing: 'elasticOut',
-                animationDelay: function (dataIndex, params) {
-                    return params.index * 30;
-                }
-            }, {
-                name: '2018',
-                type: 'pictorialBar',
-                xAxisIndex: 2,
-                yAxisIndex: 2,
-                symbol: 'rect',
-                barWidth: 10,
-                itemStyle: {
-                    normal: {
-                        barBorderRadius: 5,
-                        color: '#409eff'
-                    }
-                },
-                symbolRepeat: true,
-                symbolSize: 14,
-                data: thisYearData[timeLineData[0]],
-                animationEasing: 'elasticOut',
-                animationDelay: function (dataIndex, params) {
-                    return params.index * 30 * 1.1;
-                }
-            }
-        ]
-    });
-
-    hot.setOption(option);
-
-
-    // 销量前十品牌
-    let topTenBrand = echarts.init(document.getElementById('topTenBrand'));
-    let dataAxis = ['小米', '华为', 'Apple', 'Vivo', '锤子', '一加', '魅族', 'Oppo', 'HTC', '索尼'];
-    // let data = ''
-    // axios({
-    //     url: '',
-    //     method: 'POST',
-    //     params:{
-    //         category: ''
-    //     }
-    //         .then(res => {
-    //             data = res.data.data
-    //     })
-    // })
-    let data = [5200000, 1820000, 1910000, 2340000, 2900000, 3300000, 310000, 123000, 442000, 321000];
-    let yMax = 6000000;
-    let dataShadow = [];
-
-    for (let i = 0; i < data.length; i++) {
-        dataShadow.push(yMax);
-    }
-    let topTenBrandOption = {
-        // title: {
-        //     text: '',
-        //     subtext: ''
-        // },
-        xAxis: {
-            data: dataAxis,
-            axisLabel: {
-                inside: true,
-                textStyle: {
-                    color: '#fff'
-                }
-            },
-            axisTick: {
-                show: false
-            },
-            axisLine: {
-                show: false
-            },
-            z: 10
-        },
-        yAxis: {
-            axisLine: {
-                show: false
-            },
-            axisTick: {
-                show: false
-            },
-            axisLabel: {
-                textStyle: {
-                    color: '#999'
-                }
-            }
-        },
-        dataZoom: [
-            {
-                type: 'inside'
-            }
-        ],
-        series: [
-            { // For shadow
-                type: 'bar',
-                itemStyle: {
-                    normal: {color: 'rgba(0,0,0,0.0)'}
-                },
-                barGap:'-100%',
-                barCategoryGap:'40%',
-                data: dataShadow,
-                animation: false
-            },
-            {
-                type: 'bar',
-                itemStyle: {
-                    normal: {
-                        color: new echarts.graphic.LinearGradient(
-                            0, 0, 0.6, 1,
-                            [
-                                {offset: 0, color: '#409EFF'},
-                                {offset: 0.5, color: '#188df0'},
-                                {offset: 1, color: '#354eb0'}
-                            ]
-                        )
-                    },
-                    emphasis: {
-                        color: new echarts.graphic.LinearGradient(
-                            0, 0, 0, 1,
-                            [
-                                {offset: 0, color: '#409EFF'},
-                                {offset: 0.7, color: '#409EFF'},
-                                {offset: 1, color: '#409EFF'}
-                            ]
-                        )
-                    }
-                },
-                data: data
-            }
-        ]
-    };
-
-    let zoomSize = 6;
-    topTenBrand.on('click', function (params) {
-        console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
-        topTenBrand.dispatchAction({
-            type: 'dataZoom',
-            startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
-            endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
-        });
-    });
-    topTenBrand.setOption(topTenBrandOption);
-    // Enable data zoom when user click bar.
-
-
-    // 品牌下商品数
-    // let saleNumber = echarts.init(document.getElementById('saleNumber'));
-    // function createNodes(count) {
-    //     let nodes = [];
-    //     for (let i = 0; i < count; i++) {
-    //         nodes.push({
-    //             id: i
-    //         });
-    //     }
-    //     return nodes;
-    // }
-    // function createEdges(count) {
-    //     let edges = [];
-    //     for (let i = 0; i < count; i++) {
-    //         edges.push([i, (i + 1) % count]);
-    //     }
-    //     return edges;
-    // }
-    //
-    // let numbers = [];
-    // for (let i = 10; i > 0;i--) {
-    //     numbers.push({
-    //         nodes: createNodes(i + 2),
-    //         edges: createEdges(i + 2)
-    //     });
-    // }
-    //
-    // let numberOption = {
-    //     series: numbers.map(function (item, idx) {
-    //         return {
-    //             type: 'graph',
-    //             layout: 'force',
-    //             animation: false,
-    //             data: item.nodes,
-    //             left: (idx % 10) * 8 + '%',
-    //             top: Math.floor(idx / 10) * 100 + '%',
-    //             width: '8%',
-    //             height: '25%',
-    //             force: {
-    //                 // initLayout: 'circular',
-    //                 // gravity: 0
-    //                 repulsion: 30,
-    //                 edgeLength: 3
-    //             },
-    //             edges: item.edges.map(function (e) {
-    //                 return {
-    //                     source: e[0],
-    //                     target: e[1]
-    //                 };
-    //             })
-    //         };
-    //     })
-    // };
-    // let numberOption = {
-    //     series: {
-    //         type: 'graph',
-    //         layout: 'force',
-    //         animation: false,
-    //         data: createNodes(4),
-    //         force: {
-    //             repulsion: 100,
-    //             edgeLength: 5
-    //         },
-    //         edges: edges.map(function (e) {
-    //             return {
-    //                 source: e[0],
-    //                 target: e[1]
-    //             };
-    //         })
-    //
-    //     }
-    // }
-    let saleNumber = echarts.init(document.getElementById('saleNumber'));
-    numberOption = {
-        title : {
-            // text: '商品种类数目',
-            // subtext: '纯属虚构',
-            // x:'center'
-        },
-        tooltip : {
-            trigger: 'item',
-            // formatter: "{a} <br/>{b} : {c} ({d}%)",
-        },
-        legend: {
-            x : 'left',
-            y : 'bottom',
-            data: dataAxis
-        },
-        toolbox: {
-            show : false,
-            feature : {
-                mark : {show: true},
-                dataView : {show: true, readOnly: false},
-                magicType : {
-                    show: true,
-                    type: ['pie', 'funnel']
-                },
-                restore : {show: true},
-                saveAsImage : {show: true}
-            }
-        },
-        calculable : false,
-        series : [
-            {
-                name:'面积模式',
-                type:'pie',
-                radius : [30, 110],
-                center : ['50%', '50%'],
-                roseType : 'area',
-                data:[
-                    {value:7, name:'小米'},
-                    {value:5, name:'Apple'},
-                    {value:15, name:'华为'},
-                    {value:25, name:'Oppo'},
-                    {value:20, name:'Vivo'},
-                    {value:35, name:'魅族'},
-                    {value:30, name:'锤子'},
-                    {value:40, name:'一加'},
-                    {value:30, name:'HTC'},
-                    {value:40, name:'索尼'}
-                ]
-            }
-        ]
-    };
-    saleNumber.setOption(numberOption);
-
-
-    let priceChart = echarts.init(document.getElementById('priceChart'));
-    priceChartOption = {
-        xAxis: {
-            type: 'category',
-            data: ['1000以下', '1000', '2000', '3000', '4000', '5000', '6000']
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [{
-            showSymbol: false,
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
-            type: 'line'
-        }]
-    };
-
-    priceChart.setOption(priceChartOption);
+        .then(function (response) {
+            app.items = response.result;
+            console.log(response.data.result);
+        })
+        .catch(function (err) {
+            console.log(err);
+        })
 </script>
 </html>

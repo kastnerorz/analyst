@@ -111,12 +111,12 @@
         },
         methods: {
             search: function() {
-                var patrn=/[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
+                let patrn=/[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
                 if(!patrn.exec(app.keyword)) {
                     window.location.href = 'search?keyword=' + app.keyword;
                 }
                 else if(patrn.exec(app.keyword)){
-                    window.location.href = 'category?keyword=' + app.keyword;
+                    window.location.href = 'search?keyword=' + app.keyword;
                 }
                 // $.ajax({
                 //     url: '/search',

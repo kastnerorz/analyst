@@ -53,7 +53,6 @@ public class HomeController {
         return "index";
     }
 
-
     @RequestMapping(value = "/search")
     public String search(@RequestParam String keyword, Model model) throws JSONException {
         model.addAttribute("keyword", keyword);
