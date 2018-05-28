@@ -75,44 +75,107 @@ public class ReportController {
     @RequestMapping(value = "/getItemNumByPriceDis")
     public NetResult getItemNumByPriceDis(@RequestParam Long categoryId) {    //一个类别下按价格区间统计所有的item
         List<Brand> brands = brandService.findAll();
+//        System.out.println(brands.get(0).getBrandZhName());
         Long brandId;
-        Double min = (double) 0;
-        Double max = (double) 1000;
-        List<HashMap<String, Object>> data = new ArrayList<>();
-        while (min > 5999) {    //根据每个区间遍历所有brand下的item总数
+        Double min;
+        Double max;
+        List<HashMap<String, Object>> priceSum = new ArrayList<>();
+        if(categoryId==4){
+            min=(double)0;
+            max=(double)1000;
+            while (min < 5999) {    //根据每个j区间遍历所有brand下的item总数
+                Long sum = (long) 0;
+                for (Brand brand : brands) {    //遍历每个brand得到该区间下的item
+                    brandId = brand.getBrandId();
+                    List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
+//                System.out.println(items.get(0).getZhName());
+                    List<Long> itemIdList = new ArrayList<>();   //存放itemId
+                    for (Item item : items) {
+                        Long itemId = item.getItemId();
+                        itemIdList.add(itemId);
+                    }
+//                System.out.println(itemIdList);
+                    if (!itemIdList.isEmpty()) {   //找到每个brand下这个价格区间的商品数
+                        List<Price> prices = priceService.findPriceListByPriceAndItem(min, max, itemIdList);
+                        sum = sum + prices.size();
+//                    System.out.println(sum);
+                    }
+                }
+                HashMap<String, Object> tmp = new HashMap<>();
+                tmp.put("price", min);
+                tmp.put("sum", sum);
+                priceSum.add(tmp);
+                min = min + 1000;
+                max = max + 1000;
+            }
+            //对7000+以上的价格遍历每个brand（感觉这样子复杂度太高了，哭了）
             Long sum = (long) 0;
-            for (Brand brand : brands) {    //遍历每个brand得到该区间下的item
+            for (Brand brand : brands) {
                 brandId = brand.getBrandId();
                 List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
-                if (!items.isEmpty()) {
-                    List<Price> prices = priceService.findPriceListByPriceAndItem(min, max, items);
+                List<Long> itemIdList = new ArrayList<>();
+                for (Item item : items) {
+                    Long itemId = item.getItemId();
+                    itemIdList.add(itemId);
+                }
+                if (!itemIdList.isEmpty()) {
+                    List<Price> prices = priceService.findPriceListByPriceMin(min, itemIdList);
                     sum = sum + prices.size();
                 }
             }
             HashMap<String, Object> tmp = new HashMap<>();
             tmp.put("price", min);
             tmp.put("sum", sum);
-            data.add(tmp);
-            min = min + 1000;
-            max = max + 1000;
-        }
-        Long sum = (long) 0;
-        for (Brand brand : brands) {
-            brandId = brand.getBrandId();
-            List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
-            if (!items.isEmpty()) {
-                List<Price> prices = priceService.findPriceListByPriceMin(min, items);
-                sum = sum + prices.size();
+            priceSum.add(tmp);
+        }else{
+            //电脑3000,6000,9000,11000,14000;
+            min=(double)1000;
+            max=(double)3000;
+            while (min <13999) {    //根据每个j区间遍历所有brand下的item总数
+                Long sum = (long) 0;
+                for (Brand brand : brands) {    //遍历每个brand得到该区间下的item
+                    brandId = brand.getBrandId();
+                    List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
+                    List<Long> itemIdList = new ArrayList<>();   //存放itemId
+                    for (Item item : items) {
+                        Long itemId = item.getItemId();
+                        itemIdList.add(itemId);
+                    }
+                    if (!itemIdList.isEmpty()) {   //找到每个brand下这个价格区间的商品数
+                        List<Price> prices = priceService.findPriceListByPriceAndItem(min, max, itemIdList);
+                        sum = sum + prices.size();
+                    }
+                }
+                HashMap<String, Object> tmp = new HashMap<>();
+                tmp.put("price", min);
+                tmp.put("sum", sum);
+                priceSum.add(tmp);
+                min = min +3000 ;
+                max = max +3000;
             }
+            //对14000+以上的价格遍历每个brand（感觉这样子复杂度太高了，哭了）
+            Long sum = (long) 0;
+            for (Brand brand : brands) {
+                brandId = brand.getBrandId();
+                List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
+                List<Long> itemIdList = new ArrayList<>();
+                for (Item item : items) {
+                    Long itemId = item.getItemId();
+                    itemIdList.add(itemId);
+                }
+                if (!itemIdList.isEmpty()) {
+                    List<Price> prices = priceService.findPriceListByPriceMin(min, itemIdList);
+                    sum = sum + prices.size();
+                }
+            }
+            HashMap<String, Object> tmp = new HashMap<>();
+            tmp.put("price", min);
+            tmp.put("sum", sum);
+            priceSum.add(tmp);
         }
-        HashMap<String, Object> tmp = new HashMap<>();
-        tmp.put("price", min);
-        tmp.put("sum", sum);
-        data.add(tmp);
 
-        netResult.data = data;
+        netResult.data = priceSum;
         netResult.status = 0;
         return netResult;
-
     }
 }

@@ -57,7 +57,7 @@ public interface PriceService {
 
     List<Price> findPriceListByPriceDistrict(Double min, Double max);
 
-    List<Price> findPriceListByPriceAndItem(Double min,Double max,List item);
+    List<Price> findPriceListByPriceAndItem(Double min,Double max,List<Long> item);
 
-    List<Price>  findPriceListByPriceMin(Double min,List item);
+    List<Price>  findPriceListByPriceMin(Double min,List<Long> item);
 }

@@ -57,12 +57,12 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public List<Price> findPriceListByPriceAndItem(Double min,Double max,List item){
+    public List<Price> findPriceListByPriceAndItem(Double min,Double max,List<Long> item){
         return priceRepository.findAllByPriceBetweenAndItemItemIdIn(min,max,item);
     }
 
     @Override
-    public List<Price> findPriceListByPriceMin(Double min ,List item){
+    public List<Price> findPriceListByPriceMin(Double min ,List<Long> item){
         return priceRepository.findAllByPriceGreaterThanAndItemItemIdIn(min,item);
 
     }
