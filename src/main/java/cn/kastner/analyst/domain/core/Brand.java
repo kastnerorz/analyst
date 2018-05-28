@@ -1,6 +1,7 @@
 package cn.kastner.analyst.domain.core;
 
 import cn.kastner.analyst.domain.detail.PhoneDetail;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,6 +25,7 @@ public class Brand {
     private Float rate;
 
     @OneToMany(mappedBy = "brand")
+    @JsonIgnore
     private List<Item> itemList;
 
     @OneToMany

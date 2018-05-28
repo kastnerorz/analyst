@@ -1,6 +1,8 @@
 package cn.kastner.analyst.domain.core;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +31,7 @@ public class Item {
 
     @ManyToOne(cascade = {CascadeType.MERGE,
     CascadeType.PERSIST})
+
     private Category category;
 
     @ManyToOne(cascade = {CascadeType.MERGE,

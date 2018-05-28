@@ -4,12 +4,15 @@ import cn.kastner.analyst.service.core.CommentService;
 import cn.kastner.analyst.service.core.ItemService;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
 import cn.kastner.analyst.util.NetResult;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -47,7 +50,6 @@ public class ItemController {
         netResult.message = "No such Item!";
         netResult.status = -1;
         return netResult;
-
     }
 
     @RequestMapping(value = "/getItemInfoByCname")

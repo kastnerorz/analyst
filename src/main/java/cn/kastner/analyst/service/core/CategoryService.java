@@ -21,7 +21,6 @@ public interface CategoryService {
      * @return category retrieved
      */
     Category findById(Long categoryId);
-
     /**
      * retrieve all categories
      *

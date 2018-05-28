@@ -1,6 +1,8 @@
 package cn.kastner.analyst.domain.core;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class Category {
     private String levelThreeName;
 
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Item> itemList;
 
     public Long getCategoryId() {

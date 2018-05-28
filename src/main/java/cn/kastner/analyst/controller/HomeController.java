@@ -54,7 +54,7 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/search")
-    public String search(@RequestParam String keyword, Model model) throws JSONException {
+    public String search(@RequestParam String keyword, Model model) throws JSONException{
         model.addAttribute("keyword", keyword);
         Boolean isMatch = Pattern.matches(".*https?.*", keyword);
         Category category = categoryService.findByLevelName(keyword);
@@ -108,6 +108,16 @@ public class HomeController {
             return null;
         }
         return "itemList";
+    }
+    @RequestMapping(value = "/report")
+    public String report(@RequestParam String keyword, Model model) {
+        model.addAttribute("keyword", keyword);
+        Category category = categoryService.findByLevelName(keyword);
+        if(category!=null){
+
+            return "report";
+        }
+        return null;
     }
 
 }

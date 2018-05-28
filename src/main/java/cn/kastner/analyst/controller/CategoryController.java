@@ -8,6 +8,7 @@ import cn.kastner.analyst.service.core.CategoryService;
 import cn.kastner.analyst.service.core.ItemService;
 import cn.kastner.analyst.service.core.PriceService;
 import cn.kastner.analyst.util.NetResult;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,62 +37,35 @@ public class CategoryController {
 
     }
 
+    @JsonIgnore
     @RequestMapping(value="/getCategoryInfoByCategoryId")
-    public NetResult getCategoryInfoByCategoryId(@RequestParam Long categoryId){
-        Category category=categoryService.findById(categoryId);
-        if(category !=null){
-            netResult.data=category;
-            netResult.status=0;
+    public NetResult getCategoryInfoByCategoryId(@RequestParam Long categoryId) {
+        Category category = categoryService.findById(categoryId);
+        System.out.print(category.getCategoryId());
+        if (category != null) {
+            netResult.data = category;
+            netResult.status = 0;
+            return netResult;
+        } else {
+            netResult.message = "No such category";
+            netResult.status = -1;
             return netResult;
         }
-        netResult.message="No such category";
-        netResult.status=-1;
-        return netResult;
     }
 
     @RequestMapping(value="/getItemListByCategoryId")
     public NetResult getItemListByCategoryId(@RequestParam Long categoryId){
         List<Item> items=itemService.findByCategoryId(categoryId);
-        if(!items.isEmpty()){
-            netResult.data=items;
-            netResult.status=0;
+        if(!items.isEmpty()) {
+            netResult.data = items;
+            netResult.status = 0;
+            return netResult;
+        }else{
+            netResult.message="No such items";
+            netResult.status = -1;
             return netResult;
         }
-        netResult.message="No such items";
-        netResult.status=-1;
-        return netResult;
     }
 
-    @RequestMapping(value = "/report")
-    public String report(@RequestParam String keyword, Model model) {
-        model.addAttribute("keyword", keyword);
-        Category category = categoryService.findByLevelName(keyword);
-        if(category!=null){
-
-            return "report";
-        }
-//        Long categoryId = category.getCategoryId();
-//        model.addAttribute("category", categoryId);
-//        List<Brand> brands = brandService.findAll();
-//        List brandSaleList;
-//        Long brandId = (long) 0;
-//        for (int i = 0; i < brands.size(); i++) {
-//            brandId = brands.get(i).getBrandId();
-//            List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
-//            Long itemId = (long) 0;
-//            Long brandSale=(long)0;
-//            for (int j = 0; j < items.size(); j++) {
-//                itemId = items.get(j).getItemId();
-//                List<Price> prices=priceService.findByItemId(itemId);
-//                Long sum=(long)0;
-//                for(int m=0;m<prices.size();m++){
-//                    sum=sum+prices.get(m).getVolume();
-//                }
-//                brandSale=brandSale+sum;
-//            }
-//            System.out.println(brands.get(i).getBrandZhName()+"的销售总量"+brandSale);
-//        }
-        return "categoryList";
-    }
 
 }
