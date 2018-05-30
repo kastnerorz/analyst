@@ -79,7 +79,7 @@ public class CategoryController {
         if(!demands.isEmpty()){
             for(Demand demand:demands){
                 HashMap<String,Object> demandList=new HashMap<>();
-                demandList.put("paramId",demand.getId());
+                demandList.put("demandId",demand.getId());
                 demandList.put("categoryId",categoryId);
                 List<Param> params=paramService.findByDemandId(demand.getId());
                 HashMap<String,Object> tmp=new HashMap<>();
@@ -95,6 +95,21 @@ public class CategoryController {
         }
         netResult.message="No such demands";
         netResult.status=-1;
+        return netResult;
+    }
+
+    @RequestMapping(value="/getItemListAfterDemand")
+    //根据需求刷新页面
+    public NetResult getItemListAfterDemand(@RequestParam List<String> demands ,Long category){
+
+
+
+
+
+
+
+
+
         return netResult;
     }
 
