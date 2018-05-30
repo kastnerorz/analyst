@@ -1,9 +1,12 @@
 package cn.kastner.analyst.service.crawler.impl;
 
 import cn.kastner.analyst.domain.core.*;
+import cn.kastner.analyst.domain.detail.PhoneDetail;
 import cn.kastner.analyst.repository.core.MarketRepository;
 import cn.kastner.analyst.service.core.*;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
+import cn.kastner.analyst.service.detail.PhoneDetailService;
+import cn.kastner.analyst.util.crawler.Lang;
 import cn.kastner.analyst.util.crawler.Finder;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,7 +22,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.thymeleaf.util.StringUtils;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -58,8 +60,12 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     private final Finder finder;
 
+    private final Lang lang;
+
+    private final PhoneDetailService phoneDetailService;
+
     @Autowired
-    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, Finder finder) {
+    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, Finder finder, Lang lang, PhoneDetailService phoneDetailService) {
         this.itemService = itemService;
         this.commentService = commentService;
         this.priceService = priceService;
@@ -67,6 +73,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         this.categoryService = categoryService;
         this.marketRepository = marketRepository;
         this.finder = finder;
+        this.lang = lang;
+        this.phoneDetailService = phoneDetailService;
     }
 
 
@@ -88,20 +96,14 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         Market market = marketRepository.findByCode(Market.Code.JD);
         item.setMarket(market);
 
-        Document doc = new Document("");
-        try {
-            logger.info("Connecting to base url ...");
-            doc = Jsoup.connect(url)
+        logger.info("Connecting to base url ...");
+        Document doc = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
                     .get();
 
-        } catch (IOException e) {
-            logger.warning(String.valueOf(e.getStackTrace()));
-        }
-
         doc.getElementsByClass("Ptable-tips").remove();
 
-        // get skuid
+        // get skuId
         String skuid = finder.getString(doc.head().toString(), "skuid: (\\d*),", 1);
         if (skuid == null) {
             logger.warning("can't get skuid");
@@ -133,10 +135,13 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         } else {
             String brandZhName = finder.getString(brandStr, "(.*)（.*）", 1);
             String brandEnName = finder.getString(brandStr, ".*（(.*)）", 1);
+
             Brand brandDb = brandService.findByEnName(brandEnName);
             if (brandDb == null) {
                 Brand brand = new Brand();
-                brand.setBrandZhName(brandZhName);
+                if (lang.hasChinese(brandZhName)) {
+                    brand.setBrandZhName(brandZhName);
+                }
                 brand.setBrandEnName(brandEnName);
                 brandService.insertByBrand(brand);
                 item.setBrand(brand);
@@ -155,17 +160,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             logger.info("Get Item zhName from title: " + zhName);
         }
 
-        // get itemModel from html title
-//        Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
-//        Matcher modelMatcher = modelPattern.matcher(doc.title());
-//        if (modelMatcher.find()) {
-//            String model = modelMatcher.group(1);
-//            item.setModel(model);
-//            logger.info("Get Item Model from title: " + model);
-//        } else {
-//            logger.warning("Can't get item model");
-//        }
-//        String model = finder.getString(doc.toString(), "")
+        // 获取商品型号（model）
         Element dlEl = doc
                 // div.Ptable
                 .getElementsByClass("Ptable").get(0)
@@ -178,8 +173,12 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
         int index = 0;
         for(Element e: dtEl) {
+            if (e.text().equals("型号")){
+                String model = ddEl.get(index).text();
+                lang.removeChinese(model);
+                item.setModel(model);
+            }
             index++;
-
         }
 
 
@@ -193,7 +192,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         // analyse doc
 
 
-        // get&set vendorId
+        // get vendorId
         Pattern vendorIdPattern = Pattern.compile("venderId:(\\d+),");
         Matcher vendorIdMatcher = vendorIdPattern.matcher(doc.head().toString());
         if (vendorIdMatcher.find()) {
@@ -225,6 +224,13 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             item.setIsSelfSell(true);
         }
 
+        // 获取 ROM
+        Double rom = Double.parseDouble(finder.getString(doc.toString(), "机身内存：(.*)GB</li>", 1));
+        PhoneDetail phoneDetail = new PhoneDetail();
+        itemService.insertByItem(item);
+        phoneDetail.setItem(item);
+        phoneDetail.setRomCapacity(rom);
+        phoneDetailService.insertByPhoneDetail(phoneDetail);
 
         // get commentVersion from html head
         Pattern commentVersionPattern = Pattern.compile("commentVersion:\\'(.+)\\',");
@@ -304,26 +310,20 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
 
         // get commentsCount
-        Document commentsCountDoc = new Document("");
+        logger.info("Connecting to http://club.jd.com/comment/productCommentSummaries.action");
+        Document commentsCountDoc = Jsoup.connect("http://club.jd.com/comment/productCommentSummaries.action")
+                .header("accept", "*/*")
+                .header("accept-encoding", "gzip, deflate, br")
+                .header("accept-language", "zh-CN,zh;q=0.9")
+                .header("referer", "https://item.jd.com/" + itemId + ".html")
+                .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
+                        "AppleWebKit/537.36 (KHTML, like Gecko)" +
+                        "Chrome/65.0.3325.181 Safari/537.36")
 
-        try {
-            logger.info("Connecting to http://club.jd.com/comment/productCommentSummaries.action");
-            commentsCountDoc = Jsoup.connect("http://club.jd.com/comment/productCommentSummaries.action")
-                    .header("accept", "*/*")
-                    .header("accept-encoding", "gzip, deflate, br")
-                    .header("accept-language", "zh-CN,zh;q=0.9")
-                    .header("referer", "https://item.jd.com/" + itemId + ".html")
-                    .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
-                            "AppleWebKit/537.36 (KHTML, like Gecko)" +
-                            "Chrome/65.0.3325.181 Safari/537.36")
-
-                    .data("referenceIds", item.getSkuId())
-                    .data("callback", "jQuery" + jQueryId)
-                    .data("_", "" + System.currentTimeMillis() / 1000)
-                    .get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                .data("referenceIds", item.getSkuId())
+                .data("callback", "jQuery" + jQueryId)
+                .data("_", "" + System.currentTimeMillis() / 1000)
+                .get();
 
         JSONObject commentsCount;
         int generalCount = 0;
@@ -345,6 +345,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             int poorCount = commentsCount.getInt("PoorCount");
 
             String poorCountStr = commentsCount.getString("PoorCountStr");
+
+
         }
         jQueryId = jQueryId + 1;
 
@@ -352,30 +354,29 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         // get stock info
         String stockStr = "";
         int pduid = 1901035936;
-        try {
-            Connection.Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + item.getSkuId() +
-                    "&area=1_72_2799_0" +
-                    "&vendorId=" + item.getVendorId() +
-                    "&cat=" + item.getCategory().getCategoryStr() +
-                    "&buyNum=1" +
-                    "&choseSuitSkuIds=" +
-                    "&extraParam={\"originid\":\"1\"}" +
-                    "&ch=1" +
-                    "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
-                    "&pdpin=" +
-                    "&detailedAdd=null" +
-                    "&callback=jQuery" + jQueryId)
-                    .ignoreContentType(true)
-                    .execute();
-            stockStr = stockDoc.body();
-            logger.info(stockStr);
+
+        Connection.Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + item.getSkuId() +
+                "&area=1_72_2799_0" +
+                "&vendorId=" + item.getVendorId() +
+                "&cat=" + item.getCategory().getCategoryStr() +
+                "&buyNum=1" +
+                "&choseSuitSkuIds=" +
+                "&extraParam={\"originid\":\"1\"}" +
+                "&ch=1" +
+                "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
+                "&pdpin=" +
+                "&detailedAdd=null" +
+                "&callback=jQuery" + jQueryId)
+                .ignoreContentType(true)
+                .execute();
+        stockStr = stockDoc.body();
+        logger.info(stockStr);
 //            String stockStr = new String(stockDoc.toString().getBytes(), "gbk");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         Pattern stockPattern = Pattern.compile("jQuery" + jQueryId + "\\(\\{\\\"stock\\\":(\\{.+\\}),\\\"");
         Matcher stockMatcher = stockPattern.matcher(stockStr);
         if (stockMatcher.find()) {
+
             JSONObject stock = new JSONObject(stockMatcher.group(1));
 
 //            JSONObject selfDeliver;
@@ -434,31 +435,26 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         // get comments
         String commentStr = "";
         for (int currentPage = 0; currentPage < 5; currentPage++) {
-            try {
-                String commentUrl = "https://club.jd.com/comment/skuProductPageComments.action?" +
-                        "callback=fetchJSON_comment98vv" + item.getCommentVersion() +
-                        "&productId=" + item.getSkuId() +
-                        "&score=0" +
-                        "&sortType=5" +
-                        "&page=" + currentPage +
-                        "&pageSize=10" +
-                        "&isShadowSku=0" +
-                        "&rid=0" +
-                        "&fold=1";
-                logger.info("Connecting to " + commentUrl);
-                Connection.Response commentDoc = Jsoup.connect(commentUrl)
-                        .header("accept", "*/*")
-                        .header("accept-encoding", "gzip, deflate, br")
-                        .header("accept-language", "zh-CN,zh;q=0.9")
-                        .header("referer", "https://item.jd.com/" + item.getSkuId() + ".html")
-                        .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-                        .execute();
-                commentStr = commentDoc.body();
-                logger.info(commentStr);
-            } catch (IOException e) {
-                logger.info("Can't connect to http://club.jd.com/comment/skuProductPageComments.action");
-                e.printStackTrace();
-            }
+            String commentUrl = "https://club.jd.com/comment/skuProductPageComments.action?" +
+                    "callback=fetchJSON_comment98vv" + item.getCommentVersion() +
+                    "&productId=" + item.getSkuId() +
+                    "&score=0" +
+                    "&sortType=5" +
+                    "&page=" + currentPage +
+                    "&pageSize=10" +
+                    "&isShadowSku=0" +
+                    "&rid=0" +
+                    "&fold=1";
+            logger.info("Connecting to " + commentUrl);
+            Connection.Response commentDoc = Jsoup.connect(commentUrl)
+                    .header("accept", "*/*")
+                    .header("accept-encoding", "gzip, deflate, br")
+                    .header("accept-language", "zh-CN,zh;q=0.9")
+                    .header("referer", "https://item.jd.com/" + item.getSkuId() + ".html")
+                    .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
+                    .execute();
+            commentStr = commentDoc.body();
+            logger.info(commentStr);
             Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv" + item.getCommentVersion() + "\\((\\{.+\\})\\);");
             Matcher commentMatcher = commentPattern.matcher(commentStr);
             if (commentMatcher.find()) {
@@ -514,11 +510,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                     logger.info("commentContent has been saved.");
                 }
             }
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            TimeUnit.SECONDS.sleep(3);
+
         }
         logger.info("[check]commentCountStr    ->" + item.getCommentCountStr());
         logger.info("[check]generalCountStr    ->" + item.getGeneralCountStr());

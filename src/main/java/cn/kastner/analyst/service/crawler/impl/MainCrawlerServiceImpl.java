@@ -8,6 +8,8 @@ import cn.kastner.analyst.service.crawler.TrustReviewCrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 /**
  * 爬虫服务主入口实现
  */
@@ -37,12 +39,16 @@ public class MainCrawlerServiceImpl implements MainCrawlerService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        if (item != null) {
-//            if (item.getCategory().getLevelThreeName().equals("手机")) {
-//                phoneDbCrawlerService.crawByItem(item);
-//            }
-//            trustReviewCrawlerService.crawByItem(item);
-//        }
+        if (item != null) {
+            if (item.getCategory().getLevelThreeName().equals("手机")) {
+                try {
+                    phoneDbCrawlerService.crawByItem(item);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            trustReviewCrawlerService.crawByItem(item);
+        }
         return item;
     }
 }

@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * PhoneDB 爬虫服务实现
@@ -47,9 +49,9 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
      * @return Item 商品对象
      */
     @Override
-    public Item crawByItem(Item item) {
+    public Item crawByItem(Item item) throws IOException {
         this.item = item;
-        String url = searchByModelAndRom(item.getModel(), item.getRom());
+        String url = searchByModelAndRom(item.getModel(), phoneDetailService.findByItem(item).getRomCapacity().toString());
         crawDetails(url);
         return item;
     }
@@ -60,58 +62,66 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
      * @return PhoneDB详情链接
      */
     @Override
-    public String searchByModelAndRom(String model, String rom) {
+    public String searchByModelAndRom(String model, String rom) throws IOException {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
         headers.put("Accept-Language", "zh-CN,zh;q=0.9");
         headers.put("Cache-Control", "max-age=0");
         headers.put("Content-Type", "application/x-www-form-urlencoded");
         headers.put("Upgrade-Insecure-Requests", "1");
-        Document doc = new Document("http://phonedb.net");
-        try {
-            doc = Jsoup.connect("http://phonedb.net/index.php?m=device&s=query")
+        HashMap<String, String> data = new HashMap<>();
+        data.put("model", model);
+        data.put("rom_cap_b", rom + " GB");
+        Document doc = Jsoup.connect("http://phonedb.net/index.php?m=device&s=query")
                     .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
                             "AppleWebKit/537.36 (KHTML, like Gecko)" +
                             "Chrome/66.0.3359.181 Safari/537.36")
                     .headers(headers)
+                    .data(data)
                     .post();
-        } catch (IOException e) {
-            logger.warning(e.toString());
-        }
-
         Element resultEl = doc.getElementsByAttributeValue("title", "See detailed datasheet")
                             .get(0);
-        return resultEl.attr("title");
+        return resultEl.attr("href");
     }
 
     /**
      * @param url PhoneDB详情链接
      */
     @Override
-    public void crawDetails(String url) {
+    public void crawDetails(String url) throws IOException {
         HashMap<String , String> headers = new HashMap<>();
-        Document doc = new Document("http://phonedb.net");
-        try {
-            doc = Jsoup.connect("http://phonedb.net" + url)
+        headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+        headers.put("Accept-Encoding", "gzip, deflate");
+        headers.put("Accept-Language", "zh-CN,zh;q=0.9");
+        headers.put("Cache-Control", "no-cache");
+        headers.put("Connection", "keep-alive");
+        headers.put("Host", "phonedb.net");
+        headers.put("Pragma", "no-cache");
+        headers.put("Referer", "http://phonedb.net/index.php?m=device&s=query");
+        headers.put("Upgrade-Insecure-Requests", "1");
+        System.getProperties().setProperty("proxySet", "true");
+        //用的代理服务器
+        System.getProperties().setProperty("http.proxyHost", "127.0.0.1");
+        //代理端口
+        System.getProperties().setProperty("http.proxyPort", "2333");
+        Document doc = Jsoup.connect("http://phonedb.net/" + url)
                     .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
                             "AppleWebKit/537.36 (KHTML, like Gecko)" +
                             "Chrome/66.0.3359.181 Safari/537.36")
                     .headers(headers)
                     .post();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Element dataTableEl = doc.getElementsByTag("table").get(0);
-        Elements dataTrEls = dataTableEl.getElementsByTag("tr");
-
-        PhoneDetail phoneDetail = new PhoneDetail();
-        phoneDetail.setItem(item);
+        Element dataTableEl = doc.select("table").first();
+        Elements dataTrEls = dataTableEl.select("tr");
+        PhoneDetail phoneDetail = phoneDetailService.findByItem(item);
         phoneDetail.setCrawDate(LocalDate.now());
         int index = 0;
         for(Element el: dataTrEls) {
             index++;
-            Elements dataTdEls = el.getElementsByTag("td");
-            String attr = dataTdEls.get(0).text();
+            Elements dataTdEls = el.select("td");
+            if (dataTdEls.size() == 1) {
+                continue;
+            }
+            String attr = dataTdEls.first().text();
             String val = dataTdEls.get(1).text();
 
             if (attr.equals("Brand")) {
@@ -120,6 +130,7 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
                     Brand brand = new Brand();
                     brand.setBrandEnName(val);
                     phoneDetail.setBrand(brand);
+                    brandService.insertByBrand(brand);
                 } else {
                     phoneDetail.setBrand(brandDb);
                 }
@@ -159,8 +170,11 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
             } else if (attr.equals("Non-volatile Memory Capacity")) {
                 phoneDetail.setRomCapacity(finder.getDouble(val, 1));
             } else if (attr.equals("Display Resolution")) {
-                phoneDetail.setWideRez(finder.getDouble(val, 1).intValue());
-                phoneDetail.setLongRez(finder.getDouble(val, 2).intValue());
+                Pattern pattern = Pattern.compile("(.*)x(.*)");
+                Matcher matcher = pattern.matcher(val);
+                matcher.find();
+                phoneDetail.setWideRez(Integer.parseInt(matcher.group(1)));
+                phoneDetail.setLongRez(Integer.parseInt(matcher.group(2)));
             } else if (attr.equals("Display Diagonal")) {
                 Element dispDiagonalTrEl = dataTrEls.get(index + 1);
                 Elements dispDiagonalTdEls = dispDiagonalTrEl.getElementsByTag("td");

@@ -14,6 +14,7 @@ public class PhoneDetail {
      * 手机详情 id
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long phoneDetailId;
 
     /**
