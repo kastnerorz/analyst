@@ -37,12 +37,12 @@ public class MainCrawlerServiceImpl implements MainCrawlerService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (item != null) {
-            if (item.getCategory().getLevelThreeName().equals("手机")) {
-                phoneDbCrawlerService.crawByItem(item);
-            }
-            trustReviewCrawlerService.crawByItem(item);
-        }
+//        if (item != null) {
+//            if (item.getCategory().getLevelThreeName().equals("手机")) {
+//                phoneDbCrawlerService.crawByItem(item);
+//            }
+//            trustReviewCrawlerService.crawByItem(item);
+//        }
         return item;
     }
 }

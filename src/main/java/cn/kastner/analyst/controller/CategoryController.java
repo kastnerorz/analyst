@@ -1,12 +1,7 @@
 package cn.kastner.analyst.controller;
 
-import cn.kastner.analyst.domain.core.Brand;
-import cn.kastner.analyst.domain.core.Category;
-import cn.kastner.analyst.domain.core.Item;
-import cn.kastner.analyst.domain.core.Price;
-import cn.kastner.analyst.service.core.CategoryService;
-import cn.kastner.analyst.service.core.ItemService;
-import cn.kastner.analyst.service.core.PriceService;
+import cn.kastner.analyst.domain.core.*;
+import cn.kastner.analyst.service.core.*;
 import cn.kastner.analyst.util.NetResult;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -24,16 +21,21 @@ public class CategoryController {
 
     private final ItemService itemService;
 
-    private final PriceService priceService;
 
     private final NetResult netResult;
 
+    private final DemandService demandService;
+
+    private final ParamService paramService;
+
     @Autowired
-    public CategoryController(CategoryService categoryService, ItemService itemService,PriceService priceService,NetResult netResult){
-        this.priceService=priceService;
+    public CategoryController(CategoryService categoryService, ItemService itemService, NetResult netResult,
+                              DemandService demandService,ParamService paramService){
         this.categoryService=categoryService;
         this.itemService=itemService;
         this.netResult=netResult;
+        this.demandService=demandService;
+        this.paramService=paramService;
 
     }
 
@@ -68,10 +70,26 @@ public class CategoryController {
     }
 
     @RequestMapping(value="getNeedListByCategoryId")
-    public NetResult getNeedListCategory(@RequestParam Long categoryId){
-
-
-
+    public NetResult getNeedListCategory(@RequestParam Category category){
+        //一开始展示类别下的所有需求
+        List<Demand> demands=demandService.findAllByCategory(category);
+        List<HashMap<String,Object>> data=new ArrayList<>();
+        if(!demands.isEmpty()){
+            for(Demand demand:demands){
+                    List<Param> params=paramService.findByDemand(demand);
+                    HashMap<String,Object> tmp=new HashMap<>();
+                    for(Param param:params){
+                        tmp.put("name",param.getName());
+                        tmp.put("value",param.getValue());
+                        data.add(tmp);
+                    }
+            }
+            netResult.data=data;
+            netResult.status=0;
+            return netResult;
+        }
+        netResult.message="No such demands";
+        netResult.status=-1;
         return netResult;
     }
 
