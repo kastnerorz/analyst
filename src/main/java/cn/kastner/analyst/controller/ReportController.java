@@ -181,6 +181,7 @@ public class ReportController {
 
     @RequestMapping(value="/getFocusByCategoryId")
     public NetResult getFocusByCategoryId(@RequestParam Long categoryId){
+        //根据demand里的flag判断
 
 
 

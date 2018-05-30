@@ -99,6 +99,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             logger.warning(String.valueOf(e.getStackTrace()));
         }
 
+        doc.getElementsByClass("Ptable-tips").remove();
+
         // get skuid
         String skuid = finder.getString(doc.head().toString(), "skuid: (\\d*),", 1);
         if (skuid == null) {
@@ -164,9 +166,21 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 //            logger.warning("Can't get item model");
 //        }
 //        String model = finder.getString(doc.toString(), "")
-        Element pTableEl = doc.getElementsByClass("Ptable").get(0);
-        Elements pTableItemEls = pTableEl.getElementsByClass("Ptable-item");
-        Element mainEl = pTableItemEls.get(0);
+        Element dlEl = doc
+                // div.Ptable
+                .getElementsByClass("Ptable").get(0)
+                // div.Ptable-item
+                .getElementsByClass("Ptable-item").get(0)
+                // dl
+                .getElementsByTag("dl").get(0);
+        Elements dtEl = dlEl.getElementsByTag("dt");
+        Elements ddEl = dlEl.getElementsByTag("dd");
+
+        int index = 0;
+        for(Element e: dtEl) {
+            index++;
+
+        }
 
 
 

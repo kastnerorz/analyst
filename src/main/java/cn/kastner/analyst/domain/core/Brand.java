@@ -28,7 +28,8 @@ public class Brand {
     @JsonIgnore
     private List<Item> itemList;
 
-    @OneToMany
+    @OneToMany(mappedBy = "brand")
+    @JsonIgnore
     private List<PhoneDetail> phoneDetailList;
 
     public Long getBrandId() {

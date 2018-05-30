@@ -27,7 +27,7 @@ public interface DemandService {
      * @param category 品类
      * @return 需求列表
      */
-    List<Demand> findAllByCategory(Category category);
+    List<Demand> findAllByCategory(Category  category);
 
     /**
      * 在当前品类下搜索需求

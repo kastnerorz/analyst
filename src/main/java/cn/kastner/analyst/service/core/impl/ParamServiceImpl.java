@@ -4,9 +4,11 @@ import cn.kastner.analyst.domain.core.Demand;
 import cn.kastner.analyst.domain.core.Param;
 import cn.kastner.analyst.repository.core.ParamRepository;
 import cn.kastner.analyst.service.core.ParamService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ParamServiceImpl implements ParamService {
 
     private final ParamRepository paramRepository;
