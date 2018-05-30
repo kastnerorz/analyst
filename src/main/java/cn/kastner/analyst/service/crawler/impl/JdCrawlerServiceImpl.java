@@ -135,20 +135,40 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         } else {
             String brandZhName = finder.getString(brandStr, "(.*)（.*）", 1);
             String brandEnName = finder.getString(brandStr, ".*（(.*)）", 1);
-
-            Brand brandDb = brandService.findByEnName(brandEnName);
-            if (brandDb == null) {
-                Brand brand = new Brand();
-                if (lang.hasChinese(brandZhName)) {
-                    brand.setBrandZhName(brandZhName);
+            if (brandEnName == null || brandZhName == null) {
+                if (lang.hasChinese(brandStr)) {
+                    Brand brandDb = brandService.findByZhName(brandStr);
+                    if (brandDb == null) {
+                        Brand brand = new Brand();
+                        brand.setBrandZhName(brandStr);
+                        brandService.insertByBrand(brand);
+                        item.setBrand(brand);
+                    } else {
+                        item.setBrand(brandDb);
+                    }
+                } else {
+                    Brand brandDb = brandService.findByEnName(brandStr.toUpperCase());
+                    if (brandDb == null) {
+                        Brand brand = new Brand();
+                        brand.setBrandEnName(brandStr.toUpperCase());
+                        brandService.insertByBrand(brand);
+                        item.setBrand(brand);
+                    } else {
+                        item.setBrand(brandDb);
+                    }
                 }
-                brand.setBrandEnName(brandEnName);
-                brandService.insertByBrand(brand);
-                item.setBrand(brand);
             } else {
-                item.setBrand(brandDb);
+                Brand brandDb = brandService.findByEnOrZhName(brandEnName.toUpperCase(), brandZhName);
+                if (brandDb == null) {
+                    Brand brand = new Brand();
+                    brand.setBrandZhName(brandZhName);
+                    brand.setBrandEnName(brandEnName.toUpperCase());
+                    brandService.insertByBrand(brand);
+                    item.setBrand(brand);
+                } else {
+                    item.setBrand(brandDb);
+                }
             }
-
         }
 
         // get itemCname from html title

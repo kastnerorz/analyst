@@ -35,6 +35,19 @@ public interface BrandService {
      */
     Brand findByEnName(String enName);
 
+    /**
+     * @param zhName 中文名
+     * @return 品牌
+     */
+    Brand findByZhName(String zhName);
+
+    /**
+     * @param enName 英文名
+     * @param zhName 中文名
+     * @return 品牌
+     */
+    Brand findByEnOrZhName(String enName, String zhName);
+
 
     /**
      * update a brand

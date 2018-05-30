@@ -125,10 +125,10 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
             String val = dataTdEls.get(1).text();
 
             if (attr.equals("Brand")) {
-                Brand brandDb = brandService.findByEnName(attr);
+                Brand brandDb = brandService.findByEnName(attr.toUpperCase());
                 if (brandDb == null) {
                     Brand brand = new Brand();
-                    brand.setBrandEnName(val);
+                    brand.setBrandEnName(val.toUpperCase());
                     phoneDetail.setBrand(brand);
                     brandService.insertByBrand(brand);
                 } else {

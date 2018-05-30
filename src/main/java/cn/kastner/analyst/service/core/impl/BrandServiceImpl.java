@@ -40,6 +40,16 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    public Brand findByZhName(String zhName) {
+        return brandRepository.findByBrandZhName(zhName);
+    }
+
+    @Override
+    public Brand findByEnOrZhName(String enName, String zhName) {
+        return brandRepository.findByBrandEnNameOrBrandZhName(enName, zhName);
+    }
+
+    @Override
     public Brand update(Brand brand) {
         return brandRepository.save(brand);
     }
