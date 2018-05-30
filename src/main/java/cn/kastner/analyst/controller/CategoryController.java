@@ -39,6 +39,7 @@ public class CategoryController {
 
     }
 
+
     @JsonIgnore
     @RequestMapping(value="/getCategoryInfoByCategoryId")
     public NetResult getCategoryInfoByCategoryId(@RequestParam Long categoryId) {
