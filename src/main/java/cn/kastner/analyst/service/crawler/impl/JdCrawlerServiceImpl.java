@@ -154,16 +154,19 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
 
         // get itemModel from html title
-        Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
-        Matcher modelMatcher = modelPattern.matcher(doc.title());
-        if (modelMatcher.find()) {
-            String model = modelMatcher.group(1);
-            item.setModel(model);
-            logger.info("Get Item Model from title: " + model);
-        } else {
-            logger.warning("Can't get item model");
-        }
-
+//        Pattern modelPattern = Pattern.compile("\\（(.+)\\）");
+//        Matcher modelMatcher = modelPattern.matcher(doc.title());
+//        if (modelMatcher.find()) {
+//            String model = modelMatcher.group(1);
+//            item.setModel(model);
+//            logger.info("Get Item Model from title: " + model);
+//        } else {
+//            logger.warning("Can't get item model");
+//        }
+//        String model = finder.getString(doc.toString(), "")
+        Element pTableEl = doc.getElementsByClass("Ptable").get(0);
+        Elements pTableItemEls = pTableEl.getElementsByClass("Ptable-item");
+        Element mainEl = pTableItemEls.get(0);
 
 
 

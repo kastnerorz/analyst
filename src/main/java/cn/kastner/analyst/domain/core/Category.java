@@ -14,6 +14,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long categoryId;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "category")
+    private List<Demand> demandList;
+
     private String categoryStr;
 
     @Column(nullable = false)
@@ -31,8 +35,8 @@ public class Category {
 
     private String levelThreeName;
 
-    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
     @JsonIgnore
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
     private List<Item> itemList;
 
     public Long getCategoryId() {
@@ -105,5 +109,13 @@ public class Category {
 
     public void setItemList(List<Item> itemList) {
         this.itemList = itemList;
+    }
+
+    public List<Demand> getDemandList() {
+        return demandList;
+    }
+
+    public void setDemandList(List<Demand> demandList) {
+        this.demandList = demandList;
     }
 }

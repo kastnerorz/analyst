@@ -69,7 +69,7 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
         headers.put("Upgrade-Insecure-Requests", "1");
         Document doc = new Document("http://phonedb.net");
         try {
-            doc = Jsoup.connect("/index.php?m=device&s=query")
+            doc = Jsoup.connect("http://phonedb.net/index.php?m=device&s=query")
                     .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
                             "AppleWebKit/537.36 (KHTML, like Gecko)" +
                             "Chrome/66.0.3359.181 Safari/537.36")
@@ -92,7 +92,7 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
         HashMap<String , String> headers = new HashMap<>();
         Document doc = new Document("http://phonedb.net");
         try {
-            doc = Jsoup.connect(url)
+            doc = Jsoup.connect("http://phonedb.net" + url)
                     .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
                             "AppleWebKit/537.36 (KHTML, like Gecko)" +
                             "Chrome/66.0.3359.181 Safari/537.36")
