@@ -560,14 +560,6 @@
         ]
     };
     let zoomSize = 6;
-    topTenBrand.on('click', function (params) {
-        console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
-        topTenBrand.dispatchAction({
-            type: 'dataZoom',
-            startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
-            endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
-        });
-    });
     topTenBrand.setOption(topTenBrandOption);
     // Enable data zoom when user click bar.
 
