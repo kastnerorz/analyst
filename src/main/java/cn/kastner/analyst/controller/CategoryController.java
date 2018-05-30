@@ -4,6 +4,7 @@ import cn.kastner.analyst.domain.core.*;
 import cn.kastner.analyst.service.core.*;
 import cn.kastner.analyst.util.NetResult;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javafx.beans.binding.ObjectExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,28 +72,30 @@ public class CategoryController {
     }
 
     @RequestMapping(value="getNeedListByCategoryId")
-    public NetResult getNeedListCategory(@RequestParam Category category){
+    public NetResult getNeedListByCategoryId(@RequestParam Long categoryId){
         //一开始展示类别下的所有需求
-        List<Demand> demands=demandService.findAllByCategory(category);
-        List<HashMap<String,Object>> data=new ArrayList<>();
+        List<Demand> demands=demandService.findAllByCategoryId(categoryId);
+        List<HashMap<String,Object>> data=new ArrayList<>();  //[ demand1:[{},{}],demand2:[{}，{}]]
         if(!demands.isEmpty()){
             for(Demand demand:demands){
-                    List<Param> params=paramService.findByDemand(demand);
-                    HashMap<String,Object> tmp=new HashMap<>();
-                    for(Param param:params){
-                        tmp.put("name",param.getName());
-                        tmp.put("value",param.getValue());
-                        data.add(tmp);
-                    }
+                HashMap<String,Object> demandList=new HashMap<>();
+                demandList.put("paramId",demand.getId());
+                demandList.put("categoryId",categoryId);
+                List<Param> params=paramService.findByDemandId(demand.getId());
+                HashMap<String,Object> tmp=new HashMap<>();
+                tmp.put(demand.getContent(),params);
+                demandList.put("demand",tmp);
+                data.add(demandList);
+
             }
             netResult.data=data;
             netResult.status=0;
             return netResult;
+
         }
         netResult.message="No such demands";
         netResult.status=-1;
         return netResult;
     }
-
 
 }

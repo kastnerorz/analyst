@@ -34,7 +34,7 @@ public interface ParamService {
      * @param demand 需求
      * @return 参数列表
      */
-    List<Param> findByDemand(Demand demand);
+    List<Param> findByDemandId(Long demandId);
 
 
     /**
