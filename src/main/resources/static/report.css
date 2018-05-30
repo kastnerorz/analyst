@@ -1,0 +1,27 @@
+.borderRight {
+    border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+.borderBottom {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.borderTop {
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+.hFixed {
+    height: 450px;
+}
+.heightFixed {
+    height: 300px;
+}
+
+.height-fixed {
+    height: 400px;
+}
+
+.header {
+    padding: 20px 20px 0 20px;
+    font-size: 20px;
+    font-weight: bold;
+}

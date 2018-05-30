@@ -33,7 +33,9 @@
             <el-row type="flex">
 
                 <el-col :span="12" :offset="4">
-                    <p>您想找的是...</p>
+                    <div style="padding:0 20px 20px 0">
+                        <el-button type="primary" class="button" @click="report">生成{{ keyword }}类别报告</el-button>
+                    </div>
                     <!-- main content -->
                     <el-row type="flex" style="flex-direction: row; flex-wrap: wrap" :gutter="5">
                         <el-col :span="8" :key="o" v-for="(o, index) in 5">
@@ -53,9 +55,7 @@
                     <!-- end main content -->
                 </el-col>
                 <el-col :span="7" :offset="1">
-                    <div style="padding:20px 20px 20px 0">
-                        <el-button type="primary" class="button">生成{{ keyword }}类别报告</el-button>
-                    </div>
+
                     <el-card>
                         <div slot="header">
                             <span>需求清单</span>
@@ -124,6 +124,20 @@
     });
     axios({
         url: '/search',
+        method: 'post',
+        params: {
+            keyword: [[${keyword}]]
+        }
+    })
+        .then(function (response) {
+            app.items = response.result;
+            console.log(response.data.result);
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+    axios({
+        url: '/report',
         method: 'post',
         params: {
             keyword: [[${keyword}]]
