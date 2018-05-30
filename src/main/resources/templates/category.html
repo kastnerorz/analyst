@@ -29,27 +29,31 @@
                 </el-col>
             </el-row>
         </el-header>
-        <el-main>
+        <el-main style="padding:0">
             <el-row type="flex">
-
-                <el-col :span="12" :offset="4">
+                <el-col :span="18">
                     <div style="padding:0 20px 20px 0">
                         <el-button type="primary" class="button" @click="report">生成{{ keyword }}类别报告</el-button>
                     </div>
+                </el-col>
+            </el-row>
+            <el-row type="flex">
+                <el-col :span="18">
                     <!-- main content -->
                     <el-row type="flex" style="flex-direction: row; flex-wrap: wrap" :gutter="5">
-                        <el-col :span="8" :key="item" v-for="(item, index) in items">
-                            <el-card :body-style="{ padding: '0px' }" justify="center" style="margin-bottom: 20px;">
-                                <div style="text-align: center;">
-                                    <img :src="'https://img11.360buyimg.com/n1/s450x450_' + item.imageList.split(',')[0]" class="image" width="150px">
+                        <el-col :span="6" :key="item" v-for="(item, index) in items">
+                            <el-card :body-style="{ padding: '0px' }" justify="center" style="margin-bottom: 10px;">
+                                <div style="text-align: center;padding-top:20px">
+                                    <img :src="'https://img11.360buyimg.com/n1/s450x450_' + item.imageList.split(',')[0]" class="image" width="100%">
                                 </div>
-                                <div style="padding: 14px;">
-                                    <p style="font-weight: bold">{{ item.zhName }}</p>
-                                    <p>颜色：<span style="color:#999">{{ item.color }}</span></p>
-                                    <p>评论数：<span style="color:#c73420">{{ item.commentCountStr }}</span><span v-if="item.commentCountStr === null" style="color:#666">暂时没找到</span></p>
-                                    <div class="bottom clearfix">
-                                        <el-button type="text" class="button" @click="singleAnalyst(item.skuId)">查看分析</el-button>
-                                    </div>
+                                <div style="padding: 14px;height:28px;">
+                                    <span style="color:#c73420">￥{{ item.priceList[0].price }}&nbsp</span><span style="font-size: 12px">（<span style="color:#c73420">{{ item.commentCountStr }}</span><span v-if="item.commentCountStr === null">暂无</span>评论）</span>
+                                </div>
+                                <div style="height:25px;padding-left:12px;">
+                                    <p style="font-weight: bold;margin: 0px;">{{ item.zhName }}</p>
+                                </div>
+                                <div class="bottom clearfix" style="padding-left:12px;">
+                                    <el-button type="text" class="button" @click="singleAnalyst(item.skuId)">查看分析</el-button>
                                 </div>
                             </el-card>
                         </el-col>
@@ -58,9 +62,9 @@
 
                     <!-- end main content -->
                 </el-col>
-                <el-col :span="7" :offset="1">
+                <el-col :span="6" :offset="1">
 
-                    <el-card>
+                    <el-card >
                         <div slot="header">
                             <span>需求清单</span>
                         </div>
@@ -137,7 +141,7 @@
                 })
                     .then(res => {
                         this.items = res.data.data
-                        console.log(this.items)
+                        // console.log(this.items)
                     })
                     .catch(err => {
                         this.$message.error(err)
