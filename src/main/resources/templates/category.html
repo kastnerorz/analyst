@@ -38,13 +38,17 @@
                     </div>
                     <!-- main content -->
                     <el-row type="flex" style="flex-direction: row; flex-wrap: wrap" :gutter="5">
-                        <el-col :span="8" :key="o" v-for="(o, index) in 5">
+                        <el-col :span="8" :key="item" v-for="(item, index) in items">
                             <el-card :body-style="{ padding: '0px' }" justify="center" style="margin-bottom: 20px;">
-                                <img src="../imgs/s8.png" class="image" width="100px">
+                                <div style="text-align: center;">
+                                    <img :src="'https://img11.360buyimg.com/n1/s450x450_' + item.imageList.split(',')[0]" class="image" width="150px">
+                                </div>
                                 <div style="padding: 14px;">
-                                    <span>三星S8</span>
+                                    <p style="font-weight: bold">{{ item.zhName }}</p>
+                                    <p>颜色：<span style="color:#999">{{ item.color }}</span></p>
+                                    <p>评论数：<span style="color:#c73420">{{ item.commentCountStr }}</span><span v-if="item.commentCountStr === null" style="color:#666">暂时没找到</span></p>
                                     <div class="bottom clearfix">
-                                        <el-button type="text" class="button">查看分析</el-button>
+                                        <el-button type="text" class="button" @click="singleAnalyst(item.skuId)">查看分析</el-button>
                                     </div>
                                 </div>
                             </el-card>
@@ -100,7 +104,8 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 
 <script th:inline="javascript">
-    var app = new Vue({
+    let categoryId = [[${categoryId}]]
+    let app = new Vue({
         el: '#app',
         data() {
             return {
@@ -108,8 +113,10 @@
                 items: []
             }
         },
+        created () {
+            this.getItems()
+        },
         computed: {
-
         },
         methods: {
             search () {
@@ -119,36 +126,28 @@
             },
             report () {
                 window.location.href = 'report?keyword=' + app.keyword;
+            },
+            getItems () {
+                axios({
+                    url: '/getItemListByCategoryId',
+                    method: 'POST',
+                    params: {
+                        categoryId: categoryId
+                    }
+                })
+                    .then(res => {
+                        this.items = res.data.data
+                        console.log(this.items)
+                    })
+                    .catch(err => {
+                        this.$message.error(err)
+                    })
+            },
+            singleAnalyst (skuId) {
+                window.location.href = 'http://localhost:8082/search?keyword=https://item.jd.com/' + skuId +'.html';
             }
         }
     });
-    axios({
-        url: '/search',
-        method: 'post',
-        params: {
-            keyword: [[${keyword}]]
-        }
-    })
-        .then(function (response) {
-            app.items = response.result;
-            console.log(response.data.result);
-        })
-        .catch(function (err) {
-            console.log(err);
-        });
-    axios({
-        url: '/report',
-        method: 'post',
-        params: {
-            keyword: [[${keyword}]]
-        }
-    })
-        .then(function (response) {
-            app.items = response.result;
-            console.log(response.data.result);
-        })
-        .catch(function (err) {
-            console.log(err);
-        })
+
 </script>
 </html>
