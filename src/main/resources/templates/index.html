@@ -128,36 +128,30 @@
         },
         methods: {
             search: function() {
-                let patrn=/[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
-                if(!patrn.exec(app.keyword)) {
-                    window.location.href = 'search?keyword=' + app.keyword;
-                }
-                else if(patrn.exec(app.keyword)){
-                    window.location.href = 'search?keyword=' + app.keyword;
-                }
-                // $.ajax({
-                //     url: '/search',
-                //     type:'POST',
-                //     dataType:'text',
-                //     data: {
-                //         "keyword": app.keyword
-                //     },
-                //     beforeSend: function () {
-                //         app.isLoading = true;
-                //         console.log('searching')
-                //     },
-                //     success: function (data, status) {
-                //         console.log(data);
-                //         app.isLoading = false
-                //     },
-                //     error: function (data) {
-                //
-                //         app.isLoading = false
-                //     }
-                // });
+                window.location.href = 'search?keyword=' + app.keyword;
             }
+            // $.ajax({
+            //     url: '/search',
+            //     type:'POST',
+            //     dataType:'text',
+            //     data: {
+            //         "keyword": app.keyword
+            //     },
+            //     beforeSend: function () {
+            //         app.isLoading = true;
+            //         console.log('searching')
+            //     },
+            //     success: function (data, status) {
+            //         console.log(data);
+            //         app.isLoading = false
+            //     },
+            //     error: function (data) {
+            //
+            //         app.isLoading = false
+            //     }
+            // });
         },
-        computed:{
+        computed: {
             type () {
                 if (this.keyword.search('jd') !== -1) {
                     return 'imgs/jd.png'
