@@ -29,8 +29,8 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public List<Demand> findAllByCategoryId(Long categoryId) {
-        return demandRepository.findDemandsByCategoryCategoryId(categoryId);
+    public List<Demand> findAllByCategory(Category category) {
+        return demandRepository.findDemandsByCategory(category);
     }
 
     @Override

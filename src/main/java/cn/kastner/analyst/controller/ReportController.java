@@ -207,11 +207,9 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/getFocusByCategoryId")
-    public NetResult getFocusByCategoryId(@RequestParam Long categoryId) {
+    public NetResult getFocusByCategoryId(@RequestParam Category category) {
         //根据demand和param里的flag判断
-        List<Demand> demands = demandService.findAllByCategoryId(categoryId);
-        Category category = categoryService.findById(categoryId);
-        String categoryName = category.getLevelOneName();
+        List<Demand> demands = demandService.findAllByCategory(category);
         //[{name:   flag:  },{}]
         List<HashMap<String, Object>> focus = new ArrayList<>();
         for (Demand demand : demands) {
@@ -219,7 +217,7 @@ public class ReportController {
             tmp.put("name", demand.getContent());
             tmp.put("flag", demand.getFlag());
             focus.add(tmp);
-            List<Param> params = paramService.findByDemandId(demand.getId());
+            List<Param> params = paramService.findByDemand(demand);
             for (Param param : params) {
                 HashMap<String, Object> tmp2 = new HashMap<>();
                 tmp2.put("name", param.getValue());

@@ -10,5 +10,5 @@ import java.util.List;
 public interface ParamRepository extends JpaRepository<Param, Long>,
         JpaSpecificationExecutor<ParamRepository> {
     Param findParamById(Long paramId);
-    List<Param> findParamsByDemandId(Long demandId);
+    List<Param> findParamsByDemand(Demand demand);
 }

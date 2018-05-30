@@ -10,6 +10,6 @@ import java.util.List;
 public interface DemandRepository extends JpaRepository<Demand, Long>,
         JpaSpecificationExecutor<DemandRepository> {
     Demand findDemandById(Long demandId);
-    List<Demand> findDemandsByCategoryCategoryId(Long categoryId);
+    List<Demand> findDemandsByCategory(Category category);
     List<Demand> findDemandsByCategoryAndContentContaining(Category category, String keyword);
 }
