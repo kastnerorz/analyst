@@ -33,8 +33,8 @@ public class ParamServiceImpl implements ParamService {
     }
 
     @Override
-    public List<Param> findByDemandId(Long demandId) {
-        return paramRepository.findParamsByDemandId(demandId);
+    public List<Param> findByDemand(Demand demand) {
+        return paramRepository.findParamsByDemand(demand);
     }
 
     @Override

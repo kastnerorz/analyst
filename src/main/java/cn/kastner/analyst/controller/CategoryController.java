@@ -71,17 +71,20 @@ public class CategoryController {
         }
     }
 
+
+
+
     @RequestMapping(value="getNeedListByCategoryId")
-    public NetResult getNeedListByCategoryId(@RequestParam Long categoryId){
+    public NetResult getNeedListByCategoryId(@RequestParam Category category){
         //一开始展示类别下的所有需求
-        List<Demand> demands=demandService.findAllByCategoryId(categoryId);
+        List<Demand> demands=demandService.findAllByCategory(category);
         List<HashMap<String,Object>> data=new ArrayList<>();  //[ demand1:[{},{}],demand2:[{}，{}]]
         if(!demands.isEmpty()){
             for(Demand demand:demands){
                 HashMap<String,Object> demandList=new HashMap<>();
                 demandList.put("demandId",demand.getId());
-                demandList.put("categoryId",categoryId);
-                List<Param> params=paramService.findByDemandId(demand.getId());
+                demandList.put("categoryId",category);
+                List<Param> params=paramService.findByDemand(demand);
                 HashMap<String,Object> tmp=new HashMap<>();
                 tmp.put(demand.getContent(),params);
                 demandList.put("demand",tmp);
