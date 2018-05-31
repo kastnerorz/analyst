@@ -70,26 +70,46 @@
                         <div slot="header">
                             <span>需求清单</span>
                         </div>
-                        <!--<el-autocomplete-->
-                                <!--class="inline-input"-->
-                                <!--v-model="state"-->
-                                <!--:fetch-suggestions="querySearch"-->
-                                <!--placeholder="请输入内容"-->
-                                <!--@select="handleSelect"-->
-                                <!--style="margin-bottom: 10px;"-->
-                        <!--&gt;</el-autocomplete>-->
-                        <!--<el-button type="primary">搜索</el-button>-->
-                        <!--<el-collapse accordion>-->
-                            <!--<el-collapse-item>-->
-                                <!--<template slot="title">-->
-                                    <!--<el-radio v-model="radio" label="1">游戏手机</el-radio>-->
-                                <!--</template>-->
-                                <!--<el-checkbox-group v-model="checkList">-->
-                                    <!--<el-checkbox label="复选框 A" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>-->
-                                    <!--<el-checkbox label="复选框 B" style="margin:0;padding:0"></el-checkbox>-->
-                                <!--</el-checkbox-group>-->
-                            <!--</el-collapse-item>-->
-                        <!--</el-collapse>-->
+                        <el-autocomplete
+                                class="inline-input"
+                                v-model="state"
+                                :fetch-suggestions="querySearch"
+                                placeholder="请输入内容"
+                                @select="handleSelect"
+                                style="margin-bottom: 10px;"
+                        ></el-autocomplete>
+                        <el-button type="primary">搜索</el-button>
+                        <el-collapse accordion>
+                            <el-collapse-item>
+                                <template slot="title">
+                                    <el-radio v-model="radio" label="1">手机类型</el-radio>
+                                </template>
+                                <el-checkbox-group v-model="checkList">
+                                    <el-checkbox label="游戏手机" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
+                                    <el-checkbox label="拍照手机" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
+                                </el-checkbox-group>
+                            </el-collapse-item>
+                            <el-collapse-item>
+                                <template slot="title">
+                                    <el-radio v-model="radio" label="1">尺寸</el-radio>
+                                </template>
+                                <el-checkbox-group v-model="checkList">
+                                    <el-checkbox label="5.0英寸" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
+                                    <el-checkbox label="5.5英寸" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
+                                    <el-checkbox label="6.0英寸" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
+                                    <el-checkbox label="6.5英寸" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
+                                </el-checkbox-group>
+                            </el-collapse-item>
+                            <el-collapse-item>
+                                <template slot="title">
+                                    <el-radio v-model="radio" label="1">核数</el-radio>
+                                </template>
+                                <el-checkbox-group v-model="checkList">
+                                    <el-checkbox label="2核" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
+                                    <el-checkbox label="4核" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
+                                </el-checkbox-group>
+                            </el-collapse-item>
+                        </el-collapse>
 
                         <!--<div>-->
                         <!--<el-row type="flex" style="flex-direction: row; flex-wrap: wrap;">-->
@@ -164,12 +184,6 @@
                 })
         },
         computed: {
-            // image () {
-            //     return 'https://img11.360buyimg.com/n1/s450x450_' + item.imageList.split(",")[0]
-            // },
-            // getPrice (item) {
-            //     return item.priceList["0"].price
-            // }
             price (index) {
                 return this.items[index].priceList[0].price
             }
@@ -178,25 +192,23 @@
             price (index) {
                 return this.items[index].priceList[0].price
             },
-            // querySearch(queryString, cb) {
-            //     let demands = this.demands;
-            //     let results = queryString ? demands.filter(this.createFilter(queryString)) : demands;
-            //     // 调用 callback 返回建议列表的数据
-            //     cb(results);
-            // },
-            // createFilter(queryString) {
-            //     return (demands) => {
-            //         return (demands.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-            //     };
-            // },
-            // loadAll() {
-            //     return [
-            //         {value: 'fff',place: 'ddd'}
-            //     ]
-            // },
-            // handleSelect(item) {
-            //     console.log(item);
-            // },
+            querySearch(queryString, cb) {
+                let demands = this.demands;
+                let results = queryString ? demands.filter(this.createFilter(queryString)) : demands;
+                // 调用 callback 返回建议列表的数据
+                cb(results);
+            },
+            createFilter(queryString) {
+                return (demands) => {
+                    return (demands.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                };
+            },
+            loadAll() {
+                return this.demandString
+            },
+            handleSelect(item) {
+                console.log(item);
+            },
             search () {
                 if(app.keyword != null){
                     window.location.href = 'search?keyword=' + app.keyword;
@@ -206,7 +218,7 @@
                 window.location.href = 'report?keyword=' + app.keyword;
             },
             singleAnalyst (skuId) {
-                window.location.href = 'http://localhost:8082/search?keyword=https://item.jd.com/' + skuId +'.html';
+                window.location.href = '/search?keyword=https://item.jd.com/' + skuId +'.html';
             },
             getDemands () {
                 axios({
@@ -221,9 +233,9 @@
                     })
             }
         },
-        // mounted() {
-        //     this.demands = this.loadAll();
-        // }
+        mounted() {
+            this.demands = this.loadAll();
+        }
     });
 
 </script>
