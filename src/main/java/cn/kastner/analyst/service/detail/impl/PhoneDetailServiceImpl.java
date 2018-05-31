@@ -6,6 +6,8 @@ import cn.kastner.analyst.repository.detail.PhoneDetailRepository;
 import cn.kastner.analyst.service.detail.PhoneDetailService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 手机详细信息服务实现
  */
@@ -32,6 +34,11 @@ public class PhoneDetailServiceImpl implements PhoneDetailService {
     @Override
     public PhoneDetail findByItem(Item item) {
         return phoneDetailRepository.findByItem(item);
+    }
+
+    @Override
+    public List<PhoneDetail> findByItemFilter(List<Integer> batteryCap, List<Double> cpuClock, List<Double> romCapacity, List<Double> ramCapacity, List<Integer> pxDensity) {
+        return phoneDetailRepository.findByBatteryCapInAndCpuClockInAndRomCapacityInAndRamCapacityInAndPxDensityIn(batteryCap, cpuClock, romCapacity, ramCapacity, pxDensity);
     }
 
     @Override
