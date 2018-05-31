@@ -72,10 +72,8 @@ public class CategoryController {
     }
 
 
-
-
     @RequestMapping(value="getNeedListByCategoryId")
-    public NetResult getNeedListByCategoryId(@RequestParam Category category){
+    public NetResult getNeedListByCategoryId(Category category){
         //一开始展示类别下的所有需求
         List<Demand> demands=demandService.findAllByCategory(category);
         List<HashMap<String,Object>> data=new ArrayList<>();  //[ demand1:[{},{}],demand2:[{}，{}]]

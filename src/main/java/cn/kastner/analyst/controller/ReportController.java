@@ -207,7 +207,7 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/getFocusByCategoryId")
-    public NetResult getFocusByCategoryId(@RequestParam Category category) {
+    public NetResult getFocusByCategoryId(Category category) {
         //根据demand和param里的flag判断
         List<Demand> demands = demandService.findAllByCategory(category);
         //[{name:   flag:  },{}]
