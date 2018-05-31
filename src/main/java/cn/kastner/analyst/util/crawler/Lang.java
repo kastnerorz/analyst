@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
 @Service
 public class Lang {
 
-    private static String REGEX_CHINESE = "[\u4e00-\u9fa5]";// 中文正则
-
     // 判断一个字符是否是中文
     private boolean isChinese(char c) {
         return c >= 0x4E00 &&  c <= 0x9FA5;// 根据字节码判断
@@ -25,6 +23,8 @@ public class Lang {
     }
 
     public String removeChinese(String str) {
+        // 中文正则
+        String REGEX_CHINESE = "[\u4e00-\u9fa5]";
         Pattern pat = Pattern.compile(REGEX_CHINESE);
         Matcher mat = pat.matcher(str);
         return mat.replaceAll("");

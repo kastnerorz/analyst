@@ -47,6 +47,7 @@ public class PhoneDetail {
     /**
      * 附加功能（additional feature）
      */
+    @Column(columnDefinition = "TEXT")
     private String addlFeatures;
 
     /**
@@ -91,6 +92,7 @@ public class PhoneDetail {
     /**
      * 其他软件（Software Extra）
      */
+    @Column(columnDefinition = "TEXT")
     private String swExtras;
 
     /**
@@ -223,6 +225,7 @@ public class PhoneDetail {
      * 相机其他功能（Camera Extra Function）
      * 数组
      */
+    @Column(columnDefinition = "TEXT")
     private String camExFunctions;
 
     /**
@@ -239,6 +242,7 @@ public class PhoneDetail {
      * 第二相机其他功能
      * 数组
      */
+    @Column(columnDefinition = "TEXT")
     private String camExFunctions2;
 
     /**
@@ -269,6 +273,7 @@ public class PhoneDetail {
      * 附加传感器
      * 数组
      */
+    @Column(columnDefinition = "TEXT")
     private String addSensors;
 
     public Long getPhoneDetailId() {

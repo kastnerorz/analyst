@@ -72,32 +72,46 @@ public class CategoryController {
     }
 
 
-    @RequestMapping(value="getNeedListByCategoryId")
+    @RequestMapping(value="/getNeedListByCategoryId")
     public NetResult getNeedListByCategoryId(Category category){
         //一开始展示类别下的所有需求
-        List<Demand> demands=demandService.findAllByCategory(category);
-        List<HashMap<String,Object>> data=new ArrayList<>();  //[ demand1:[{},{}],demand2:[{}，{}]]
+        List<Demand> demands = demandService.findAllByCategory(category);
+//        List<HashMap<String,Object>> data=new ArrayList<>();  //[ demand1:[{},{}],demand2:[{}，{}]]
         if(!demands.isEmpty()){
-            for(Demand demand:demands){
-                HashMap<String,Object> demandList=new HashMap<>();
-                demandList.put("demandId",demand.getId());
-                demandList.put("categoryId",category);
-                List<Param> params=paramService.findByDemand(demand);
-                HashMap<String,Object> tmp=new HashMap<>();
-                tmp.put(demand.getContent(),params);
-                demandList.put("demand",tmp);
-                data.add(demandList);
-
-            }
-            netResult.data=data;
+//            for(Demand demand:demands){
+//                HashMap<String,Object> demandList=new HashMap<>();
+//                demandList.put("demandId",demand.getId());
+//                demandList.put("categoryId",category);
+//                List<Param> params=paramService.findByDemand(demand);
+//                HashMap<String,Object> tmp=new HashMap<>();
+//                tmp.put(demand.getContent(),params);
+//                demandList.put("demand",tmp);
+//                data.add(demandList);
+//            }
+            netResult.data=demands;
             netResult.status=0;
             return netResult;
-
         }
         netResult.message="No such demands";
         netResult.status=-1;
         return netResult;
     }
+
+    @RequestMapping(value = "/getParamsByDemand")
+    public NetResult getParamsByDemand(Demand demand) {
+        List<Param> paramList = paramService.findByDemand(demand);
+        if (!paramList.isEmpty()) {
+             netResult.data = paramList;
+             netResult.status = 0;
+        } else {
+            netResult.message = "没有这个需求！";
+            netResult.status = -1;
+        }
+        return netResult;
+    }
+
+//    @RequestMapping(value = "/getItemsAfterFilter")
+//    public NetResult getItemsAfterFilter(@RequestParam )
 
     @RequestMapping(value="/getItemListAfterDemand")
     //根据需求刷新页面

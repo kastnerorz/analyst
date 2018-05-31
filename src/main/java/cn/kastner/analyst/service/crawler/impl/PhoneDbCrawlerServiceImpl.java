@@ -51,9 +51,16 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
     @Override
     public Item crawByItem(Item item) throws IOException {
         this.item = item;
-        String url = searchByModelAndRom(item.getModel(), phoneDetailService.findByItem(item).getRomCapacity().toString());
-        crawDetails(url);
-        return item;
+        PhoneDetail phoneDetailDb = phoneDetailService.findByItem(item);
+        if (phoneDetailDb == null) {
+            return item;
+        } else {
+            String url = searchByModelAndRom(item.getModel(), phoneDetailService.findByItem(item).getRomCapacity().toString());
+            if (url != null) {
+                crawDetails(url);
+            }
+            return item;
+        }
     }
 
     /**
@@ -79,9 +86,17 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
                     .headers(headers)
                     .data(data)
                     .post();
-        Element resultEl = doc.getElementsByAttributeValue("title", "See detailed datasheet")
-                            .get(0);
-        return resultEl.attr("href");
+        System.out.println("model   ->" + model);
+        System.out.println("rom     ->" + rom);
+        try {
+            Element resultEl = doc.getElementsByAttributeValue("title", "See detailed datasheet")
+                    .get(0);
+            return resultEl.attr("href");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     /**
@@ -125,6 +140,7 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
             String val = dataTdEls.get(1).text();
 
             if (attr.equals("Brand")) {
+                logger.info("attr   ->" + attr);
                 Brand brandDb = brandService.findByEnName(attr.toUpperCase());
                 if (brandDb == null) {
                     Brand brand = new Brand();

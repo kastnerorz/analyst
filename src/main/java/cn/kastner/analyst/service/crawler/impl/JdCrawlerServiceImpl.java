@@ -195,8 +195,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         for(Element e: dtEl) {
             if (e.text().equals("型号")){
                 String model = ddEl.get(index).text();
-                lang.removeChinese(model);
-                item.setModel(model);
+                System.out.println("getModel    ->" + lang.removeChinese(model));
+                item.setModel(lang.removeChinese(model));
             }
             index++;
         }
