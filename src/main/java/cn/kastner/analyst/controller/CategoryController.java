@@ -1,12 +1,12 @@
 package cn.kastner.analyst.controller;
 
 import cn.kastner.analyst.domain.core.*;
+import cn.kastner.analyst.domain.detail.PhoneDetail;
 import cn.kastner.analyst.service.core.*;
+import cn.kastner.analyst.service.detail.PhoneDetailService;
 import cn.kastner.analyst.util.NetResult;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javafx.beans.binding.ObjectExpression;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,15 +29,18 @@ public class CategoryController {
 
     private final ParamService paramService;
 
+    private final PhoneDetailService phoneDetailService;
+
     @Autowired
     public CategoryController(CategoryService categoryService, ItemService itemService, NetResult netResult,
-                              DemandService demandService,ParamService paramService){
+                              DemandService demandService, ParamService paramService, PhoneDetailService phoneDetailService){
         this.categoryService=categoryService;
         this.itemService=itemService;
         this.netResult=netResult;
         this.demandService=demandService;
         this.paramService=paramService;
 
+        this.phoneDetailService = phoneDetailService;
     }
 
 
@@ -110,8 +113,23 @@ public class CategoryController {
         return netResult;
     }
 
-//    @RequestMapping(value = "/getItemsAfterFilter")
-//    public NetResult getItemsAfterFilter(@RequestParam )
+    @RequestMapping(value = "/getItemsAfterFilter")
+    public NetResult getItemsAfterFilter(@RequestParam List<Integer> batteryCap,
+                                         @RequestParam List<Double> cpuClock,
+                                         @RequestParam List<Double> romCapacity,
+                                         @RequestParam List<Double> ramCapacity,
+                                         @RequestParam List<Integer> pxDensity) {
+        List<PhoneDetail> phoneDetailList = phoneDetailService.findByItemFilter(batteryCap, cpuClock, romCapacity, ramCapacity, pxDensity);
+        List<Item> itemList = new ArrayList<>();
+        if (!phoneDetailList.isEmpty()) {
+            for (PhoneDetail e: phoneDetailList) {
+                itemList.add(e.getItem());
+            }
+        }
+        netResult.data = itemList;
+        netResult.status = 0;
+        return netResult;
+    }
 
     @RequestMapping(value="/getItemListAfterDemand")
     //根据需求刷新页面

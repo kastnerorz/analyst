@@ -3,6 +3,8 @@ package cn.kastner.analyst.service.detail;
 import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.detail.PhoneDetail;
 
+import java.util.List;
+
 /**
  * 手机详细信息服务接口
  */
@@ -30,6 +32,20 @@ public interface PhoneDetailService {
      * @return 手机详细信息对象
      */
     PhoneDetail findByItem(Item item);
+
+    /**
+     * @param batteryCap
+     * @param cpuClock
+     * @param romCapacity
+     * @param ramCapacity
+     * @param pxDensity
+     * @return
+     */
+    List<PhoneDetail> findByItemFilter(List<Integer> batteryCap,
+                                       List<Double> cpuClock,
+                                       List<Double> romCapacity,
+                                       List<Double> ramCapacity,
+                                       List<Integer> pxDensity);
 
     /**
      * update a phoneDetail by id
