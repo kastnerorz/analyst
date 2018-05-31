@@ -41,13 +41,15 @@
                 <el-col :span="18">
                     <!-- main content -->
                     <el-row type="flex" style="flex-direction: row; flex-wrap: wrap" :gutter="5">
-                        <el-col :span="6" :key="item" v-for="(item, index) in items">
+                        <el-col :span="6" :key="index" v-for="(item, index) in items">
                             <el-card :body-style="{ padding: '0px' }" justify="center" style="margin-bottom: 10px;">
                                 <div style="text-align: center;padding-top:20px">
-                                    <img :src="'https://img11.360buyimg.com/n1/s450x450_' + item.imageList.split(',')[0]" class="image" width="100%">
+                                    <img :src='"https://img11.360buyimg.com/n1/s450x450_" + item.imageList.split(",")[0]' class="image" width="100%">
                                 </div>
                                 <div style="padding: 14px;height:28px;">
-                                    <span style="color:#c73420">￥{{ item.priceList[0].price }}&nbsp</span><span style="font-size: 12px">（<span style="color:#c73420">{{ item.commentCountStr }}</span><span v-if="item.commentCountStr === null">暂无</span>评论）</span>
+                                    <span style="color:#c73420" v-if="item.priceList.length">￥ {{ item.priceList[0].price }}&nbsp</span>
+                                    <span style="font-size: 12px">（<span style="color:#c73420">{{ item.commentCountStr}}</span>
+                                        <span v-if="item.commentCountStr === null">暂无</span>评论）</span>
                                 </div>
                                 <div style="height:25px;padding-left:12px;">
                                     <p style="font-weight: bold;margin: 0px;">{{ item.zhName }}</p>
@@ -68,28 +70,49 @@
                         <div slot="header">
                             <span>需求清单</span>
                         </div>
-                        <div>
-                            <!--<el-row type="flex" style="flex-direction: row; flex-wrap: wrap;">-->
-                            <!--<el-tag v-for="tag in fulfilledTags"-->
-                            <!--:key="tag.name"-->
-                            <!--closable-->
-                            <!--:type="success"></el-tag>-->
-                            <!--</el-row>-->
-                            <!--<el-row type="flex"-->
-                            <!--justify="space-around"-->
-                            <!--v-for="tag in unfulfilledTags"-->
-                            <!--:key="tag.name"></el-row>-->
-                            <el-collapse v-model="activeDemandBlock">
-                                <el-collapse-item v-for="demand in demands">
-                                    <div slot="title">
-                                        {{demand.name}}：
-                                        <el-tag v-for="tag in demand.tags"
-                                                :key="tag.name"
-                                                closable></el-tag>
-                                    </div>
-                                </el-collapse-item>
-                            </el-collapse>
-                        </div>
+                        <!--<el-autocomplete-->
+                                <!--class="inline-input"-->
+                                <!--v-model="state"-->
+                                <!--:fetch-suggestions="querySearch"-->
+                                <!--placeholder="请输入内容"-->
+                                <!--@select="handleSelect"-->
+                                <!--style="margin-bottom: 10px;"-->
+                        <!--&gt;</el-autocomplete>-->
+                        <!--<el-button type="primary">搜索</el-button>-->
+                        <!--<el-collapse accordion>-->
+                            <!--<el-collapse-item>-->
+                                <!--<template slot="title">-->
+                                    <!--<el-radio v-model="radio" label="1">游戏手机</el-radio>-->
+                                <!--</template>-->
+                                <!--<el-checkbox-group v-model="checkList">-->
+                                    <!--<el-checkbox label="复选框 A" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>-->
+                                    <!--<el-checkbox label="复选框 B" style="margin:0;padding:0"></el-checkbox>-->
+                                <!--</el-checkbox-group>-->
+                            <!--</el-collapse-item>-->
+                        <!--</el-collapse>-->
+
+                        <!--<div>-->
+                        <!--<el-row type="flex" style="flex-direction: row; flex-wrap: wrap;">-->
+                        <!--<el-tag v-for="tag in fulfilledTags"-->
+                        <!--:key="tag.name"-->
+                        <!--closable-->
+                        <!--:type="success"></el-tag>-->
+                        <!--</el-row>-->
+                        <!--<el-row type="flex"-->
+                        <!--justify="space-around"-->
+                        <!--v-for="tag in unfulfilledTags"-->
+                        <!--:key="tag.name"></el-row>-->
+                        <!--<el-collapse v-model="activeDemandBlock">-->
+                        <!--<el-collapse-item v-for="demand in demands">-->
+                        <!--<div slot="title">-->
+                        <!--{{demand.name}}：-->
+                        <!--<el-tag v-for="tag in demand.tags"-->
+                        <!--:key="tag.name"-->
+                        <!--closable></el-tag>-->
+                        <!--</div>-->
+                        <!--</el-collapse-item>-->
+                        <!--</el-collapse>-->
+                        <!--</div>-->
                     </el-card>
                 </el-col>
             </el-row>
@@ -114,15 +137,66 @@
         data() {
             return {
                 keyword: [[${keyword}]],
-                items: []
+                items: [],
+                radio: '2',
+                checkList: [],
+                demands: [],
+                demandString: [],
+                state: ''
             }
         },
         created () {
-            this.getItems()
+            axios({
+                url: '/getItemListByCategoryId',
+                method: 'POST',
+                params: {
+                    categoryId: categoryId
+                }
+            })
+                .then(res => {
+                    this.items = res.data.data
+                    this.items.forEach(function (item, idx) {
+                        console.log(item.priceList.get(0).price)
+                    })
+                })
+                .catch(err => {
+                    // this.$message.error(err)
+                })
         },
         computed: {
+            // image () {
+            //     return 'https://img11.360buyimg.com/n1/s450x450_' + item.imageList.split(",")[0]
+            // },
+            // getPrice (item) {
+            //     return item.priceList["0"].price
+            // }
+            price (index) {
+                return this.items[index].priceList[0].price
+            }
         },
         methods: {
+            price (index) {
+                return this.items[index].priceList[0].price
+            },
+            // querySearch(queryString, cb) {
+            //     let demands = this.demands;
+            //     let results = queryString ? demands.filter(this.createFilter(queryString)) : demands;
+            //     // 调用 callback 返回建议列表的数据
+            //     cb(results);
+            // },
+            // createFilter(queryString) {
+            //     return (demands) => {
+            //         return (demands.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            //     };
+            // },
+            // loadAll() {
+            //     return [
+            //         {value: 'fff',place: 'ddd'}
+            //     ]
+            // },
+            // handleSelect(item) {
+            //     console.log(item);
+            // },
             search () {
                 if(app.keyword != null){
                     window.location.href = 'search?keyword=' + app.keyword;
@@ -131,26 +205,25 @@
             report () {
                 window.location.href = 'report?keyword=' + app.keyword;
             },
-            getItems () {
+            singleAnalyst (skuId) {
+                window.location.href = 'http://localhost:8082/search?keyword=https://item.jd.com/' + skuId +'.html';
+            },
+            getDemands () {
                 axios({
-                    url: '/getItemListByCategoryId',
-                    method: 'POST',
+                    url: '/getNeedListByCategoryId',
+                    methods: 'POST',
                     params: {
                         categoryId: categoryId
                     }
                 })
                     .then(res => {
-                        this.items = res.data.data
-                        // console.log(this.items)
+                        this.demandString = res.data.data
                     })
-                    .catch(err => {
-                        this.$message.error(err)
-                    })
-            },
-            singleAnalyst (skuId) {
-                window.location.href = 'http://localhost:8082/search?keyword=https://item.jd.com/' + skuId +'.html';
             }
-        }
+        },
+        // mounted() {
+        //     this.demands = this.loadAll();
+        // }
     });
 
 </script>
