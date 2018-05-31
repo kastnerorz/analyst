@@ -1,5 +1,7 @@
 package cn.kastner.analyst.domain.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -14,12 +16,18 @@ public class Param {
      * 对应需求
      */
     @ManyToOne
+    @JsonIgnore
     private Demand demand;
 
     /**
      * 参数名
      */
     private String name;
+
+    /**
+     * 参数对应代码
+     */
+    private String code;
 
     /**
      * 参数值
@@ -69,5 +77,13 @@ public class Param {
 
     public void setDemand(Demand demand) {
         this.demand = demand;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

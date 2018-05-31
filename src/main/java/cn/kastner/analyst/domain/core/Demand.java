@@ -17,6 +17,7 @@ public class Demand {
      * 所属品类
      */
     @ManyToOne
+    @JsonIgnore
     private Category category;
 
     /**
