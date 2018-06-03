@@ -85,8 +85,9 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     }
 
     /**
-     * @param url
-     * @return itemId
+     * 基础信息爬取
+     * @param url 商品链接
+     * @return 商品
      */
     @Override
     public Item crawItemByUrl(String url) throws Exception {
@@ -448,7 +449,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     }
 
     /**
-     * @param item
+     * 商品评论爬取
+     * @param item 商品
      */
     @Override
     public void crawItemComment (Item item) throws Exception {
