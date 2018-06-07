@@ -53,6 +53,13 @@ public class HomeController {
         return "index";
     }
 
+    /**
+     * 搜索
+     * @param keyword 关键词或链接
+     * @param model 型号
+     * @return 页面
+     * @throws JSONException
+     */
     @RequestMapping(value = "/search")
     public String search(@RequestParam String keyword, Model model) throws JSONException{
         model.addAttribute("keyword", keyword);
