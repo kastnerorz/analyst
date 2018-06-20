@@ -65,8 +65,7 @@
                     <!-- end main content -->
                 </el-col>
                 <el-col :span="6" :offset="1">
-
-                    <el-card >
+                    <el-card>
                         <div slot="header">
                             <span>需求清单</span>
                         </div>
@@ -76,64 +75,16 @@
                                 :fetch-suggestions="querySearch"
                                 placeholder="请输入内容"
                                 @select="handleSelect"
-                                style="margin-bottom: 10px;"
                         ></el-autocomplete>
                         <el-button type="primary">搜索</el-button>
-                        <el-collapse accordion>
-                            <el-collapse-item>
-                                <template slot="title">
-                                    <el-radio v-model="radio" label="1">手机类型</el-radio>
-                                </template>
-                                <el-checkbox-group v-model="checkList">
-                                    <el-checkbox label="游戏手机" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
-                                    <el-checkbox label="拍照手机" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
-                                </el-checkbox-group>
-                            </el-collapse-item>
-                            <el-collapse-item>
-                                <template slot="title">
-                                    <el-radio v-model="radio" label="1">尺寸</el-radio>
-                                </template>
-                                <el-checkbox-group v-model="checkList">
-                                    <el-checkbox label="5.0英寸" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
-                                    <el-checkbox label="5.5英寸" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
-                                    <el-checkbox label="6.0英寸" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
-                                    <el-checkbox label="6.5英寸" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
-                                </el-checkbox-group>
-                            </el-collapse-item>
-                            <el-collapse-item>
-                                <template slot="title">
-                                    <el-radio v-model="radio" label="1">核数</el-radio>
-                                </template>
-                                <el-checkbox-group v-model="checkList">
-                                    <el-checkbox label="2核" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
-                                    <el-checkbox label="4核" style="margin:0;padding:0;padding-right:5px;"></el-checkbox>
-                                </el-checkbox-group>
+
+                        <el-collapse v-model="activeNames" @change="handleChange" :key="index" v-for="(demand,index) in demands">
+                            <el-collapse-item :title="demand.content" :name="index">
+                                <div>待补充内容</div>
                             </el-collapse-item>
                         </el-collapse>
-
-                        <!--<div>-->
-                        <!--<el-row type="flex" style="flex-direction: row; flex-wrap: wrap;">-->
-                        <!--<el-tag v-for="tag in fulfilledTags"-->
-                        <!--:key="tag.name"-->
-                        <!--closable-->
-                        <!--:type="success"></el-tag>-->
-                        <!--</el-row>-->
-                        <!--<el-row type="flex"-->
-                        <!--justify="space-around"-->
-                        <!--v-for="tag in unfulfilledTags"-->
-                        <!--:key="tag.name"></el-row>-->
-                        <!--<el-collapse v-model="activeDemandBlock">-->
-                        <!--<el-collapse-item v-for="demand in demands">-->
-                        <!--<div slot="title">-->
-                        <!--{{demand.name}}：-->
-                        <!--<el-tag v-for="tag in demand.tags"-->
-                        <!--:key="tag.name"-->
-                        <!--closable></el-tag>-->
-                        <!--</div>-->
-                        <!--</el-collapse-item>-->
-                        <!--</el-collapse>-->
-                        <!--</div>-->
                     </el-card>
+
                 </el-col>
             </el-row>
         </el-main>
@@ -158,14 +109,13 @@
             return {
                 keyword: [[${keyword}]],
                 items: [],
-                radio: '2',
-                checkList: [],
-                demands: [],
-                demandString: [],
-                state: ''
+                demand: [],
+                demandStrings: [],
+                state: '',
+                activeNames: ['1']
             }
         },
-        created () {
+        created() {
             axios({
                 url: '/getItemListByCategoryId',
                 method: 'POST',
@@ -181,60 +131,67 @@
                 })
                 .catch(err => {
                     // this.$message.error(err)
+                }),
+            axios({
+                url: '/getNeedListByCategoryId',
+                methods: 'POST',
+                params: {
+                    categoryId: categoryId
+                }
+            })
+                .then(res => {
+                    console.log(res.data.data);
+                    this.demands = res.data.data;
+                    for(let i = 0; i < this.demands.length; i++) {
+                        this.demandStrings.push({
+                            "id": this.demands[i].id,
+                            "content": this.demands[i].content
+                        })
+                    }
+                    // console.log(this.demandStrings);
+                    // this.demandStrings = this.demandStrings.map(item => {
+                    //     return Object.values(item)
+                    // })
+                    console.log(this.demandStrings);
                 })
         },
         computed: {
-            price (index) {
+            price(index) {
                 return this.items[index].priceList[0].price
             }
         },
         methods: {
-            price (index) {
+            price(index) {
                 return this.items[index].priceList[0].price
             },
             querySearch(queryString, cb) {
-                let demands = this.demands;
-                let results = queryString ? demands.filter(this.createFilter(queryString)) : demands;
+                let demandStrings = this.demandStrings;
+                let results = queryString ? demandStrings.filter(this.createFilter(queryString)) : demandStrings;
                 // 调用 callback 返回建议列表的数据
                 cb(results);
             },
             createFilter(queryString) {
-                return (demands) => {
-                    return (demands.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                return (demandString) => {
+                    return (demandString.value.indexOf(queryString) === 0);
                 };
-            },
-            loadAll() {
-                return this.demandString
             },
             handleSelect(item) {
                 console.log(item);
             },
-            search () {
-                if(app.keyword != null){
+            search() {
+                if (app.keyword != null) {
                     window.location.href = 'search?keyword=' + app.keyword;
                 }
             },
-            report () {
+            report() {
                 window.location.href = 'report?keyword=' + app.keyword;
             },
-            singleAnalyst (skuId) {
-                window.location.href = '/search?keyword=https://item.jd.com/' + skuId +'.html';
+            singleAnalyst(skuId) {
+                window.location.href = '/search?keyword=https://item.jd.com/' + skuId + '.html';
             },
-            getDemands () {
-                axios({
-                    url: '/getNeedListByCategoryId',
-                    methods: 'POST',
-                    params: {
-                        categoryId: categoryId
-                    }
-                })
-                    .then(res => {
-                        this.demandString = res.data.data
-                    })
+            handleChange(val) {
+                console.log(val);
             }
-        },
-        mounted() {
-            this.demands = this.loadAll();
         }
     });
 

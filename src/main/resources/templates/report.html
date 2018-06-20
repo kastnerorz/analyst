@@ -527,19 +527,19 @@
                         tooltip: {},
                         series: [{
                             type: 'wordCloud',
-                            gridSize: 2,
+                            gridSize: 20,
                             sizeRange: [8, 50],
                             rotationRange: [0, 0],
                             shape: 'rectangle',
                             textStyle: {
                                 normal: {
                                     color: function() {
-                                        return '#409EFF'
-                                        // return 'rgb(' + [
-                                        //     Math.round(50+Math.random() * 40),
-                                        //     Math.round(138+Math.random() * 60),
-                                        //     Math.round(235+Math.random() * 60)
-                                        // ].join(',') + ')';
+                                        // return '#409EFF'
+                                        return 'rgb(' + [
+                                            Math.round(40+Math.random() * 40),
+                                            Math.round(138+Math.random() * 60),
+                                            Math.round(235+Math.random() * 60)
+                                        ].join(',') + ')';
                                     }
                                 },
                                 emphasis: {
