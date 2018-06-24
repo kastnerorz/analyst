@@ -116,6 +116,12 @@ public class HomeController {
         }
         return "itemList";
     }
+
+    /**
+     * @param keyword
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/report")
     public String report(@RequestParam String keyword, Model model) {
         model.addAttribute("keyword", keyword);
