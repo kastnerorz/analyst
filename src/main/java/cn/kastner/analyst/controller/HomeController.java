@@ -54,7 +54,7 @@ public class HomeController {
     }
 
     /**
-     * 搜索
+     * 搜索 deperated
      * @param keyword 关键词或链接
      * @param model 型号
      * @return 页面
