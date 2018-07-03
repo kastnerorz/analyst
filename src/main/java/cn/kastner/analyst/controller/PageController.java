@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.regex.*;
 
 @Controller
-public class HomeController {
+public class PageController {
 
     private final
     ItemService itemService;
@@ -39,7 +39,7 @@ public class HomeController {
     BrandService brandService;
 
     @Autowired
-    public HomeController(ItemService itemService, PriceService priceService, CategoryService categoryService, MainCrawlerService mainCrawlerService, BrandService brandService) {
+    public PageController(ItemService itemService, PriceService priceService, CategoryService categoryService, MainCrawlerService mainCrawlerService, BrandService brandService) {
         this.itemService = itemService;
         this.priceService = priceService;
         this.mainCrawlerService = mainCrawlerService;
