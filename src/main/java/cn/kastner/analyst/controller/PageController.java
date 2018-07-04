@@ -54,7 +54,7 @@ public class PageController {
     }
 
     /**
-     * 搜索 deperated
+     * 搜索
      * @param keyword 关键词或链接
      * @param model 型号
      * @return 页面

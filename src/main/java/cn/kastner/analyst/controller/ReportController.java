@@ -35,8 +35,12 @@ public class ReportController {
     }
 
 
+    /**
+     * 市场占比和品牌的商品总数和品牌的平均价格
+     * @param categoryId
+     * @return
+     */
     @RequestMapping(value = "/getTopTenSaleAndItemNumByCategoryId")
-    //市场占比和品牌的商品总数和品牌的平均价格
     public NetResult getTopTenSaleAndItemNumByCategoryId(@RequestParam Long categoryId) {
         List<Brand> brands = brandService.findAll();   //All brand
         Long brandId = (long) 0;
@@ -78,8 +82,13 @@ public class ReportController {
         return netResult;
     }
 
+    /**
+     * 一个类别下按价格区间统计所有的item
+     * @param categoryId
+     * @return
+     */
     @RequestMapping(value = "/getItemNumByPriceDis")
-    public NetResult getItemNumByPriceDis(@RequestParam Long categoryId) {    //一个类别下按价格区间统计所有的item
+    public NetResult getItemNumByPriceDis(@RequestParam Long categoryId) {    //
         List<Brand> brands = brandService.findAll();
 //        System.out.println(brands.get(0).getBrandZhName());
         Long brandId;
@@ -206,9 +215,13 @@ public class ReportController {
         return netResult;
     }
 
+    /**
+     * 根据demand和param里的flag判断
+     * @param category
+     * @return
+     */
     @RequestMapping(value = "/getFocusByCategoryId")
     public NetResult getFocusByCategoryId(Category category) {
-        //根据demand和param里的flag判断
         List<Demand> demands = demandService.findAllByCategory(category);
         //[{name:   flag:  },{}]
         List<HashMap<String, Object>> focus = new ArrayList<>();
