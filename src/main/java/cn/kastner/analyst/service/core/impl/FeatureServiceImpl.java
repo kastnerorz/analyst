@@ -3,6 +3,7 @@ package cn.kastner.analyst.service.core.impl;
 import cn.kastner.analyst.domain.core.Feature;
 import cn.kastner.analyst.repository.core.FeatureRepository;
 import cn.kastner.analyst.service.core.FeatureService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ public class FeatureServiceImpl implements FeatureService {
 
     private final FeatureRepository featureRepository;
 
+    @Autowired
     public FeatureServiceImpl(FeatureRepository featureRepository) {
         this.featureRepository = featureRepository;
     }

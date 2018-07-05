@@ -3,6 +3,7 @@ package cn.kastner.analyst.service.core.impl;
 import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.repository.core.ItemRepository;
 import cn.kastner.analyst.service.core.ItemService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
 
+    @Autowired
     public ItemServiceImpl(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
     }

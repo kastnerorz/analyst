@@ -4,6 +4,7 @@ import cn.kastner.analyst.domain.core.Comment;
 import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.repository.core.CommentRepository;
 import cn.kastner.analyst.service.core.CommentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
 
+    @Autowired
     public CommentServiceImpl(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
     }

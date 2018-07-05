@@ -4,6 +4,7 @@ import cn.kastner.analyst.domain.core.Category;
 import cn.kastner.analyst.domain.core.Demand;
 import cn.kastner.analyst.repository.core.DemandRepository;
 import cn.kastner.analyst.service.core.DemandService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class DemandServiceImpl implements DemandService {
 
     private final DemandRepository demandRepository;
 
+    @Autowired
     public DemandServiceImpl(DemandRepository demandRepository) {
         this.demandRepository = demandRepository;
     }

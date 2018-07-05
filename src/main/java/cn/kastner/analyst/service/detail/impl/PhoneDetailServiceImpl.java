@@ -4,6 +4,7 @@ import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.detail.PhoneDetail;
 import cn.kastner.analyst.repository.detail.PhoneDetailRepository;
 import cn.kastner.analyst.service.detail.PhoneDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class PhoneDetailServiceImpl implements PhoneDetailService {
 
     private final PhoneDetailRepository phoneDetailRepository;
 
+    @Autowired
     public PhoneDetailServiceImpl(PhoneDetailRepository phoneDetailRepository) {
         this.phoneDetailRepository = phoneDetailRepository;
     }

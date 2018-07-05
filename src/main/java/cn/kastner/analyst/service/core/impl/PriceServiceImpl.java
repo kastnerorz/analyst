@@ -4,6 +4,7 @@ import cn.kastner.analyst.domain.core.Item;
 import cn.kastner.analyst.domain.core.Price;
 import cn.kastner.analyst.repository.core.PriceRepository;
 import cn.kastner.analyst.service.core.PriceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ public class PriceServiceImpl implements PriceService {
 
     private final PriceRepository priceRepository;
 
+    @Autowired
     public PriceServiceImpl(PriceRepository priceRepository) {
         this.priceRepository = priceRepository;
     }

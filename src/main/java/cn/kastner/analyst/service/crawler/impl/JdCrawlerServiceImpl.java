@@ -58,22 +58,16 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     private final MarketRepository marketRepository;
 
-    private final Finder finder;
-
-    private final Lang lang;
-
     private final PhoneDetailService phoneDetailService;
 
     @Autowired
-    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, Finder finder, Lang lang, PhoneDetailService phoneDetailService) {
+    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, PhoneDetailService phoneDetailService) {
         this.itemService = itemService;
         this.commentService = commentService;
         this.priceService = priceService;
         this.brandService = brandService;
         this.categoryService = categoryService;
         this.marketRepository = marketRepository;
-        this.finder = finder;
-        this.lang = lang;
         this.phoneDetailService = phoneDetailService;
     }
 
@@ -92,7 +86,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     @Override
     public Item crawItemByUrl(String url) throws Exception {
 
-
+        Finder finder = new Finder();
+        Lang lang = new Lang();
         Item item = new Item();
         Market market = marketRepository.findByCode(Market.Code.JD);
         item.setMarket(market);
