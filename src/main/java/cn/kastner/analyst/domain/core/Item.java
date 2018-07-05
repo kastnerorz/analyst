@@ -12,10 +12,7 @@ import java.util.List;
 public class Item {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long itemId;
-
-    private String skuId;
 
     private String zhName;
 
@@ -23,15 +20,8 @@ public class Item {
 
     private String model;
 
-    private String vendorId;
-
-    private String vendor;
-
-    private String commentVersion;
-
     @ManyToOne(cascade = {CascadeType.MERGE,
     CascadeType.PERSIST})
-
     private Category category;
 
     @ManyToOne(cascade = {CascadeType.MERGE,
@@ -41,7 +31,6 @@ public class Item {
     @ManyToOne(cascade = {CascadeType.MERGE,
             CascadeType.PERSIST})
     private Market market;
-
 
     @Column(columnDefinition = "TEXT")
     private String imageList;
@@ -67,25 +56,7 @@ public class Item {
     private int commentCount;
 
     private String commentCountStr;
-
-    private int generalCount;
-
-    private String generalCountStr;
-
-    private int goodCount;
-
-    private String goodCountStr;
-
-    private int poorCount;
-
-    private String poorCountStr;
-
     private LocalDate crawDate;
-
-    private String color;
-
-    @Column(columnDefinition = "BOOLEAN DEFAULT false")
-    private Boolean isSelfSell;
 
     public Long getItemId() {
         return itemId;
@@ -93,14 +64,6 @@ public class Item {
 
     public void setItemId(Long itemId) {
         this.itemId = itemId;
-    }
-
-    public String getSkuId() {
-        return skuId;
-    }
-
-    public void setSkuId(String skuId) {
-        this.skuId = skuId;
     }
 
     public String getZhName() {
@@ -125,30 +88,6 @@ public class Item {
 
     public void setModel(String model) {
         this.model = model;
-    }
-
-    public String getVendorId() {
-        return vendorId;
-    }
-
-    public void setVendorId(String vendorId) {
-        this.vendorId = vendorId;
-    }
-
-    public String getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
-    }
-
-    public String getCommentVersion() {
-        return commentVersion;
-    }
-
-    public void setCommentVersion(String commentVersion) {
-        this.commentVersion = commentVersion;
     }
 
     public Category getCategory() {
@@ -247,53 +186,6 @@ public class Item {
         this.commentCountStr = commentCountStr;
     }
 
-    public int getGeneralCount() {
-        return generalCount;
-    }
-
-    public void setGeneralCount(int generalCount) {
-        this.generalCount = generalCount;
-    }
-
-    public String getGeneralCountStr() {
-        return generalCountStr;
-    }
-
-    public void setGeneralCountStr(String generalCountStr) {
-        this.generalCountStr = generalCountStr;
-    }
-
-    public int getGoodCount() {
-        return goodCount;
-    }
-
-    public void setGoodCount(int goodCount) {
-        this.goodCount = goodCount;
-    }
-
-    public String getGoodCountStr() {
-        return goodCountStr;
-    }
-
-    public void setGoodCountStr(String goodCountStr) {
-        this.goodCountStr = goodCountStr;
-    }
-
-    public int getPoorCount() {
-        return poorCount;
-    }
-
-    public void setPoorCount(int poorCount) {
-        this.poorCount = poorCount;
-    }
-
-    public String getPoorCountStr() {
-        return poorCountStr;
-    }
-
-    public void setPoorCountStr(String poorCountStr) {
-        this.poorCountStr = poorCountStr;
-    }
 
     public LocalDate getCrawDate() {
         return crawDate;
@@ -301,21 +193,5 @@ public class Item {
 
     public void setCrawDate(LocalDate crawDate) {
         this.crawDate = crawDate;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public Boolean getIsSelfSell() {
-        return isSelfSell;
-    }
-
-    public void setIsSelfSell(Boolean selfSell) {
-        isSelfSell = selfSell;
     }
 }
