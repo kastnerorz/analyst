@@ -250,7 +250,7 @@
         el: '#app',
         data() {
             return {
-                itemId: [[${itemId}]],
+                id: [[${id}]],
                 keyword: [[${keyword}]],
                 inputLength: 10,
                 rank: Math.ceil(Math.random()*10),
@@ -368,7 +368,7 @@
                 url: '/getImageListByItemId',
                 method: 'POST',
                 params: {
-                    itemId: [[${itemId}]]
+                    id: [[${id}]]
                 }
             })
                 .then( value=> {
@@ -382,7 +382,7 @@
                 url: '/getItemComments',
                 method: 'POST',
                 params: {
-                    itemId: [[${itemId}]]
+                    id: [[${id}]]
                 }
             })
 

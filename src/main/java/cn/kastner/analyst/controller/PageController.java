@@ -1,6 +1,5 @@
 package cn.kastner.analyst.controller;
 
-import cn.kastner.analyst.domain.core.Brand;
 import cn.kastner.analyst.domain.core.Category;
 import cn.kastner.analyst.service.core.BrandService;
 import cn.kastner.analyst.service.core.CategoryService;
@@ -67,11 +66,11 @@ public class PageController {
         Category category = categoryService.findByLevelName(keyword);
         if (isMatch) {
             Item item = mainCrawlerService.crawItemByUrl(keyword);
-            model.addAttribute("itemId", item.getItemId());
+            model.addAttribute("itemId", item.getId());
 
             String itemCode = item.getModel();
             String cname = item.getZhName();
-            String imageList = item.getImageList();
+            String imageList = item.getImageGroup();
             String primaryImage = imageList.split(",")[0];
             model.addAttribute("primaryImage", primaryImage);
             model.addAttribute("cname", cname);
@@ -95,13 +94,13 @@ public class PageController {
                 Double price = (double) 0;
                 for (int i = 0; i < items.size(); i++) {   //set i
                     Item item = items.get(i);
-                    itemId=item.getItemId();
+                    itemId=item.getId();
                     itemZhName = item.getZhName();   //get name
                     List<Price> prices = priceService.findByItemAndCrawDateTimeAfter(item, LocalDateTime.now().minusWeeks(1));
                     if (!prices.isEmpty()) {
                         price = prices.get(0).getPrice();  //get price
                     }
-                    String imageList = item.getImageList();
+                    String imageList = item.getImageGroup();
                     String primaryImage = imageList.split(",")[0];  //get photo
                     System.out.print(itemId+itemZhName+price);
                     model.addAttribute("categoryId",categoryId);

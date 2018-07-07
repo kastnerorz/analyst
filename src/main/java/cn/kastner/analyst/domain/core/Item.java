@@ -1,8 +1,6 @@
 package cn.kastner.analyst.domain.core;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,13 +10,15 @@ import java.util.List;
 public class Item {
 
     @Id
-    private Long itemId;
+    private Long id;
 
     private String zhName;
 
     private String enName;
 
     private String model;
+
+    private String description;
 
     @ManyToOne(cascade = {CascadeType.MERGE,
     CascadeType.PERSIST})
@@ -33,7 +33,7 @@ public class Item {
     private Market market;
 
     @Column(columnDefinition = "TEXT")
-    private String imageList;
+    private String imageGroup;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<Feature> featureList;
@@ -56,14 +56,15 @@ public class Item {
     private int commentCount;
 
     private String commentCountStr;
+
     private LocalDate crawDate;
 
-    public Long getItemId() {
-        return itemId;
+    public Long getId() {
+        return id;
     }
 
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getZhName() {
@@ -114,12 +115,12 @@ public class Item {
         this.market = market;
     }
 
-    public String getImageList() {
-        return imageList;
+    public String getImageGroup() {
+        return imageGroup;
     }
 
-    public void setImageList(String imageList) {
-        this.imageList = imageList;
+    public void setImageGroup(String imageGroup) {
+        this.imageGroup = imageGroup;
     }
 
     public List<Feature> getFeatureList() {
@@ -193,5 +194,13 @@ public class Item {
 
     public void setCrawDate(LocalDate crawDate) {
         this.crawDate = crawDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

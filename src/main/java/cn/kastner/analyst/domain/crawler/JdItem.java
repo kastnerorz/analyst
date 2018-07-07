@@ -16,41 +16,11 @@ public class JdItem extends Item{
 
     private String skuId;
 
-    private String zhName;
-
-    private String enName;
-
-    private String model;
-
     private String vendorId;
 
     private String vendor;
 
     private String commentVersion;
-
-    @ManyToOne(cascade = {CascadeType.MERGE,
-            CascadeType.PERSIST})
-    private Category category;
-
-    @ManyToOne(cascade = {CascadeType.MERGE,
-            CascadeType.PERSIST})
-    private Brand brand;
-
-    @ManyToOne(cascade = {CascadeType.MERGE,
-            CascadeType.PERSIST})
-    private Market market;
-
-    @Column(columnDefinition = "TEXT")
-    private String imageList;
-
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<Feature> featureList;
-
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<Comment> commentList;
-
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<Price> priceList;
 
     @Column(columnDefinition = "TEXT")
     private String keyFeature;
@@ -71,17 +41,15 @@ public class JdItem extends Item{
 
     private String poorCountStr;
 
-    private LocalDate crawDate;
-
-    private String color;
-
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean isSelfSell;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -92,36 +60,6 @@ public class JdItem extends Item{
 
     public void setSkuId(String skuId) {
         this.skuId = skuId;
-    }
-
-    @Override
-    public String getZhName() {
-        return zhName;
-    }
-
-    @Override
-    public void setZhName(String zhName) {
-        this.zhName = zhName;
-    }
-
-    @Override
-    public String getEnName() {
-        return enName;
-    }
-
-    @Override
-    public void setEnName(String enName) {
-        this.enName = enName;
-    }
-
-    @Override
-    public String getModel() {
-        return model;
-    }
-
-    @Override
-    public void setModel(String model) {
-        this.model = model;
     }
 
     public String getVendorId() {
@@ -146,76 +84,6 @@ public class JdItem extends Item{
 
     public void setCommentVersion(String commentVersion) {
         this.commentVersion = commentVersion;
-    }
-
-    @Override
-    public Category getCategory() {
-        return category;
-    }
-
-    @Override
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    @Override
-    public Brand getBrand() {
-        return brand;
-    }
-
-    @Override
-    public void setBrand(Brand brand) {
-        this.brand = brand;
-    }
-
-    @Override
-    public Market getMarket() {
-        return market;
-    }
-
-    @Override
-    public void setMarket(Market market) {
-        this.market = market;
-    }
-
-    @Override
-    public String getImageList() {
-        return imageList;
-    }
-
-    @Override
-    public void setImageList(String imageList) {
-        this.imageList = imageList;
-    }
-
-    @Override
-    public List<Comment> getCommentList() {
-        return commentList;
-    }
-
-    @Override
-    public void setCommentList(List<Comment> commentList) {
-        this.commentList = commentList;
-    }
-
-    @Override
-    public List<Price> getPriceList() {
-        return priceList;
-    }
-
-    @Override
-    public void setPriceList(List<Price> priceList) {
-        this.priceList = priceList;
-    }
-
-    @Override
-    public List<Feature> getFeatureList() {
-        return featureList;
-    }
-
-    @Override
-    public void setFeatureList(List<Feature> featureList) {
-        this.featureList = featureList;
     }
 
     @Override
@@ -294,24 +162,6 @@ public class JdItem extends Item{
 
     public void setPoorCountStr(String poorCountStr) {
         this.poorCountStr = poorCountStr;
-    }
-
-    @Override
-    public LocalDate getCrawDate() {
-        return crawDate;
-    }
-
-    @Override
-    public void setCrawDate(LocalDate crawDate) {
-        this.crawDate = crawDate;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public Boolean getSelfSell() {

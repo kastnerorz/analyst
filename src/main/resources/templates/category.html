@@ -44,7 +44,7 @@
                         <el-col :span="6" :key="index" v-for="(item, index) in items">
                             <el-card :body-style="{ padding: '0px' }" justify="center" style="margin-bottom: 10px;">
                                 <div style="text-align: center;padding-top:20px">
-                                    <img :src='"https://img11.360buyimg.com/n1/s450x450_" + item.imageList.split(",")[0]' class="image" width="100%">
+                                    <img :src='"https://img11.360buyimg.com/n1/s450x450_" + item.imageGroup.split(",")[0]' class="image" width="100%">
                                 </div>
                                 <div style="padding: 14px;height:28px;">
                                     <span style="color:#c73420" v-if="item.priceList.length">￥ {{ item.priceList[0].price }}&nbsp</span>

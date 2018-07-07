@@ -107,7 +107,7 @@ public class ReportController {
 //                System.out.println(items.get(0).getZhName());
                     List<Long> itemIdList = new ArrayList<>();   //存放itemId
                     for (Item item : items) {
-                        Long itemId = item.getItemId();
+                        Long itemId = item.getId();
                         itemIdList.add(itemId);
                     }
 //                System.out.println(itemIdList);
@@ -137,7 +137,7 @@ public class ReportController {
                 List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
                 List<Long> itemIdList = new ArrayList<>();
                 for (Item item : items) {
-                    Long itemId = item.getItemId();
+                    Long itemId = item.getId();
                     itemIdList.add(itemId);
                 }
                 if (!itemIdList.isEmpty()) {
@@ -165,7 +165,7 @@ public class ReportController {
                     List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
                     List<Long> itemIdList = new ArrayList<>();   //存放itemId
                     for (Item item : items) {
-                        Long itemId = item.getItemId();
+                        Long itemId = item.getId();
                         itemIdList.add(itemId);
                     }
                     if (!itemIdList.isEmpty()) {   //找到每个brand下这个价格区间的商品数
@@ -192,7 +192,7 @@ public class ReportController {
                 List<Item> items = itemService.findByBrandIdAndCategoryId(brandId, categoryId);
                 List<Long> itemIdList = new ArrayList<>();
                 for (Item item : items) {
-                    Long itemId = item.getItemId();
+                    Long itemId = item.getId();
                     itemIdList.add(itemId);
                 }
                 if (!itemIdList.isEmpty()) {

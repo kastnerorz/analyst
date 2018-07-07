@@ -199,7 +199,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
 
 
-        Long itemId = item.getItemId();
+        Long itemId = item.getId();
 
 
 
@@ -228,7 +228,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             String imageList = StringUtils.join(
                     imageListStr.split("\",\""), ","
             ) ;
-            item.setImageList(imageList);
+            item.setImageGroup(imageList);
             logger.info("Get  imageList from head: " + imageList);
         }
 
@@ -521,7 +521,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 //                                "content        ->" + commentContent.getContent() + "\n" +
 //                                "is_good        ->" + commentContent.getGood() + "\n" +
 //                                "content_id     ->" + commentContent.getCommentId() + "\n" +
-//                                "item_id        ->" + commentContent.getItemId());
+//                                "item_id        ->" + commentContent.getId());
                     commentContent.setCrawDate(LocalDate.now());
                     commentService.insertByComment(commentContent);
                     logger.info("commentContent has been saved.");
