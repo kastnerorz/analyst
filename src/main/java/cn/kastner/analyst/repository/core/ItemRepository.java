@@ -12,7 +12,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>,
     Item findByItemId(Long itemId);
     List<Item> findALlByItemId(Long itemId);
     List<Item> findByZhName(String zhName);
-    List<Item> findAllByZhName(String zhName);
+    List<Item> findByZhNameContaining(String zhName);
     Item findBySkuId(String skuId);
     List<Item>  findAllByCategoryCategoryId(Long categoryId);
     List<Item> findAllByBrandBrandIdAndCategoryCategoryId(Long brandId,Long categoryId);

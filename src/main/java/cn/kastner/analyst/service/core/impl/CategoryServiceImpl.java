@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category findByLevelName(String name){
-        return categoryRepository.findByLevelOneNameOrLevelTwoNameOrLevelThreeName(name,name,name);
+        return categoryRepository.findByLevelThreeName(name);
     }
 
 

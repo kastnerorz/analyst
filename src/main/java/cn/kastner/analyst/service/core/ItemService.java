@@ -28,8 +28,19 @@ public interface ItemService {
      */
     Item findBySkuId(String skuId);
 
+    /**
+     * 精确查找某商品
+     * @param zhName
+     * @return
+     */
     List<Item> findByZhName(String zhName);
 
+    /**
+     * 模糊查找某商品
+     * @param zhName 中文名
+     * @return 商品列表
+     */
+    List<Item> findByZhNameLike(String zhName);
     /**
      * retrieve all categories
      *

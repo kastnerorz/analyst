@@ -33,6 +33,13 @@ public interface PriceService {
     List<Price> findByItemAndCrawDateTimeAfter(Item item, LocalDateTime crawDateTime);
 
     /**
+     * 根据商品查找最新价格
+     * @param item 商品
+     * @return 价格
+     */
+    Price findLatestByItem(Item item);
+
+    /**
      * 根据商品查找所有价格
      * @param item
      * @return
@@ -47,7 +54,7 @@ public interface PriceService {
      */
     Price update(Price price);
 
-    /**hibernate_sequence
+    /**
      * delete a price by id
      *
      * @param priceId

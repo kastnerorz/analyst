@@ -35,7 +35,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> findByZhName(String zhName) {
-        return itemRepository.findAllByZhName(zhName);
+        return itemRepository.findByZhName(zhName);
+    }
+
+    @Override
+    public List<Item> findByZhNameLike(String zhName) {
+        return itemRepository.findByZhNameContaining(zhName);
     }
 
     @Override

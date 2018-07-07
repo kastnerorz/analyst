@@ -38,7 +38,11 @@ public class PageController {
     BrandService brandService;
 
     @Autowired
-    public PageController(ItemService itemService, PriceService priceService, CategoryService categoryService, MainCrawlerService mainCrawlerService, BrandService brandService) {
+    public PageController(ItemService itemService,
+                          PriceService priceService,
+                          CategoryService categoryService,
+                          MainCrawlerService mainCrawlerService,
+                          BrandService brandService) {
         this.itemService = itemService;
         this.priceService = priceService;
         this.mainCrawlerService = mainCrawlerService;
@@ -62,57 +66,29 @@ public class PageController {
     @RequestMapping(value = "/search")
     public String search(@RequestParam String keyword, Model model) throws JSONException{
         model.addAttribute("keyword", keyword);
+
+        // 如果搜索关键词为链接
         Boolean isMatch = Pattern.matches(".*https?.*", keyword);
-        Category category = categoryService.findByLevelName(keyword);
         if (isMatch) {
             Item item = mainCrawlerService.crawItemByUrl(keyword);
-            model.addAttribute("itemId", item.getId());
-
-            String itemCode = item.getModel();
-            String cname = item.getZhName();
-            String imageList = item.getImageGroup();
-            String primaryImage = imageList.split(",")[0];
+            String primaryImage = item.getImageGroup().split(",")[0];
             model.addAttribute("primaryImage", primaryImage);
-            model.addAttribute("cname", cname);
-            model.addAttribute("itemCode", itemCode);
-
-            Double price = (double) 0;
-            List<Price> prices = priceService.findByItemAndCrawDateTimeAfter(item, LocalDateTime.now().minusWeeks(1));
-            if (!prices.isEmpty()) {
-                price = prices.get(0).getPrice();
-            }
-            model.addAttribute("price", price);
-
+            model.addAttribute("zhName", item.getZhName());
+            model.addAttribute("itemModel", item.getModel());
+            model.addAttribute("id", item.getId());
+            model.addAttribute("price", priceService.findLatestByItem(item));
             return "item";
         }
-        else if(category!=null){
+
+        // 如果搜索关键词为品类
+        Category category = categoryService.findByLevelName(keyword);
+        if(category!=null) {
             Long categoryId = category.getCategoryId();
-            String itemZhName;
-            Long itemId;
-            List<Item> items = itemService.findByCategoryId(categoryId);
-            if (!items.isEmpty()) {
-                Double price = (double) 0;
-                for (int i = 0; i < items.size(); i++) {   //set i
-                    Item item = items.get(i);
-                    itemId=item.getId();
-                    itemZhName = item.getZhName();   //get name
-                    List<Price> prices = priceService.findByItemAndCrawDateTimeAfter(item, LocalDateTime.now().minusWeeks(1));
-                    if (!prices.isEmpty()) {
-                        price = prices.get(0).getPrice();  //get price
-                    }
-                    String imageList = item.getImageGroup();
-                    String primaryImage = imageList.split(",")[0];  //get photo
-                    System.out.print(itemId+itemZhName+price);
-                    model.addAttribute("categoryId",categoryId);
-                    model.addAttribute("itemId",itemId);
-                    model.addAttribute("itemZhName", itemZhName);
-                    model.addAttribute("price", price);
-                    model.addAttribute("primaryImage", primaryImage);
-                }
-                return "category";
-            }
-            return null;
+            model.addAttribute("categoryId",categoryId);
+            return "category";
         }
+
+        // 直接搜索关键词
         return "itemList";
     }
 

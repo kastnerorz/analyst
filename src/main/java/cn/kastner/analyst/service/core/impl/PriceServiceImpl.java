@@ -37,6 +37,11 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
+    public Price findLatestByItem(Item item) {
+        return priceRepository.findByItemOrderByCrawDateTimeDesc(item).get(0);
+    }
+
+    @Override
     public List<Price> findByItem(Item item) {
         return priceRepository.findByItem(item);
     }
