@@ -83,8 +83,7 @@ public class PageController {
         // 如果搜索关键词为品类
         Category category = categoryService.findByLevelName(keyword);
         if(category!=null) {
-            Long categoryId = category.getCategoryId();
-            model.addAttribute("categoryId",categoryId);
+            model.addAttribute("categoryId",category.getCategoryId());
             return "category";
         }
 
