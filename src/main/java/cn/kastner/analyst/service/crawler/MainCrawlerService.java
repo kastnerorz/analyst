@@ -14,5 +14,5 @@ public interface MainCrawlerService {
      * @return 商品对象
      * @throws JSONException
      */
-    Item crawItemByUrl (String url) throws JSONException;
+    Item crawl(String url) throws JSONException;
 }

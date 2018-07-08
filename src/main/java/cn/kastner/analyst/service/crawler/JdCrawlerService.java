@@ -16,7 +16,7 @@ public interface JdCrawlerService {
      * @return 商品对象
      * @throws Exception 网络错误
      */
-    Item crawItemByUrl(String url) throws Exception;
+    Item crawl(String url) throws Exception;
 
     /**
      * 爬取商品评论

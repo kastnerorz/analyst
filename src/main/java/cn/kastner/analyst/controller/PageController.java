@@ -7,7 +7,6 @@ import cn.kastner.analyst.service.core.ItemService;
 import cn.kastner.analyst.service.core.PriceService;
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
 import cn.kastner.analyst.domain.core.Item;
-import cn.kastner.analyst.domain.core.Price;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,8 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.regex.*;
 
 @Controller
@@ -70,7 +67,7 @@ public class PageController {
         // 如果搜索关键词为链接
         Boolean isMatch = Pattern.matches(".*https?.*", keyword);
         if (isMatch) {
-            Item item = mainCrawlerService.crawItemByUrl(keyword);
+            Item item = mainCrawlerService.crawl(keyword);
             String primaryImage = item.getImageGroup().split(",")[0];
             model.addAttribute("primaryImage", primaryImage);
             model.addAttribute("zhName", item.getZhName());

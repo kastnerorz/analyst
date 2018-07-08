@@ -49,7 +49,7 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
      * @return Item 商品对象
      */
     @Override
-    public Item crawByItem(Item item) throws IOException {
+    public Item crawl(Item item) throws IOException {
         this.item = item;
         PhoneDetail phoneDetailDb = phoneDetailService.findByItem(item);
         if (phoneDetailDb == null) {

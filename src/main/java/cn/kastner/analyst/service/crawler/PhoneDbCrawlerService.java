@@ -13,7 +13,7 @@ public interface PhoneDbCrawlerService {
      * @param item 商品
      * @return 商品对象
      */
-    Item crawByItem (Item item) throws IOException;
+    Item crawl(Item item) throws IOException;
 
     /**
      * @param model 型号

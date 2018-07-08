@@ -42,21 +42,21 @@ public class MainCrawlerServiceImpl implements MainCrawlerService {
     }
 
     @Override
-    public Item crawItemByUrl (String url){
+    public Item crawl(String url){
         try {
-            item = jdCrawlerService.crawItemByUrl(url);
+            item = jdCrawlerService.crawl(url);
         } catch (Exception e) {
             e.printStackTrace();
         }
         if (item != null) {
             if (item.getCategory().getLevelThreeName().equals("手机")) {
                 try {
-                    phoneDbCrawlerService.crawByItem(item);
+                    phoneDbCrawlerService.crawl(item);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            trustReviewCrawlerService.crawByItem(item);
+            trustReviewCrawlerService.crawl(item);
         }
         return item;
     }

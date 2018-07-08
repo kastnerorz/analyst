@@ -21,7 +21,7 @@ public class TrustReviewCrawlerServiceImpl implements TrustReviewCrawlerService 
     }
 
     @Override
-    public void crawByItem (Item item) {
+    public void crawl(Item item) {
         String itemModel = item.getModel();
     }
 }
