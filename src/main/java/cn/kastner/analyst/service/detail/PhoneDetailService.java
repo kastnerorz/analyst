@@ -47,6 +47,7 @@ public interface PhoneDetailService {
                                        List<Double> ramCapacity,
                                        List<Integer> pxDensity);
 
+    List<PhoneDetail> findByItemAndRom(Item item, Double rom);
     /**
      * update a phoneDetail by id
      *

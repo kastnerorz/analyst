@@ -44,6 +44,11 @@ public class PhoneDetailServiceImpl implements PhoneDetailService {
     }
 
     @Override
+    public List<PhoneDetail> findByItemAndRom(Item item, Double rom) {
+        return phoneDetailRepository.findByItemAndRomCapacity(item, rom);
+    }
+
+    @Override
     public PhoneDetail update(PhoneDetail phoneDetail) {
         return phoneDetailRepository.save(phoneDetail);
     }

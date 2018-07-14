@@ -1,10 +1,10 @@
 package cn.kastner.analyst.exception;
 
-public class CrawllerException extends Exception {
+public class CrawlerException extends Exception {
 
     private final String msg;
 
-    public CrawllerException(String message) {
+    public CrawlerException(String message) {
         super(message);
         msg = message;
     }

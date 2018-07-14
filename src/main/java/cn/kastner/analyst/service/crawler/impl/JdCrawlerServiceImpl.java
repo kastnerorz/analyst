@@ -3,6 +3,7 @@ package cn.kastner.analyst.service.crawler.impl;
 import cn.kastner.analyst.domain.core.*;
 import cn.kastner.analyst.domain.crawler.JdItem;
 import cn.kastner.analyst.domain.detail.PhoneDetail;
+import cn.kastner.analyst.exception.CrawlerException;
 import cn.kastner.analyst.repository.core.MarketRepository;
 import cn.kastner.analyst.service.core.*;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;
@@ -23,12 +24,15 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.thymeleaf.util.StringUtils;
 
+import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
+import java.security.cert.CertificateRevokedException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -93,7 +97,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     private Document document;
 
-    private Market crawlMarket() {
+    private Market getMarket() {
         return marketRepository.findByCode(Market.Code.JD);
     }
 
@@ -101,27 +105,26 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         document.getElementsByClass("Ptable-tips").remove();
     }
 
-    private String crawlSkuId() {
+    private String getSkuId() throws CrawlerException {
         String skuId = finder.getString(document.head().toString(), "skuId: (\\d*),", 1);
-        if (skuId == null) {
-            logger.warning("can't get skuId");
-        } else {
-            logger.info(MessageFormat.format("Get skuId from head: {0}", skuId));
+        if (skuId != null) {
             return skuId;
+        } else {
+            throw new CrawlerException("未获取到 skuId");
         }
-        return "";
     }
 
-    private String crawlDescription() {
+    private String getDescription() throws CrawlerException {
         Elements itemSelect = document.getElementsByClass("jdItem  selected  ");
         String description = itemSelect.get(0).getElementsByTag("i").get(0).text();
         if (description != null) {
             return description;
+        } else {
+            throw new CrawlerException("未获取到描述");
         }
-        return "";
     }
 
-    private Brand crawlBrand() {
+    private Brand getBrand() throws CrawlerException {
         String brandStr = document.getElementById("parameter-brand")
                 .getElementsByTag("a")
                 .get(0)
@@ -165,22 +168,22 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                     return brandDb;
                 }
             }
+        } else {
+            throw new CrawlerException("未获取到品牌");
         }
-        logger.warning("no brand");
-        return null;
     }
 
-    private String crawlZhName() {
+    private String getZhName() throws CrawlerException {
         String zhName = finder.getString(document.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
         if (zhName != null) {
             logger.info("Get Item zhName from title: " + zhName);
             return zhName;
+        } else {
+            throw new CrawlerException("未获取到中文名");
         }
-        logger.warning("Can't get jdItem zhName");
-        return "";
     }
 
-    private String crawlModel() {
+    private String getModel() throws CrawlerException {
         Element dlEl = document
                 // div.Ptable
                 .getElementsByClass("Ptable").get(0)
@@ -199,91 +202,70 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             }
             index++;
         }
-        return "";
+        throw new CrawlerException("未获取到型号");
     }
-    /**
-     * 基础信息爬取
-     * @param url 商品链接
-     * @return 商品
-     */
-    @Override
-    public Item crawl(String url) throws Exception {
 
-        document = getDocument(url);
-        processDocument();
-
-        jdItem.setMarket(crawlMarket());
-        jdItem.setSkuId(crawlSkuId());
-        jdItem.setDescription(crawlDescription());
-        jdItem.setBrand(crawlBrand());
-        jdItem.setZhName(crawlZhName());
-        jdItem.setModel(crawlModel());
-
-
-        // analyse document
-
-
-        // get vendorId
+    private String getVendorId() throws CrawlerException {
         Pattern vendorIdPattern = Pattern.compile("venderId:(\\d+),");
         Matcher vendorIdMatcher = vendorIdPattern.matcher(document.head().toString());
         if (vendorIdMatcher.find()) {
             String vendorId = vendorIdMatcher.group(1);
-            jdItem.setVendorId(vendorId);
             logger.info("Get  vendorId from head: " + vendorId);
+            return vendorId;
         } else {
-            logger.warning("no vendorId");
+            throw new CrawlerException("未获取到店铺Id");
         }
+    }
 
-        // get imageList
-
+    private String getImageGroup() throws CrawlerException {
         String imageListStr = finder.getString(document.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
-        if (imageListStr == null) {
-            logger.warning("no imageList");
+        if (imageListStr != null) {
+            return StringUtils.join(imageListStr.split("\",\""), ",");
         } else {
-            String imageList = StringUtils.join(
-                    imageListStr.split("\",\""), ","
-            ) ;
-            jdItem.setImageGroup(imageList);
-            logger.info("Get  imageList from head: " + imageList);
+            throw new CrawlerException("未获取到展示图片列表");
         }
+    }
 
-        // check if self selling
+    private Boolean getIsSelfSell() {
         Element selfSelling = document.getElementsByClass("u-jd").get(0);
-        if (selfSelling == null) {
-            jdItem.setIsSelfSell(false);
-        } else {
-            jdItem.setIsSelfSell(true);
-        }
+        return selfSelling != null;
+    }
 
-        // 获取 ROM
+    private Double crawlRom() {
         Double rom = Double.parseDouble(finder.getString(document.toString(), "机身内存：(.*)GB</li>", 1));
-        PhoneDetail phoneDetail = new PhoneDetail();
         itemService.insertByItem(jdItem);
-        phoneDetail.setItem(jdItem);
-        phoneDetail.setRomCapacity(rom);
-        phoneDetailService.insertByPhoneDetail(phoneDetail);
+        List<PhoneDetail> phoneDetailList = phoneDetailService.findByItemAndRom(jdItem, rom);
+        if (phoneDetailList.isEmpty()) {
+            PhoneDetail phoneDetail = new PhoneDetail();
+            phoneDetail.setItem(jdItem);
+            phoneDetail.setRomCapacity(rom);
+            phoneDetailService.insertByPhoneDetail(phoneDetail);
+        }
+        return rom;
+    }
 
-        // get commentVersion from html head
+    private String getCommentVersion() throws CrawlerException {
         Pattern commentVersionPattern = Pattern.compile("commentVersion:\\'(.+)\\',");
         Matcher commentVersionMatcher = commentVersionPattern.matcher(document.head().toString());
         if (commentVersionMatcher.find()) {
             String commentVersion = commentVersionMatcher.group(1);
-            jdItem.setCommentVersion(commentVersion);
             logger.info("Get comment version from head: " + commentVersion);
+            return commentVersion;
         } else {
-            logger.warning("no commentVersion");
+            throw new CrawlerException("未获取到 CommentVersion");
         }
+    }
 
-        // get vendor
+    private String getVendor() throws CrawlerException {
         String vendor = finder.getString(document.toString(), "dianpuname.*\">(.*)</a>", 1);
-        if (vendor == null) {
-            logger.warning("no vendor");
+        if (vendor != null) {
+            return vendor;
         } else {
-            jdItem.setVendor(vendor);
-            logger.info("Get vendor: " + vendor);
+            throw new CrawlerException("未获取到店铺");
         }
+    }
 
-        // get category
+    private Category getCategory() throws CrawlerException {
         Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
         Matcher catMatcher = catPattern.matcher(document.head().toString());
         if (catMatcher.find()) {
@@ -296,7 +278,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             );
             Category category;
             if (null != categoryDb) {
-                category = categoryDb;
+                return categoryDb;
             } else {
                 category = new Category();
             }
@@ -329,19 +311,16 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                 String level3 = level3Matcher.group(1);
                 category.setLevelThreeName(level3);
             }
-
-
-            jdItem.setCategory(category);
             logger.info("Get cat from head: " + categoryStr);
+            return category;
         } else {
-            logger.warning("no category");
+            throw new CrawlerException("未获取到品类");
         }
+    }
 
-        Integer jQueryId = 6546654;
 
-
+    private void getCommentCount() {
         // get commentsCount
-        logger.info("Connecting to http://club.jd.com/comment/productCommentSummaries.action");
         Document commentsCountDoc = Jsoup.connect("http://club.jd.com/comment/productCommentSummaries.action")
                 .header("accept", "*/*")
                 .header("accept-encoding", "gzip, deflate, br")
@@ -352,40 +331,69 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                         "Chrome/65.0.3325.181 Safari/537.36")
 
                 .data("referenceIds", jdItem.getSkuId())
-                .data("callback", "jQuery" + jQueryId)
+                .data("callback", "jQuery" + 6546654)
                 .data("_", "" + System.currentTimeMillis() / 1000)
                 .get();
 
-        JSONObject commentsCount;
-        int generalCount = 0;
-        Pattern commentsCountPattern = Pattern.compile("jQuery" + jQueryId + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);");
+         commentsCount;
+        Pattern commentsCountPattern = Pattern.compile("jQuery" + 6546654 + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);");
         Matcher commentsCountMatcher = commentsCountPattern.matcher(commentsCountDoc.toString());
         if (commentsCountMatcher.find()) {
 
-            commentsCount = new JSONObject(commentsCountMatcher.group(1));
+            JSONObject commentsCount = new JSONObject(commentsCountMatcher.group(1));
 
-            generalCount = commentsCount.getInt("GeneralCount");
-            logger.info("gneralCount: " + generalCount);
+            int generalCount = commentsCount.getInt("GeneralCount");
+            jdItem.setGeneralCount(generalCount);
 
             String generalCountStr = commentsCount.getString("GeneralCountStr");
+            jdItem.setGeneralCountStr(generalCountStr);
 
             int goodCount = commentsCount.getInt("GoodCount");
+            jdItem.setGoodCount(goodCount);
 
             String goodCountStr = commentsCount.getString("GoodCountStr");
+            jdItem.setGoodCountStr(goodCountStr);
 
             int poorCount = commentsCount.getInt("PoorCount");
+            jdItem.setPoorCount(poorCount);
 
             String poorCountStr = commentsCount.getString("PoorCountStr");
-
-
+            jdItem.setGoodCountStr(poorCountStr);
         }
+    }
+    /**
+     * 基础信息爬取
+     * @param url 商品链接
+     * @return 商品
+     */
+    @Override
+    public Item crawl(String url) throws Exception {
+
+        document = getDocument(url);
+        processDocument();
+
+        jdItem.setMarket(getMarket());
+        jdItem.setSkuId(getSkuId());
+        jdItem.setDescription(getDescription());
+        jdItem.setBrand(getBrand());
+        jdItem.setZhName(getZhName());
+        jdItem.setModel(getModel());
+        jdItem.setVendor(getVendor());
+        jdItem.setVendorId(getVendorId());
+        jdItem.setImageGroup(getImageGroup());
+        jdItem.setSelfSell(getIsSelfSell());
+        jdItem.setCommentVersion(getCommentVersion());
+        jdItem.setCategory(getCategory());
+
+
+        Integer jQueryId = 6546654;
+
+
+
         jQueryId = jQueryId + 1;
 
 
         // get stock info
-        String stockStr = "";
-        int pduid = 1901035936;
-
         Connection.Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + jdItem.getSkuId() +
                 "&area=1_72_2799_0" +
                 "&vendorId=" + jdItem.getVendorId() +
@@ -394,39 +402,19 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                 "&choseSuitSkuIds=" +
                 "&extraParam={\"originid\":\"1\"}" +
                 "&ch=1" +
-                "&pduid=" + (System.currentTimeMillis() / 1000) + pduid +
+                "&pduid=" + (System.currentTimeMillis() / 1000) + 1901035936 +
                 "&pdpin=" +
                 "&detailedAdd=null" +
                 "&callback=jQuery" + jQueryId)
                 .ignoreContentType(true)
                 .execute();
-        stockStr = stockDoc.body();
+        String stockStr = stockDoc.body();
         logger.info(stockStr);
-//            String stockStr = new String(stockDoc.toString().getBytes(), "gbk");
-
         Pattern stockPattern = Pattern.compile("jQuery" + jQueryId + "\\(\\{\\\"stock\\\":(\\{.+\\}),\\\"");
         Matcher stockMatcher = stockPattern.matcher(stockStr);
         if (stockMatcher.find()) {
 
             JSONObject stock = new JSONObject(stockMatcher.group(1));
-
-//            JSONObject selfDeliver;
-//            try {
-//                selfDeliver = stock.getJSONObject("self_D");
-//                String vender = selfDeliver.getString("vender");
-//                jdItem.setVendor(vender);
-//            } catch (Exception e) {
-//                logger.info("get selfDeliver from D");
-//            }
-//
-//            try {
-//                selfDeliver = stock.getJSONObject("D");
-//                String vender = selfDeliver.getString("vender");
-//                jdItem.setVendor(vender);
-//            } catch (Exception e) {
-//                logger.info("get selfDeliver from self_D");
-//            }
-
 
             JSONObject jdPrice = stock.getJSONObject("jdPrice");
             String p = jdPrice.getString("p");
@@ -434,19 +422,12 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             Price price = new Price();
             price.setPrice(Double.parseDouble(p));
             price.setItem(jdItem);
-            price.setMarket(market);
+            price.setMarket(getMarket());
 
             Long volume = (long) generalCount;
             price.setVolume(volume);
 
-
             price.setCrawDateTime(LocalDateTime.now());
-            logger.info("price_id   ->" + price.getPriceId() + "\n" +
-                    "date       ->" + price.getCrawDateTime() + "\n" +
-                    "jdItem       ->" + price.getItem() + "\n" +
-                    "market     ->" + price.getMarket() + "\n" +
-                    "price      ->" + price.getPrice() + "\n" +
-                    "volume     ->" + price.getVolume());
             priceService.insertByPrice(price);
             logger.info("price has been saved.");
         }
@@ -460,16 +441,15 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     /**
      * 商品评论爬取
-     * @param item 商品
      */
     @Override
-    public void crawItemComment (Item item) throws Exception {
+    public void crawItemComment () throws Exception {
         // get comments
         String commentStr = "";
         for (int currentPage = 0; currentPage < 5; currentPage++) {
             String commentUrl = "https://club.jd.com/comment/skuProductPageComments.action?" +
-                    "callback=fetchJSON_comment98vv" + item.getCommentVersion() +
-                    "&productId=" + item.getSkuId() +
+                    "callback=fetchJSON_comment98vv" + jdItem.getCommentVersion() +
+                    "&productId=" + jdItem.getSkuId() +
                     "&score=0" +
                     "&sortType=5" +
                     "&page=" + currentPage +
@@ -482,12 +462,12 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                     .header("accept", "*/*")
                     .header("accept-encoding", "gzip, deflate, br")
                     .header("accept-language", "zh-CN,zh;q=0.9")
-                    .header("referer", "https://item.jd.com/" + item.getSkuId() + ".html")
+                    .header("referer", "https://jdItem.jd.com/" + jdItem.getSkuId() + ".html")
                     .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
                     .execute();
             commentStr = commentDoc.body();
             logger.info(commentStr);
-            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv" + item.getCommentVersion() + "\\((\\{.+\\})\\);");
+            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv" + jdItem.getCommentVersion() + "\\((\\{.+\\})\\);");
             Matcher commentMatcher = commentPattern.matcher(commentStr);
             if (commentMatcher.find()) {
                 JSONObject comment = new JSONObject(commentMatcher.group(1));
@@ -495,48 +475,38 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                     JSONObject productCommentsCount = comment.getJSONObject("productCommentSummary");
 
                     int commentCount = productCommentsCount.getInt("commentCount");
-                    item.setCommentCount(commentCount);
+                    jdItem.setCommentCount(commentCount);
 
                     String commentCountStr = productCommentsCount.getString("commentCountStr");
-                    item.setCommentCountStr(commentCountStr);
-                    logger.info("[set]commentCountStr    ->" + item.getCommentCountStr());
+                    jdItem.setCommentCountStr(commentCountStr);
 
                     int generalCount = productCommentsCount.getInt("generalCount");
-                    item.setGeneralCount(generalCount);
+                    jdItem.setGeneralCount(generalCount);
 
                     String generalCountStr = productCommentsCount.getString("generalCountStr");
-                    item.setGeneralCountStr(generalCountStr);
-                    logger.info("[set]generalCountStr    ->" + item.getGeneralCountStr());
+                    jdItem.setGeneralCountStr(generalCountStr);
 
                     int goodCount = productCommentsCount.getInt("goodCount");
-                    item.setGoodCount(goodCount);
+                    jdItem.setGoodCount(goodCount);
 
                     String goodCountStr = productCommentsCount.getString("goodCountStr");
-                    item.setGoodCountStr(goodCountStr);
-                    logger.info("[set]goodCountStr       ->" + item.getGoodCountStr());
+                    jdItem.setGoodCountStr(goodCountStr);
 
 
                     int poorCount = productCommentsCount.getInt("poorCount");
-                    item.setPoorCount(poorCount);
+                    jdItem.setPoorCount(poorCount);
 
                     String poorCountStr = productCommentsCount.getString("poorCountStr");
-                    item.setPoorCountStr(poorCountStr);
-                    logger.info("[set]poorCountStr       ->" + item.getPoorCountStr());
+                    jdItem.setPoorCountStr(poorCountStr);
 
                 }
                 JSONArray comments = comment.getJSONArray("comments");
                 for (int i = 0; i < comments.length(); i++) {
                     JSONObject cmt = comments.getJSONObject(i);
                     Comment commentContent = new Comment();
-                    commentContent.setItem(item);
+                    commentContent.setItem(jdItem);
                     String content = cmt.getString("content");
                     commentContent.setContent(content);
-
-//                    logger.info("comment_id     ->" + commentContent.getFeatureId() + "\n" +
-//                                "content        ->" + commentContent.getContent() + "\n" +
-//                                "is_good        ->" + commentContent.getGood() + "\n" +
-//                                "content_id     ->" + commentContent.getCommentId() + "\n" +
-//                                "item_id        ->" + commentContent.getId());
                     commentContent.setCrawDate(LocalDate.now());
                     commentService.insertByComment(commentContent);
                     logger.info("commentContent has been saved.");
@@ -545,11 +515,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             TimeUnit.SECONDS.sleep(3);
 
         }
-        logger.info("[check]commentCountStr    ->" + item.getCommentCountStr());
-        logger.info("[check]generalCountStr    ->" + item.getGeneralCountStr());
-        logger.info("[check]goodCountStr       ->" + item.getGoodCountStr());
-        logger.info("[check]poorCountStr       ->" + item.getPoorCountStr());
-        item.setCrawDate(LocalDate.now());
-        itemService.update(item);
+        jdItem.setCrawDate(LocalDate.now());
+        jdItemService.update(jdItem);
     }
 }

@@ -13,6 +13,7 @@ public interface PhoneDetailRepository extends JpaRepository<PhoneDetail, Long>,
 
     PhoneDetail findByPhoneDetailId(Long phoneDetailId);
     PhoneDetail findByItem(Item item);
+    List<PhoneDetail> findByItemAndRomCapacity(Item item, Double rom);
     List<PhoneDetail> findByBatteryCapInAndCpuClockInAndRomCapacityInAndRamCapacityInAndPxDensityIn(
             List<Integer> batteryCap,
             List<Double> cpuClock,
