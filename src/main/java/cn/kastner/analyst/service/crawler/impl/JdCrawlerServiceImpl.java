@@ -265,6 +265,11 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
     }
 
+    /**
+     * 获取商品品类
+     * @return 品类
+     * @throws CrawlerException 未获取到品类
+     */
     private Category getCategory() throws CrawlerException {
         Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
         Matcher catMatcher = catPattern.matcher(document.head().toString());
