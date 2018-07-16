@@ -89,41 +89,64 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     private JdItem jdItem = new JdItem();
 
-    private Document getDocument(String url) throws IOException {
-        return Jsoup.connect(url)
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
-                .get();
-    }
-
     private Document document;
 
+    /**
+     * 匹配商品主页面
+     * @param url 商品主页面链接
+     * @return 商品页面对象
+     * @throws IOException 链接失败
+     */
+    private Document getDocument(String url) throws IOException {
+        Document document = Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+                .get();
+        document.getElementsByClass("Ptable-tips").remove();
+        return document;
+    }
+
+    /**
+     * 匹配商品电商
+     * @return 电商
+     */
     private Market getMarket() {
         return marketRepository.findByCode(Market.Code.JD);
     }
 
-    private void processDocument() {
-        document.getElementsByClass("Ptable-tips").remove();
-    }
-
+    /**
+     * 匹配商品 SkuId
+     * @return 商品 SkuId
+     * @throws CrawlerException 未匹配到商品 SkuId
+     */
     private String getSkuId() throws CrawlerException {
         String skuId = finder.getString(document.head().toString(), "skuId: (\\d*),", 1);
         if (skuId != null) {
             return skuId;
         } else {
-            throw new CrawlerException("未获取到 skuId");
+            throw new CrawlerException("未匹配到 skuId");
         }
     }
 
+    /**
+     * 匹配商品描述
+     * @return 商品描述
+     * @throws CrawlerException 未匹配到商品描述
+     */
     private String getDescription() throws CrawlerException {
         Elements itemSelect = document.getElementsByClass("jdItem  selected  ");
         String description = itemSelect.get(0).getElementsByTag("i").get(0).text();
         if (description != null) {
             return description;
         } else {
-            throw new CrawlerException("未获取到描述");
+            throw new CrawlerException("未匹配到描述");
         }
     }
 
+    /**
+     * 匹配商品品牌
+     * @return 商品品牌
+     * @throws CrawlerException 未匹配到商品品牌
+     */
     private Brand getBrand() throws CrawlerException {
         String brandStr = document.getElementById("parameter-brand")
                 .getElementsByTag("a")
@@ -169,23 +192,33 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                 }
             }
         } else {
-            throw new CrawlerException("未获取到品牌");
+            throw new CrawlerException("未匹配到品牌");
         }
     }
 
+    /**
+     * 匹配商品中文名称
+     * @return 中文名称
+     * @throws CrawlerException 未匹配
+     */
     private String getZhName() throws CrawlerException {
         String zhName = finder.getString(document.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
         if (zhName != null) {
             logger.info("Get Item zhName from title: " + zhName);
             return zhName;
         } else {
-            throw new CrawlerException("未获取到中文名");
+            throw new CrawlerException("未匹配到中文名");
         }
     }
 
+    /**
+     * 匹配商品型号
+     * @return 商品型号
+     * @throws CrawlerException 未匹配
+     */
     private String getModel() throws CrawlerException {
         Element dlEl = document
-                // div.Ptable
+                // `div.Ptable`
                 .getElementsByClass("Ptable").get(0)
                 // div.Ptable-jdItem
                 .getElementsByClass("Ptable-jdItem").get(0)
@@ -202,35 +235,52 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             }
             index++;
         }
-        throw new CrawlerException("未获取到型号");
+        throw new CrawlerException("未匹配到型号");
     }
 
+    /**
+     * 匹配商品店铺Id
+     * @return 店铺Id
+     * @throws CrawlerException 未匹配
+     */
     private String getVendorId() throws CrawlerException {
         Pattern vendorIdPattern = Pattern.compile("venderId:(\\d+),");
         Matcher vendorIdMatcher = vendorIdPattern.matcher(document.head().toString());
         if (vendorIdMatcher.find()) {
             String vendorId = vendorIdMatcher.group(1);
-            logger.info("Get  vendorId from head: " + vendorId);
             return vendorId;
         } else {
-            throw new CrawlerException("未获取到店铺Id");
+            throw new CrawlerException("未匹配到店铺Id");
         }
     }
 
+    /**
+     * 匹配商品图片链接列表
+     * @return 图片链接列表以逗号分隔
+     * @throws CrawlerException 未匹配
+     */
     private String getImageGroup() throws CrawlerException {
         String imageListStr = finder.getString(document.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
         if (imageListStr != null) {
             return StringUtils.join(imageListStr.split("\",\""), ",");
         } else {
-            throw new CrawlerException("未获取到展示图片列表");
+            throw new CrawlerException("未匹配到展示图片列表");
         }
     }
 
+    /**
+     * 获取是否自营
+     * @return 是否自营
+     */
     private Boolean getIsSelfSell() {
         Element selfSelling = document.getElementsByClass("u-jd").get(0);
         return selfSelling != null;
     }
 
+    /**
+     * 匹配商品 Rom
+     * @return Rom
+     */
     private Double crawlRom() {
         Double rom = Double.parseDouble(finder.getString(document.toString(), "机身内存：(.*)GB</li>", 1));
         itemService.insertByItem(jdItem);
@@ -244,31 +294,39 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         return rom;
     }
 
+    /**
+     * 匹配商品 CommentVersion
+     * @return CommentVersion
+     * @throws CrawlerException 未匹配
+     */
     private String getCommentVersion() throws CrawlerException {
         Pattern commentVersionPattern = Pattern.compile("commentVersion:\\'(.+)\\',");
         Matcher commentVersionMatcher = commentVersionPattern.matcher(document.head().toString());
         if (commentVersionMatcher.find()) {
-            String commentVersion = commentVersionMatcher.group(1);
-            logger.info("Get comment version from head: " + commentVersion);
-            return commentVersion;
+            return commentVersionMatcher.group(1);
         } else {
-            throw new CrawlerException("未获取到 CommentVersion");
+            throw new CrawlerException("未匹配到 CommentVersion");
         }
     }
 
+    /**
+     * 匹配商品店铺
+     * @return 商品店铺
+     * @throws CrawlerException 未匹配
+     */
     private String getVendor() throws CrawlerException {
         String vendor = finder.getString(document.toString(), "dianpuname.*\">(.*)</a>", 1);
         if (vendor != null) {
             return vendor;
         } else {
-            throw new CrawlerException("未获取到店铺");
+            throw new CrawlerException("未匹配到店铺");
         }
     }
 
     /**
-     * 获取商品品类
+     * 匹配商品品类
      * @return 品类
-     * @throws CrawlerException 未获取到品类
+     * @throws CrawlerException 未匹配到品类
      */
     private Category getCategory() throws CrawlerException {
         Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
@@ -316,10 +374,9 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                 String level3 = level3Matcher.group(1);
                 category.setLevelThreeName(level3);
             }
-            logger.info("Get cat from head: " + categoryStr);
             return category;
         } else {
-            throw new CrawlerException("未获取到品类");
+            throw new CrawlerException("未匹配到品类");
         }
     }
 
@@ -375,7 +432,6 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     public Item crawl(String url) throws Exception {
 
         document = getDocument(url);
-        processDocument();
 
         jdItem.setMarket(getMarket());
         jdItem.setSkuId(getSkuId());
