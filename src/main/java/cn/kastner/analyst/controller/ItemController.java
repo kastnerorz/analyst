@@ -1,5 +1,5 @@
 package cn.kastner.analyst.controller;
-import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.service.core.CommentService;
 import cn.kastner.analyst.service.core.ItemService;
 import cn.kastner.analyst.service.crawler.JdCrawlerService;

@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.core.impl;
 
-import cn.kastner.analyst.domain.core.Feature;
+import cn.kastner.analyst.domain.Feature;
 import cn.kastner.analyst.repository.core.FeatureRepository;
 import cn.kastner.analyst.service.core.FeatureService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package cn.kastner.analyst.service.core.impl;
 
-import cn.kastner.analyst.domain.core.Demand;
-import cn.kastner.analyst.domain.core.Param;
+import cn.kastner.analyst.domain.Demand;
+import cn.kastner.analyst.domain.Param;
 import cn.kastner.analyst.repository.core.ParamRepository;
 import cn.kastner.analyst.service.core.ParamService;
 import org.springframework.beans.factory.annotation.Autowired;

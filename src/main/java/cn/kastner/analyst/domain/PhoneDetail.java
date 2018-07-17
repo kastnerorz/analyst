@@ -1,7 +1,4 @@
-package cn.kastner.analyst.domain.detail;
-
-import cn.kastner.analyst.domain.core.Brand;
-import cn.kastner.analyst.domain.core.Item;
+package cn.kastner.analyst.domain;
 
 import javax.persistence.*;
 import java.time.LocalDate;

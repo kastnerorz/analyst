@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.crawler;
 
-import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.Item;
 
 import java.io.IOException;
 

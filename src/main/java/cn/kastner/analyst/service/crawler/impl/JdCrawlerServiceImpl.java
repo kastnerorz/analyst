@@ -1,8 +1,6 @@
 package cn.kastner.analyst.service.crawler.impl;
 
-import cn.kastner.analyst.domain.core.*;
-import cn.kastner.analyst.domain.crawler.JdItem;
-import cn.kastner.analyst.domain.detail.PhoneDetail;
+import cn.kastner.analyst.domain.*;
 import cn.kastner.analyst.exception.CrawlerException;
 import cn.kastner.analyst.repository.core.MarketRepository;
 import cn.kastner.analyst.service.core.*;
@@ -24,10 +22,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.thymeleaf.util.StringUtils;
 
-import javax.sql.rowset.CachedRowSet;
 import java.io.IOException;
-import java.security.cert.CertificateRevokedException;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,7 +43,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     private static Logger logger = Logger.getLogger(strClassName);
 
     private final
-    ItemService itemService;
+    JdItemService jdItemService;
 
     private final
     CommentService commentService;
@@ -67,8 +62,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     private final PhoneDetailService phoneDetailService;
 
     @Autowired
-    public JdCrawlerServiceImpl(ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, PhoneDetailService phoneDetailService) {
-        this.itemService = itemService;
+    public JdCrawlerServiceImpl(JdItemService jdItemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, PhoneDetailService phoneDetailService) {
+        this.jdItemService = jdItemService;
         this.commentService = commentService;
         this.priceService = priceService;
         this.brandService = brandService;
@@ -89,7 +84,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     private JdItem jdItem = new JdItem();
 
-    private Document document;
+    private Document doc;
 
     /**
      * 匹配商品主页面
@@ -97,12 +92,12 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @return 商品页面对象
      * @throws IOException 链接失败
      */
-    private Document getDocument(String url) throws IOException {
-        Document document = Jsoup.connect(url)
+    private Document getMainDoc(String url) throws IOException {
+        doc = Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
                 .get();
-        document.getElementsByClass("Ptable-tips").remove();
-        return document;
+        doc.getElementsByClass("Ptable-tips").remove();
+        return doc;
     }
 
     /**
@@ -119,7 +114,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配到商品 SkuId
      */
     private String getSkuId() throws CrawlerException {
-        String skuId = finder.getString(document.head().toString(), "skuId: (\\d*),", 1);
+        String skuId = finder.getString(doc.head().toString(), "skuId: (\\d*),", 1);
         if (skuId != null) {
             return skuId;
         } else {
@@ -133,7 +128,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配到商品描述
      */
     private String getDescription() throws CrawlerException {
-        Elements itemSelect = document.getElementsByClass("jdItem  selected  ");
+        Elements itemSelect = doc.getElementsByClass("jdItem  selected  ");
         String description = itemSelect.get(0).getElementsByTag("i").get(0).text();
         if (description != null) {
             return description;
@@ -148,7 +143,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配到商品品牌
      */
     private Brand getBrand() throws CrawlerException {
-        String brandStr = document.getElementById("parameter-brand")
+        String brandStr = doc.getElementById("parameter-brand")
                 .getElementsByTag("a")
                 .get(0)
                 .text();
@@ -202,7 +197,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配
      */
     private String getZhName() throws CrawlerException {
-        String zhName = finder.getString(document.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
+        String zhName = finder.getString(doc.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
         if (zhName != null) {
             logger.info("Get Item zhName from title: " + zhName);
             return zhName;
@@ -217,7 +212,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配
      */
     private String getModel() throws CrawlerException {
-        Element dlEl = document
+        Element dlEl = doc
                 // `div.Ptable`
                 .getElementsByClass("Ptable").get(0)
                 // div.Ptable-jdItem
@@ -245,10 +240,9 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      */
     private String getVendorId() throws CrawlerException {
         Pattern vendorIdPattern = Pattern.compile("venderId:(\\d+),");
-        Matcher vendorIdMatcher = vendorIdPattern.matcher(document.head().toString());
+        Matcher vendorIdMatcher = vendorIdPattern.matcher(doc.head().toString());
         if (vendorIdMatcher.find()) {
-            String vendorId = vendorIdMatcher.group(1);
-            return vendorId;
+            return vendorIdMatcher.group(1);
         } else {
             throw new CrawlerException("未匹配到店铺Id");
         }
@@ -260,7 +254,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配
      */
     private String getImageGroup() throws CrawlerException {
-        String imageListStr = finder.getString(document.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
+        String imageListStr = finder.getString(doc.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
         if (imageListStr != null) {
             return StringUtils.join(imageListStr.split("\",\""), ",");
         } else {
@@ -273,7 +267,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @return 是否自营
      */
     private Boolean getIsSelfSell() {
-        Element selfSelling = document.getElementsByClass("u-jd").get(0);
+        Element selfSelling = doc.getElementsByClass("u-jd").get(0);
         return selfSelling != null;
     }
 
@@ -282,8 +276,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @return Rom
      */
     private Double crawlRom() {
-        Double rom = Double.parseDouble(finder.getString(document.toString(), "机身内存：(.*)GB</li>", 1));
-        itemService.insertByItem(jdItem);
+        Double rom = Double.parseDouble(finder.getString(doc.toString(), "机身内存：(.*)GB</li>", 1));
+        jdItemService.insertByItem(jdItem);
         List<PhoneDetail> phoneDetailList = phoneDetailService.findByItemAndRom(jdItem, rom);
         if (phoneDetailList.isEmpty()) {
             PhoneDetail phoneDetail = new PhoneDetail();
@@ -301,7 +295,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      */
     private String getCommentVersion() throws CrawlerException {
         Pattern commentVersionPattern = Pattern.compile("commentVersion:\\'(.+)\\',");
-        Matcher commentVersionMatcher = commentVersionPattern.matcher(document.head().toString());
+        Matcher commentVersionMatcher = commentVersionPattern.matcher(doc.head().toString());
         if (commentVersionMatcher.find()) {
             return commentVersionMatcher.group(1);
         } else {
@@ -315,7 +309,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配
      */
     private String getVendor() throws CrawlerException {
-        String vendor = finder.getString(document.toString(), "dianpuname.*\">(.*)</a>", 1);
+        String vendor = finder.getString(doc.toString(), "dianpuname.*\">(.*)</a>", 1);
         if (vendor != null) {
             return vendor;
         } else {
@@ -330,7 +324,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      */
     private Category getCategory() throws CrawlerException {
         Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
-        Matcher catMatcher = catPattern.matcher(document.head().toString());
+        Matcher catMatcher = catPattern.matcher(doc.head().toString());
         if (catMatcher.find()) {
             String categoryStr = catMatcher.group(1);
             String[] cats = categoryStr.split(",");
@@ -353,7 +347,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
             // get level1 name
             Pattern level1Pattern = Pattern.compile("mbNav-1\">(.*)</a>");
-            Matcher level1Matcher = level1Pattern.matcher(document.toString());
+            Matcher level1Matcher = level1Pattern.matcher(doc.toString());
             if (level1Matcher.find()) {
                 String level1 = level1Matcher.group(1);
                 category.setLevelOneName(level1);
@@ -361,7 +355,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
             // get level2 name
             Pattern level2Pattern = Pattern.compile("mbNav-2\">(.*)</a>");
-            Matcher level2Matcher = level2Pattern.matcher(document.toString());
+            Matcher level2Matcher = level2Pattern.matcher(doc.toString());
             if (level2Matcher.find()) {
                 String level2 = level2Matcher.group(1);
                 category.setLevelTwoName(level2);
@@ -369,7 +363,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
             // get level3 name
             Pattern level3Pattern = Pattern.compile("mbNav-3\">(.*)</a>");
-            Matcher level3Matcher = level3Pattern.matcher(document.toString());
+            Matcher level3Matcher = level3Pattern.matcher(doc.toString());
             if (level3Matcher.find()) {
                 String level3 = level3Matcher.group(1);
                 category.setLevelThreeName(level3);
@@ -381,48 +375,89 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     }
 
 
-    private void getCommentCount() {
-        // get commentsCount
-        Document commentsCountDoc = Jsoup.connect("http://club.jd.com/comment/productCommentSummaries.action")
-                .header("accept", "*/*")
-                .header("accept-encoding", "gzip, deflate, br")
-                .header("accept-language", "zh-CN,zh;q=0.9")
-                .header("referer", "https://item.jd.com/" + jdItem.getSkuId() + ".html")
-                .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
-                        "AppleWebKit/537.36 (KHTML, like Gecko)" +
-                        "Chrome/65.0.3325.181 Safari/537.36")
+//    private void getCommentCount() {
+//        // get commentsCount
+//        Document commentsCountDoc = Jsoup.connect("http://club.jd.com/comment/productCommentSummaries.action")
+//                .header("accept", "*/*")
+//                .header("accept-encoding", "gzip, deflate, br")
+//                .header("accept-language", "zh-CN,zh;q=0.9")
+//                .header("referer", "https://item.jd.com/" + jdItem.getSkuId() + ".html")
+//                .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
+//                        "AppleWebKit/537.36 (KHTML, like Gecko)" +
+//                        "Chrome/65.0.3325.181 Safari/537.36")
+//
+//                .data("referenceIds", jdItem.getSkuId())
+//                .data("callback", "jQuery" + 6546654)
+//                .data("_", "" + System.currentTimeMillis() / 1000)
+//                .get();
+//        Pattern commentsCountPattern = Pattern.compile("jQuery" + 6546654 + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);");
+//        Matcher commentsCountMatcher = commentsCountPattern.matcher(commentsCountDoc.toString());
+//        if (commentsCountMatcher.find()) {
+//
+//            JSONObject commentsCount = new JSONObject(commentsCountMatcher.group(1));
+//
+//            int generalCount = commentsCount.getInt("GeneralCount");
+//            jdItem.setGeneralCount(generalCount);
+//
+//            String generalCountStr = commentsCount.getString("GeneralCountStr");
+//            jdItem.setGeneralCountStr(generalCountStr);
+//
+//            int goodCount = commentsCount.getInt("GoodCount");
+//            jdItem.setGoodCount(goodCount);
+//
+//            String goodCountStr = commentsCount.getString("GoodCountStr");
+//            jdItem.setGoodCountStr(goodCountStr);
+//
+//            int poorCount = commentsCount.getInt("PoorCount");
+//            jdItem.setPoorCount(poorCount);
+//
+//            String poorCountStr = commentsCount.getString("PoorCountStr");
+//            jdItem.setGoodCountStr(poorCountStr);
+//        }
+//    }
 
-                .data("referenceIds", jdItem.getSkuId())
-                .data("callback", "jQuery" + 6546654)
-                .data("_", "" + System.currentTimeMillis() / 1000)
+    /**
+     * 获取库存信息
+     * @return 库存信息JSON对象
+     * @throws IOException 连接失败
+     */
+    private JSONObject getStockJSON() throws IOException {
+        Document stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + jdItem.getSkuId() +
+                "&area=1_72_2799_0" +
+                "&vendorId=" + jdItem.getVendorId() +
+                "&cat=" + jdItem.getCategory().getCategoryStr() +
+                "&buyNum=1" +
+                "&choseSuitSkuIds=" +
+                "&extraParam={\"originid\":\"1\"}" +
+                "&ch=1" +
+                "&pduid=" + (System.currentTimeMillis() / 1000) + 1901035936 +
+                "&pdpin=" +
+                "&detailedAdd=null" +
+                "&callback=jQuery" + 6546654)
                 .get();
-
-         commentsCount;
-        Pattern commentsCountPattern = Pattern.compile("jQuery" + 6546654 + "\\(\\{\\\"CommentsCount\\\":\\[(.+)]\\}\\);");
-        Matcher commentsCountMatcher = commentsCountPattern.matcher(commentsCountDoc.toString());
-        if (commentsCountMatcher.find()) {
-
-            JSONObject commentsCount = new JSONObject(commentsCountMatcher.group(1));
-
-            int generalCount = commentsCount.getInt("GeneralCount");
-            jdItem.setGeneralCount(generalCount);
-
-            String generalCountStr = commentsCount.getString("GeneralCountStr");
-            jdItem.setGeneralCountStr(generalCountStr);
-
-            int goodCount = commentsCount.getInt("GoodCount");
-            jdItem.setGoodCount(goodCount);
-
-            String goodCountStr = commentsCount.getString("GoodCountStr");
-            jdItem.setGoodCountStr(goodCountStr);
-
-            int poorCount = commentsCount.getInt("PoorCount");
-            jdItem.setPoorCount(poorCount);
-
-            String poorCountStr = commentsCount.getString("PoorCountStr");
-            jdItem.setGoodCountStr(poorCountStr);
+        Pattern stockPattern = Pattern.compile("jQuery" + 6546654 + "\\(\\{\\\"stock\\\":(\\{.+\\}),\\\"");
+        Matcher stockMatcher = stockPattern.matcher(stockDoc.toString());
+        if (stockMatcher.find()) {
+            return new JSONObject(stockMatcher.group(1));
+        } else {
+            throw new IOException("获取库存信息失败");
         }
     }
+
+    private Price getPrice() throws IOException {
+        JSONObject stock = getStockJSON();
+        JSONObject jdPrice = stock.getJSONObject("jdPrice");
+        String p = jdPrice.getString("p");
+        // has plus price
+        Price price = new Price();
+        price.setPrice(Double.parseDouble(p));
+        price.setItem(jdItem);
+        price.setMarket(getMarket());
+        price.setCrawDateTime(LocalDateTime.now());
+        priceService.insertByPrice(price);
+        return price;
+    }
+
     /**
      * 基础信息爬取
      * @param url 商品链接
@@ -431,7 +466,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     @Override
     public Item crawl(String url) throws Exception {
 
-        document = getDocument(url);
+        doc = getMainDoc(url);
 
         jdItem.setMarket(getMarket());
         jdItem.setSkuId(getSkuId());
@@ -446,55 +481,13 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         jdItem.setCommentVersion(getCommentVersion());
         jdItem.setCategory(getCategory());
 
-
-        Integer jQueryId = 6546654;
-
+        getPrice();
 
 
-        jQueryId = jQueryId + 1;
 
 
-        // get stock info
-        Connection.Response stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + jdItem.getSkuId() +
-                "&area=1_72_2799_0" +
-                "&vendorId=" + jdItem.getVendorId() +
-                "&cat=" + jdItem.getCategory().getCategoryStr() +
-                "&buyNum=1" +
-                "&choseSuitSkuIds=" +
-                "&extraParam={\"originid\":\"1\"}" +
-                "&ch=1" +
-                "&pduid=" + (System.currentTimeMillis() / 1000) + 1901035936 +
-                "&pdpin=" +
-                "&detailedAdd=null" +
-                "&callback=jQuery" + jQueryId)
-                .ignoreContentType(true)
-                .execute();
-        String stockStr = stockDoc.body();
-        logger.info(stockStr);
-        Pattern stockPattern = Pattern.compile("jQuery" + jQueryId + "\\(\\{\\\"stock\\\":(\\{.+\\}),\\\"");
-        Matcher stockMatcher = stockPattern.matcher(stockStr);
-        if (stockMatcher.find()) {
 
-            JSONObject stock = new JSONObject(stockMatcher.group(1));
-
-            JSONObject jdPrice = stock.getJSONObject("jdPrice");
-            String p = jdPrice.getString("p");
-            // has plus price
-            Price price = new Price();
-            price.setPrice(Double.parseDouble(p));
-            price.setItem(jdItem);
-            price.setMarket(getMarket());
-
-            Long volume = (long) generalCount;
-            price.setVolume(volume);
-
-            price.setCrawDateTime(LocalDateTime.now());
-            priceService.insertByPrice(price);
-            logger.info("price has been saved.");
-        }
-
-
-        itemService.insertByItem(jdItem);
+        jdJdItemService.insertByJdItem(jdItem);
         logger.info("jdItem has been saved.");
 
         return jdItem;
@@ -577,6 +570,6 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
         }
         jdItem.setCrawDate(LocalDate.now());
-        jdItemService.update(jdItem);
+        jdJdItemService.update(jdItem);
     }
 }

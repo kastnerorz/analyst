@@ -1,8 +1,8 @@
 package cn.kastner.analyst.service.crawler.impl;
 
-import cn.kastner.analyst.domain.core.Brand;
-import cn.kastner.analyst.domain.core.Item;
-import cn.kastner.analyst.domain.detail.PhoneDetail;
+import cn.kastner.analyst.domain.Brand;
+import cn.kastner.analyst.domain.Item;
+import cn.kastner.analyst.domain.PhoneDetail;
 import cn.kastner.analyst.service.core.BrandService;
 import cn.kastner.analyst.service.crawler.PhoneDbCrawlerService;
 import cn.kastner.analyst.service.detail.PhoneDetailService;

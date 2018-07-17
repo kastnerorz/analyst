@@ -1,7 +1,7 @@
 package cn.kastner.analyst.service.detail;
 
-import cn.kastner.analyst.domain.core.Item;
-import cn.kastner.analyst.domain.detail.PhoneDetail;
+import cn.kastner.analyst.domain.Item;
+import cn.kastner.analyst.domain.PhoneDetail;
 
 import java.util.List;
 

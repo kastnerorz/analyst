@@ -1,12 +1,12 @@
 package cn.kastner.analyst.controller;
 
-import cn.kastner.analyst.domain.core.Category;
+import cn.kastner.analyst.domain.Category;
 import cn.kastner.analyst.service.core.BrandService;
 import cn.kastner.analyst.service.core.CategoryService;
 import cn.kastner.analyst.service.core.ItemService;
 import cn.kastner.analyst.service.core.PriceService;
 import cn.kastner.analyst.service.crawler.MainCrawlerService;
-import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.Item;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -1,7 +1,7 @@
 package cn.kastner.analyst.service.core.impl;
 
-import cn.kastner.analyst.domain.core.Comment;
-import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.Comment;
+import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.core.CommentRepository;
 import cn.kastner.analyst.service.core.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;

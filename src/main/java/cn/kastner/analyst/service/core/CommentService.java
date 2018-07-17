@@ -1,7 +1,7 @@
 package cn.kastner.analyst.service.core;
 
-import cn.kastner.analyst.domain.core.Comment;
-import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.Comment;
+import cn.kastner.analyst.domain.Item;
 
 import java.time.LocalDate;
 import java.util.List;

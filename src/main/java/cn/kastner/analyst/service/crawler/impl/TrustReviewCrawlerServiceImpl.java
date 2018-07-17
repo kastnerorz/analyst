@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.crawler.impl;
 
-import cn.kastner.analyst.domain.core.Item;
+import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.repository.core.ItemRepository;
 import cn.kastner.analyst.service.crawler.TrustReviewCrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;

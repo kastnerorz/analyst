@@ -1,4 +1,4 @@
-package cn.kastner.analyst.domain.core;
+package cn.kastner.analyst.domain;
 
 
 
@@ -28,8 +28,6 @@ public class Price {
     @ManyToOne(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE})
     private Market market;
-
-    private Long volume;
 
     public Long getPriceId() {
         return priceId;
@@ -71,11 +69,4 @@ public class Price {
         this.market = market;
     }
 
-    public Long getVolume() {
-        return volume;
-    }
-
-    public void setVolume(Long volume) {
-        this.volume = volume;
-    }
 }

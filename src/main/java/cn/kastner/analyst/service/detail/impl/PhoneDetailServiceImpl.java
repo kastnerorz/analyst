@@ -1,7 +1,7 @@
 package cn.kastner.analyst.service.detail.impl;
 
-import cn.kastner.analyst.domain.core.Item;
-import cn.kastner.analyst.domain.detail.PhoneDetail;
+import cn.kastner.analyst.domain.Item;
+import cn.kastner.analyst.domain.PhoneDetail;
 import cn.kastner.analyst.repository.detail.PhoneDetailRepository;
 import cn.kastner.analyst.service.detail.PhoneDetailService;
 import org.springframework.beans.factory.annotation.Autowired;

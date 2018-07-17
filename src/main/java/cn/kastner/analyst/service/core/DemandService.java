@@ -1,7 +1,7 @@
 package cn.kastner.analyst.service.core;
 
-import cn.kastner.analyst.domain.core.Category;
-import cn.kastner.analyst.domain.core.Demand;
+import cn.kastner.analyst.domain.Category;
+import cn.kastner.analyst.domain.Demand;
 
 import java.util.List;
 

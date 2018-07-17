@@ -1,6 +1,6 @@
 package cn.kastner.analyst.repository.core;
 
-import cn.kastner.analyst.domain.core.Feature;
+import cn.kastner.analyst.domain.Feature;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

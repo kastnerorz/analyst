@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.core.impl;
 
-import cn.kastner.analyst.domain.core.Brand;
+import cn.kastner.analyst.domain.Brand;
 import cn.kastner.analyst.repository.core.BrandRepository;
 import cn.kastner.analyst.service.core.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,5 @@
-package cn.kastner.analyst.domain.core;
+package cn.kastner.analyst.domain;
 
-import cn.kastner.analyst.domain.detail.PhoneDetail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;

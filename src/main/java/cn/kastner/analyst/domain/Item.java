@@ -1,4 +1,4 @@
-package cn.kastner.analyst.domain.core;
+package cn.kastner.analyst.domain;
 
 
 import javax.persistence.*;
@@ -56,6 +56,21 @@ public class Item {
     private int commentCount;
 
     private String commentCountStr;
+
+    private int generalCount;
+
+    private String generalCountStr;
+
+    private int goodCount;
+
+    private String goodCountStr;
+
+    private int poorCount;
+
+    private String poorCountStr;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean isSelfSell;
 
     private LocalDate crawDate;
 
@@ -171,22 +186,6 @@ public class Item {
         this.keyFeature = keyFeature;
     }
 
-    public int getCommentCount() {
-        return commentCount;
-    }
-
-    public void setCommentCount(int commentCount) {
-        this.commentCount = commentCount;
-    }
-
-    public String getCommentCountStr() {
-        return commentCountStr;
-    }
-
-    public void setCommentCountStr(String commentCountStr) {
-        this.commentCountStr = commentCountStr;
-    }
-
 
     public LocalDate getCrawDate() {
         return crawDate;
@@ -202,5 +201,81 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    @Override
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    @Override
+    public String getCommentCountStr() {
+        return commentCountStr;
+    }
+
+    @Override
+    public void setCommentCountStr(String commentCountStr) {
+        this.commentCountStr = commentCountStr;
+    }
+
+    public int getGeneralCount() {
+        return generalCount;
+    }
+
+    public void setGeneralCount(int generalCount) {
+        this.generalCount = generalCount;
+    }
+
+    public String getGeneralCountStr() {
+        return generalCountStr;
+    }
+
+    public void setGeneralCountStr(String generalCountStr) {
+        this.generalCountStr = generalCountStr;
+    }
+
+    public int getGoodCount() {
+        return goodCount;
+    }
+
+    public void setGoodCount(int goodCount) {
+        this.goodCount = goodCount;
+    }
+
+    public String getGoodCountStr() {
+        return goodCountStr;
+    }
+
+    public void setGoodCountStr(String goodCountStr) {
+        this.goodCountStr = goodCountStr;
+    }
+
+    public int getPoorCount() {
+        return poorCount;
+    }
+
+    public void setPoorCount(int poorCount) {
+        this.poorCount = poorCount;
+    }
+
+    public String getPoorCountStr() {
+        return poorCountStr;
+    }
+
+    public void setPoorCountStr(String poorCountStr) {
+        this.poorCountStr = poorCountStr;
+    }
+
+    public Boolean getSelfSell() {
+        return isSelfSell;
+    }
+
+    public void setSelfSell(Boolean selfSell) {
+        isSelfSell = selfSell;
     }
 }

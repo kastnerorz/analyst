@@ -1,7 +1,6 @@
 package cn.kastner.analyst.controller;
 
-import cn.kastner.analyst.domain.core.*;
-import cn.kastner.analyst.domain.detail.PhoneDetail;
+import cn.kastner.analyst.domain.*;
 import cn.kastner.analyst.service.core.*;
 import cn.kastner.analyst.service.detail.PhoneDetailService;
 import cn.kastner.analyst.util.NetResult;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController

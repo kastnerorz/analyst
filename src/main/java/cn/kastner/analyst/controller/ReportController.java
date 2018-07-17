@@ -1,7 +1,7 @@
 package cn.kastner.analyst.controller;
 
 
-import cn.kastner.analyst.domain.core.*;
+import cn.kastner.analyst.domain.*;
 import cn.kastner.analyst.service.core.*;
 import cn.kastner.analyst.util.NetResult;
 import org.springframework.beans.factory.annotation.Autowired;

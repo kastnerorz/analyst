@@ -1,7 +1,7 @@
 package cn.kastner.analyst.repository.detail;
 
-import cn.kastner.analyst.domain.core.Item;
-import cn.kastner.analyst.domain.detail.PhoneDetail;
+import cn.kastner.analyst.domain.Item;
+import cn.kastner.analyst.domain.PhoneDetail;
 import cn.kastner.analyst.repository.core.ItemRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

@@ -1,6 +1,6 @@
 package cn.kastner.analyst.service.core;
 
-import cn.kastner.analyst.domain.core.Feature;
+import cn.kastner.analyst.domain.Feature;
 
 import java.util.List;
 
