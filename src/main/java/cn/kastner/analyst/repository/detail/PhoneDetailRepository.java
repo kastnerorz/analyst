@@ -11,9 +11,7 @@ import java.util.List;
 public interface PhoneDetailRepository extends JpaRepository<PhoneDetail, Long>,
         JpaSpecificationExecutor<ItemRepository> {
 
-    PhoneDetail findByPhoneDetailId(Long phoneDetailId);
-    PhoneDetail findByItem(Item item);
-    List<PhoneDetail> findByItemAndRomCapacity(Item item, Double rom);
+    PhoneDetail findByid(Long id);
     List<PhoneDetail> findByBatteryCapInAndCpuClockInAndRomCapacityInAndRamCapacityInAndPxDensityIn(
             List<Integer> batteryCap,
             List<Double> cpuClock,

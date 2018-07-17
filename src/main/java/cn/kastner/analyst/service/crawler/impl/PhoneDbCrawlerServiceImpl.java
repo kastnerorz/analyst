@@ -46,20 +46,16 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
     /**
      * PhoneDB 爬虫主函数
      * @param item 商品对象
-     * @return Item 商品对象
      */
     @Override
-    public Item crawl(Item item) throws IOException {
+    public void crawl(Item item) throws IOException {
         this.item = item;
-        PhoneDetail phoneDetailDb = phoneDetailService.findByItem(item);
+        PhoneDetail phoneDetailDb = phoneDetailService.findById(item.getId());
         if (phoneDetailDb == null) {
-            return item;
-        } else {
-            String url = searchByModelAndRom(item.getModel(), phoneDetailService.findByItem(item).getRomCapacity().toString());
+            String url = searchByModelAndRom(item.getModel(), phoneDetailService.findById(item.getId()).getRomCapacity().toString());
             if (url != null) {
                 crawDetails(url);
             }
-            return item;
         }
     }
 
@@ -86,8 +82,6 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
                     .headers(headers)
                     .data(data)
                     .post();
-        System.out.println("model   ->" + model);
-        System.out.println("rom     ->" + rom);
         try {
             Element resultEl = doc.getElementsByAttributeValue("title", "See detailed datasheet")
                     .get(0);
@@ -114,11 +108,13 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
         headers.put("Pragma", "no-cache");
         headers.put("Referer", "http://phonedb.net/index.php?m=device&s=query");
         headers.put("Upgrade-Insecure-Requests", "1");
+
         System.getProperties().setProperty("proxySet", "true");
         //用的代理服务器
         System.getProperties().setProperty("http.proxyHost", "127.0.0.1");
         //代理端口
         System.getProperties().setProperty("http.proxyPort", "2333");
+
         Document doc = Jsoup.connect("http://phonedb.net/" + url)
                     .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4)" +
                             "AppleWebKit/537.36 (KHTML, like Gecko)" +
@@ -127,7 +123,7 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
                     .post();
         Element dataTableEl = doc.select("table").first();
         Elements dataTrEls = dataTableEl.select("tr");
-        PhoneDetail phoneDetail = phoneDetailService.findByItem(item);
+        PhoneDetail phoneDetail = phoneDetailService.findById(item.getId());
         phoneDetail.setCrawDate(LocalDate.now());
         int index = 0;
         for(Element el: dataTrEls) {
@@ -139,106 +135,146 @@ public class PhoneDbCrawlerServiceImpl implements PhoneDbCrawlerService {
             String attr = dataTdEls.first().text();
             String val = dataTdEls.get(1).text();
 
-            if (attr.equals("Brand")) {
-                logger.info("attr   ->" + attr);
-                Brand brandDb = brandService.findByEnName(attr.toUpperCase());
-                if (brandDb == null) {
-                    Brand brand = new Brand();
-                    brand.setBrandEnName(val.toUpperCase());
-                    phoneDetail.setBrand(brand);
-                    brandService.insertByBrand(brand);
-                } else {
-                    phoneDetail.setBrand(brandDb);
-                }
-            } else if (attr.equals("Model")) {
-                phoneDetail.setModel(val);
-            } else if (attr.equals("Released")) {
-                // TODO handle date (year, month)
-            } else if (attr.equals("Additional Features")){
-                phoneDetail.setAddlFeatures(val);
-            } else if (attr.equals("Mobile Operator")) {
-                phoneDetail.setOperator(val);
-            } else if (attr.equals("Width")) {
-                phoneDetail.setWidth(finder.getDouble(val, 1));
-            } else if (attr.equals("Height")) {
-                phoneDetail.setHeight(finder.getDouble(val, 1));
-            } else if (attr.equals("Depth")) {
-                phoneDetail.setDepth(finder.getDouble(val, 1));
-            } else if (attr.equals("Mass")) {
-                phoneDetail.setMass(finder.getDouble(val, 1));
-            } else if (attr.equals("Platform")) {
-                phoneDetail.setPlatform(val);
-            } else if (attr.equals("Operating System")) {
-                phoneDetail.setOs(val);
-            } else if (attr.equals("Software Extras")) {
-                phoneDetail.setSwExtras(val);
-            } else if (attr.equals("CPU Clock")) {
-                phoneDetail.setCpuClock(finder.getDouble(val, 1));
-            } else if (attr.equals("RAM Type")) {
-                phoneDetail.setRamType(val);
-                Element ramClkTrEl = dataTrEls.get(index + 1);
-                Elements ramClkTdEls = ramClkTrEl.getElementsByTag("td");
-                phoneDetail.setRamCapacity(finder.getDouble(ramClkTdEls.get(1).text(), 1));
-            } else if (attr.equals("RAM Capacity")) {
-                phoneDetail.setRamCapacity(finder.getDouble(val, 1));
-            } else if (attr.equals("Non-volatile Memory Type")) {
-                phoneDetail.setRomType(val);
-            } else if (attr.equals("Non-volatile Memory Capacity")) {
-                phoneDetail.setRomCapacity(finder.getDouble(val, 1));
-            } else if (attr.equals("Display Resolution")) {
-                Pattern pattern = Pattern.compile("(.*)x(.*)");
-                Matcher matcher = pattern.matcher(val);
-                matcher.find();
-                phoneDetail.setWideRez(Integer.parseInt(matcher.group(1)));
-                phoneDetail.setLongRez(Integer.parseInt(matcher.group(2)));
-            } else if (attr.equals("Display Diagonal")) {
-                Element dispDiagonalTrEl = dataTrEls.get(index + 1);
-                Elements dispDiagonalTdEls = dispDiagonalTrEl.getElementsByTag("td");
-                phoneDetail.setDispDiagonal(finder.getDouble(dispDiagonalTdEls.get(1).text(), 1));
-            } else if (attr.equals("Display Area Utilization")) {
-                phoneDetail.setDispAreaUtilization(finder.getDouble(val, 1).intValue());
-            } else if (attr.equals("Pixel Density")) {
-                phoneDetail.setPxDensity(finder.getDouble(val, 1).intValue());
-            } else if (attr.equals("Display Subtype")) {
-                phoneDetail.setDispType(val);
-            } else if (attr.equals("Graphical Controller")) {
-                phoneDetail.setgController(val);
-            } else if (attr.equals("USB Connector")) {
-                phoneDetail.setUsb(val);
-            } else if (attr.equals("Bluetooth")) {
-                phoneDetail.setBluetooth(val);
-            } else if (attr.equals("NFC")) {
-                if (val.equals("No")) {
-                    phoneDetail.setNfc(false);
-                } else {
-                    phoneDetail.setNfc(true);
-                }
-            } else if (attr.equals("Number of effective pixels")) {
-                phoneDetail.setNumOfEffPixels(val);
-            } else if (attr.equals("Aperture (W)")) {
-                phoneDetail.setAperture(val);
-            } else if (attr.equals("Focus")) {
-                phoneDetail.setFocus(val);
-            } else if (attr.equals("Flash")) {
-                phoneDetail.setFlash(val);
-            } else if (attr.equals("Camera Extra Functions")) {
-                phoneDetail.setCamExFunctions(val);
-            } else if (attr.equals("Secondary Number of pixels")) {
-                phoneDetail.setNumOfPixels2(val);
-            } else if (attr.equals("Secondary Aperture (W)")) {
-                phoneDetail.setAperture2(val);
-            } else if (attr.equals("Secondary Camera Extra Functions")) {
-                phoneDetail.setCamExFunctions2(val);
-            } else if (attr.equals("Nominal Battery Capacity")) {
-                phoneDetail.setBatteryCap(finder.getDouble(val, 1).intValue());
-            } else if (attr.equals("Wireless Charging")) {
-                phoneDetail.setWrlssCharging(val);
-            } else if (attr.equals("Protection from solid materials")) {
-                phoneDetail.setProtection("IP" + finder.getDouble(val, 1).intValue());
-            } else if (attr.equals("Protection from liquids")) {
-                phoneDetail.setProtection(phoneDetail.getProtection() + finder.getDouble(val, 1).intValue());
-            } else if (attr.equals("Additional sensors")) {
-                phoneDetail.setAddSensors(val);
+            switch (attr) {
+                case "Brand":
+                    logger.info("attr   ->" + attr);
+                    Brand brandDb = brandService.findByEnName(attr.toUpperCase());
+                    if (brandDb == null) {
+                        Brand brand = new Brand();
+                        brand.setBrandEnName(val.toUpperCase());
+                        phoneDetail.setBrand(brand);
+                        brandService.insertByBrand(brand);
+                    } else {
+                        phoneDetail.setBrand(brandDb);
+                    }
+                    break;
+                case "Model":
+                    phoneDetail.setModel(val);
+                    break;
+                case "Released":
+                    // TODO handle date (year, month)
+                    break;
+                case "Additional Features":
+                    phoneDetail.setAddlFeatures(val);
+                    break;
+                case "Mobile Operator":
+                    phoneDetail.setOperator(val);
+                    break;
+                case "Width":
+                    phoneDetail.setWidth(finder.getDouble(val, 1));
+                    break;
+                case "Height":
+                    phoneDetail.setHeight(finder.getDouble(val, 1));
+                    break;
+                case "Depth":
+                    phoneDetail.setDepth(finder.getDouble(val, 1));
+                    break;
+                case "Mass":
+                    phoneDetail.setMass(finder.getDouble(val, 1));
+                    break;
+                case "Platform":
+                    phoneDetail.setPlatform(val);
+                    break;
+                case "Operating System":
+                    phoneDetail.setOs(val);
+                    break;
+                case "Software Extras":
+                    phoneDetail.setSwExtras(val);
+                    break;
+                case "CPU Clock":
+                    phoneDetail.setCpuClock(finder.getDouble(val, 1));
+                    break;
+                case "RAM Type":
+                    phoneDetail.setRamType(val);
+                    Element ramClkTrEl = dataTrEls.get(index + 1);
+                    Elements ramClkTdEls = ramClkTrEl.getElementsByTag("td");
+                    phoneDetail.setRamCapacity(finder.getDouble(ramClkTdEls.get(1).text(), 1));
+                    break;
+                case "RAM Capacity":
+                    phoneDetail.setRamCapacity(finder.getDouble(val, 1));
+                    break;
+                case "Non-volatile Memory Type":
+                    phoneDetail.setRomType(val);
+                    break;
+                case "Non-volatile Memory Capacity":
+                    phoneDetail.setRomCapacity(finder.getDouble(val, 1));
+                    break;
+                case "Display Resolution":
+                    Pattern pattern = Pattern.compile("(.*)x(.*)");
+                    Matcher matcher = pattern.matcher(val);
+                    matcher.find();
+                    phoneDetail.setWideRez(Integer.parseInt(matcher.group(1)));
+                    phoneDetail.setLongRez(Integer.parseInt(matcher.group(2)));
+                    break;
+                case "Display Diagonal":
+                    Element dispDiagonalTrEl = dataTrEls.get(index + 1);
+                    Elements dispDiagonalTdEls = dispDiagonalTrEl.getElementsByTag("td");
+                    phoneDetail.setDispDiagonal(finder.getDouble(dispDiagonalTdEls.get(1).text(), 1));
+                    break;
+                case "Display Area Utilization":
+                    phoneDetail.setDispAreaUtilization(finder.getDouble(val, 1).intValue());
+                    break;
+                case "Pixel Density":
+                    phoneDetail.setPxDensity(finder.getDouble(val, 1).intValue());
+                    break;
+                case "Display Subtype":
+                    phoneDetail.setDispType(val);
+                    break;
+                case "Graphical Controller":
+                    phoneDetail.setgController(val);
+                    break;
+                case "USB Connector":
+                    phoneDetail.setUsb(val);
+                    break;
+                case "Bluetooth":
+                    phoneDetail.setBluetooth(val);
+                    break;
+                case "NFC":
+                    if (val.equals("No")) {
+                        phoneDetail.setNfc(false);
+                    } else {
+                        phoneDetail.setNfc(true);
+                    }
+                    break;
+                case "Number of effective pixels":
+                    phoneDetail.setNumOfEffPixels(val);
+                    break;
+                case "Aperture (W)":
+                    phoneDetail.setAperture(val);
+                    break;
+                case "Focus":
+                    phoneDetail.setFocus(val);
+                    break;
+                case "Flash":
+                    phoneDetail.setFlash(val);
+                    break;
+                case "Camera Extra Functions":
+                    phoneDetail.setCamExFunctions(val);
+                    break;
+                case "Secondary Number of pixels":
+                    phoneDetail.setNumOfPixels2(val);
+                    break;
+                case "Secondary Aperture (W)":
+                    phoneDetail.setAperture2(val);
+                    break;
+                case "Secondary Camera Extra Functions":
+                    phoneDetail.setCamExFunctions2(val);
+                    break;
+                case "Nominal Battery Capacity":
+                    phoneDetail.setBatteryCap(finder.getDouble(val, 1).intValue());
+                    break;
+                case "Wireless Charging":
+                    phoneDetail.setWrlssCharging(val);
+                    break;
+                case "Protection from solid materials":
+                    phoneDetail.setProtection("IP" + finder.getDouble(val, 1).intValue());
+                    break;
+                case "Protection from liquids":
+                    phoneDetail.setProtection(phoneDetail.getProtection() + finder.getDouble(val, 1).intValue());
+                    break;
+                case "Additional sensors":
+                    phoneDetail.setAddSensors(val);
+                    break;
             }
         }
         phoneDetailService.insertByPhoneDetail(phoneDetail);

@@ -11,9 +11,8 @@ public interface PhoneDbCrawlerService {
 
     /**
      * @param item 商品
-     * @return 商品对象
      */
-    Item crawl(Item item) throws IOException;
+    void crawl(Item item) throws IOException;
 
     /**
      * @param model 型号

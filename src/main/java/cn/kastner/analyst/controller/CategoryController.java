@@ -121,7 +121,8 @@ public class CategoryController {
         List<Item> itemList = new ArrayList<>();
         if (!phoneDetailList.isEmpty()) {
             for (PhoneDetail e: phoneDetailList) {
-                itemList.add(e.getItem());
+                Item item = itemService.findById(e.getId());
+                itemList.add(item);
             }
         }
         netResult.data = itemList;

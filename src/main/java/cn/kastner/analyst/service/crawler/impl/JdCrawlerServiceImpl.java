@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -44,6 +43,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     private final
     JdItemService jdItemService;
+
+    private final ItemService itemService;
 
     private final
     CommentService commentService;
@@ -62,8 +63,9 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     private final PhoneDetailService phoneDetailService;
 
     @Autowired
-    public JdCrawlerServiceImpl(JdItemService jdItemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, PhoneDetailService phoneDetailService) {
+    public JdCrawlerServiceImpl(JdItemService jdItemService, ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, PhoneDetailService phoneDetailService) {
         this.jdItemService = jdItemService;
+        this.itemService = itemService;
         this.commentService = commentService;
         this.priceService = priceService;
         this.brandService = brandService;
@@ -275,17 +277,13 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * 匹配商品 Rom
      * @return Rom
      */
-    private Double crawlRom() {
+    private Double getRom() throws CrawlerException {
         Double rom = Double.parseDouble(finder.getString(doc.toString(), "机身内存：(.*)GB</li>", 1));
-        jdItemService.insertByItem(jdItem);
-        List<PhoneDetail> phoneDetailList = phoneDetailService.findByItemAndRom(jdItem, rom);
-        if (phoneDetailList.isEmpty()) {
-            PhoneDetail phoneDetail = new PhoneDetail();
-            phoneDetail.setItem(jdItem);
-            phoneDetail.setRomCapacity(rom);
-            phoneDetailService.insertByPhoneDetail(phoneDetail);
+        if (null == rom) {
+            throw new CrawlerException("未获取到 Rom");
+        } else {
+            return rom;
         }
-        return rom;
     }
 
     /**
@@ -444,6 +442,11 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
     }
 
+    /**
+     * 获取商品价格
+     * @return 商品价格对象
+     * @throws IOException JSON解析失败
+     */
     private Price getPrice() throws IOException {
         JSONObject stock = getStockJSON();
         JSONObject jdPrice = stock.getJSONObject("jdPrice");
@@ -454,17 +457,16 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         price.setItem(jdItem);
         price.setMarket(getMarket());
         price.setCrawDateTime(LocalDateTime.now());
-        priceService.insertByPrice(price);
         return price;
     }
 
     /**
-     * 基础信息爬取
+     * 获取商品基本信息
      * @param url 商品链接
-     * @return 商品
+     * @throws IOException 网络错误
+     * @throws CrawlerException 匹配错误
      */
-    @Override
-    public Item crawl(String url) throws Exception {
+    private void crawlJdItem(String url) throws IOException, CrawlerException {
 
         doc = getMainDoc(url);
 
@@ -480,26 +482,50 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         jdItem.setSelfSell(getIsSelfSell());
         jdItem.setCommentVersion(getCommentVersion());
         jdItem.setCategory(getCategory());
+    }
 
-        getPrice();
+    /**
+     * 保存手机详细清单所需：Rom
+     * @return 手机详细清单
+     * @throws CrawlerException 匹配错误
+     */
+    private PhoneDetail processPhoneDetail() throws CrawlerException {
+        Double rom = getRom();
+        PhoneDetail phoneDetail = phoneDetailService.findById(jdItem.getId());
+        if (null != phoneDetail) {
+            phoneDetail.setRomCapacity(rom);
+        } else {
+            phoneDetail = new PhoneDetail(jdItem.getId());
+        }
+        return phoneDetail;
+    }
 
+    /**
+     * 商品主要信息抓取
+     * @param url 商品链接
+     * @return 基础商品对象
+     */
+    @Override
+    public Item crawl(String url) throws Exception {
 
+        crawlJdItem(url);
+        jdItemService.insertByJdItem(jdItem);
+        itemService.insertByItem(jdItem);
 
-
-
-        jdJdItemService.insertByJdItem(jdItem);
-        logger.info("jdItem has been saved.");
-
+        priceService.insertByPrice(getPrice());
+        if (jdItem.getCategory().getLevelThreeName().equals("手机")) {
+            phoneDetailService.insertByPhoneDetail(processPhoneDetail());
+        }
         return jdItem;
     }
 
     /**
-     * 商品评论爬取
+     * 商品评论抓取
      */
     @Override
-    public void crawItemComment () throws Exception {
-        // get comments
-        String commentStr = "";
+    public void crawlItemComment(Item item) throws Exception {
+        jdItem = jdItemService.findById(item.getId());
+        String commentStr;
         for (int currentPage = 0; currentPage < 5; currentPage++) {
             String commentUrl = "https://club.jd.com/comment/skuProductPageComments.action?" +
                     "callback=fetchJSON_comment98vv" + jdItem.getCommentVersion() +
@@ -511,7 +537,6 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                     "&isShadowSku=0" +
                     "&rid=0" +
                     "&fold=1";
-            logger.info("Connecting to " + commentUrl);
             Connection.Response commentDoc = Jsoup.connect(commentUrl)
                     .header("accept", "*/*")
                     .header("accept-encoding", "gzip, deflate, br")
@@ -570,6 +595,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
         }
         jdItem.setCrawDate(LocalDate.now());
-        jdJdItemService.update(jdItem);
+        jdItemService.update(jdItem);
+        itemService.update(jdItem);
     }
 }

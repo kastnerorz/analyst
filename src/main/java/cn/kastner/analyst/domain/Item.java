@@ -203,22 +203,18 @@ public class Item {
         this.description = description;
     }
 
-    @Override
     public int getCommentCount() {
         return commentCount;
     }
 
-    @Override
     public void setCommentCount(int commentCount) {
         this.commentCount = commentCount;
     }
 
-    @Override
     public String getCommentCountStr() {
         return commentCountStr;
     }
 
-    @Override
     public void setCommentCountStr(String commentCountStr) {
         this.commentCountStr = commentCountStr;
     }

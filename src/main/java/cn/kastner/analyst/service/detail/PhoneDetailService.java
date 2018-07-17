@@ -21,17 +21,11 @@ public interface PhoneDetailService {
     /**
      * retrieve a phoneDetail by id
      *
-     * @param phoneDetailId 手机详细信息对象 ID
+     * @param id 手机详细信息对象 ID
      * @return phoneDetail retrieved
      */
-    PhoneDetail findById(Long phoneDetailId);
+    PhoneDetail findById(Long id);
 
-    /**
-     * retrieve all phoneDetails by Item
-     *
-     * @return 手机详细信息对象
-     */
-    PhoneDetail findByItem(Item item);
 
     /**
      * @param batteryCap
@@ -47,7 +41,6 @@ public interface PhoneDetailService {
                                        List<Double> ramCapacity,
                                        List<Integer> pxDensity);
 
-    List<PhoneDetail> findByItemAndRom(Item item, Double rom);
     /**
      * update a phoneDetail by id
      *

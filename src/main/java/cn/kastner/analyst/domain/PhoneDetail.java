@@ -7,18 +7,16 @@ import java.time.LocalDate;
 @Table(name = "phoneDetail")
 public class PhoneDetail {
 
+    public PhoneDetail(Long id) {
+        super();
+        this.id = id;
+    }
+
     /**
      * 手机详情 id
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long phoneDetailId;
-
-    /**
-     * 所属商品
-     */
-    @OneToOne
-    private Item item;
+    private Long id;
 
     /**
      * 获取时间
@@ -273,20 +271,12 @@ public class PhoneDetail {
     @Column(columnDefinition = "TEXT")
     private String addSensors;
 
-    public Long getPhoneDetailId() {
-        return phoneDetailId;
+    public Long getId() {
+        return id;
     }
 
-    public void setPhoneDetailId(Long phoneDetailId) {
-        this.phoneDetailId = phoneDetailId;
-    }
-
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDate getCrawDate() {

@@ -29,13 +29,8 @@ public class PhoneDetailServiceImpl implements PhoneDetailService {
     }
 
     @Override
-    public PhoneDetail findById(Long phoneDetailId) {
-        return phoneDetailRepository.findByPhoneDetailId(phoneDetailId);
-    }
-
-    @Override
-    public PhoneDetail findByItem(Item item) {
-        return phoneDetailRepository.findByItem(item);
+    public PhoneDetail findById(Long id) {
+        return phoneDetailRepository.findByid(id);
     }
 
     @Override
@@ -43,10 +38,6 @@ public class PhoneDetailServiceImpl implements PhoneDetailService {
         return phoneDetailRepository.findByBatteryCapInAndCpuClockInAndRomCapacityInAndRamCapacityInAndPxDensityIn(batteryCap, cpuClock, romCapacity, ramCapacity, pxDensity);
     }
 
-    @Override
-    public List<PhoneDetail> findByItemAndRom(Item item, Double rom) {
-        return phoneDetailRepository.findByItemAndRomCapacity(item, rom);
-    }
 
     @Override
     public PhoneDetail update(PhoneDetail phoneDetail) {
@@ -54,8 +45,8 @@ public class PhoneDetailServiceImpl implements PhoneDetailService {
     }
 
     @Override
-    public PhoneDetail delete(Long phoneDetailId) {
-        PhoneDetail phoneDetail = phoneDetailRepository.findByPhoneDetailId(phoneDetailId);
+    public PhoneDetail delete(Long id) {
+        PhoneDetail phoneDetail = phoneDetailRepository.findByid(id);
         phoneDetailRepository.delete(phoneDetail);
         return phoneDetail;
     }

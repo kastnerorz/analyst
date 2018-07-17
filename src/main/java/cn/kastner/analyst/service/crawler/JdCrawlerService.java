@@ -9,7 +9,7 @@ import cn.kastner.analyst.domain.Item;
 public interface JdCrawlerService {
 
     /**
-     * 爬取商品基本信息
+     * 商品主要信息抓取
      * @param url 商品链接
      * @return 商品对象
      * @throws Exception 网络错误
@@ -17,10 +17,10 @@ public interface JdCrawlerService {
     Item crawl(String url) throws Exception;
 
     /**
-     * 爬取商品评论
+     * 商品评论抓取
      * @param item 商品对象
      * @throws Exception 网络错误
      */
-    void crawItemComment (Item item) throws Exception;
+    void crawlItemComment(Item item) throws Exception;
 
 }

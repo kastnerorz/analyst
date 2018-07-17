@@ -93,7 +93,7 @@ public class ItemController {
         Item item = itemService.findById(itemId);
         if (item.getCrawDate() == null || LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
             try {
-                jdCrawlerService.crawItemComment(item);
+                jdCrawlerService.crawlItemComment(item);
             } catch (Exception e) {
                 e.printStackTrace();
             }
