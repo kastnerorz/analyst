@@ -12,6 +12,10 @@ public class PhoneDetail {
         this.id = id;
     }
 
+    public PhoneDetail() {
+        super();
+    }
+
     /**
      * 手机详情 id
      */

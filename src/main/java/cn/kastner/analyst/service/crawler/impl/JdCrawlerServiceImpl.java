@@ -496,6 +496,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
             phoneDetail.setRomCapacity(rom);
         } else {
             phoneDetail = new PhoneDetail(jdItem.getId());
+            phoneDetail.setRamCapacity(rom);
         }
         return phoneDetail;
     }
