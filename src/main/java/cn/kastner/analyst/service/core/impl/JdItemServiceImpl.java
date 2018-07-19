@@ -1,6 +1,5 @@
 package cn.kastner.analyst.service.core.impl;
 
-import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.JdItem;
 import cn.kastner.analyst.repository.core.JdItemRepository;
 import cn.kastner.analyst.service.core.JdItemService;
@@ -27,7 +26,7 @@ public class JdItemServiceImpl implements JdItemService {
 
     @Override
     public JdItem findById(Long jdItemId) {
-        return jdItemRepository.findByJdItemId(jdItemId);
+        return jdItemRepository.findJdItemById(jdItemId);
     }
 
     @Override
@@ -47,7 +46,7 @@ public class JdItemServiceImpl implements JdItemService {
 
     @Override
     public JdItem delete(Long jdItemId) {
-        JdItem jdItem = jdItemRepository.findByJdItemId(jdItemId);
+        JdItem jdItem = jdItemRepository.findJdItemById(jdItemId);
         jdItemRepository.delete(jdItem);
         return jdItem;
     }

@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface JdItemRepository extends JpaRepository<JdItem, Long>,
         JpaSpecificationExecutor<JdItemRepository> {
-    JdItem findByJdItemId(Long id);
+    JdItem findJdItemById(Long id);
     JdItem findBySkuId(String skuId);
 }

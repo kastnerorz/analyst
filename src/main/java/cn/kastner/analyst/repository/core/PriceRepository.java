@@ -17,8 +17,8 @@ public interface PriceRepository extends JpaRepository<Price, Long>,
     Price findByPriceId(Long priceId);
     List<Price> findByItemOrderByCrawDateTimeDesc(Item item);
     List<Price> findAllByPriceBetween(Double min, Double max);
-    List<Price> findAllByPriceBetweenAndItemItemIdIn(Double min,Double max,List<Long> item);
-    List<Price> findAllByPriceGreaterThanAndItemItemIdIn(Double min,List<Long> item);
+    List<Price> findAllByPriceBetweenAndItemIdIn(Double min, Double max, List<Long> item);
+    List<Price> findAllByPriceGreaterThanAndItemIdIn(Double min, List<Long> item);
 
 }
 

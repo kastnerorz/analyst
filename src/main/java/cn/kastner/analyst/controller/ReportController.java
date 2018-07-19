@@ -56,7 +56,7 @@ public class ReportController {
                 List<Price> prices = priceService.findByItem(item);
                 Long sum = (long) 0;
                 for (Price price : prices) {
-                    sum = sum + price.getVolume();
+//                    sum = sum + price.getVolume();
                     total = total + price.getPrice();
                 }
                 brandSale = brandSale + sum;
@@ -115,7 +115,7 @@ public class ReportController {
                         List<Price> prices = priceService.findPriceListByPriceAndItem(min, max, itemIdList);
                         sum = sum + prices.size();
                         for(Price price:prices){
-                            saleTotal=saleTotal+price.getVolume();
+//                            saleTotal=saleTotal+price.getVolume();
                         }
 
 //                    System.out.println(sum);
@@ -144,7 +144,7 @@ public class ReportController {
                     List<Price> prices = priceService.findPriceListByPriceMin(min, itemIdList);
                     sum = sum + prices.size();
                     for(Price price:prices){
-                        saleTotal=saleTotal+price.getVolume();
+//                        saleTotal=saleTotal+price.getVolume();
                     }
                 }
             }
@@ -172,7 +172,7 @@ public class ReportController {
                         List<Price> prices = priceService.findPriceListByPriceAndItem(min, max, itemIdList);
                         sum = sum + prices.size();
                         for(Price price:prices){
-                            saleTotal=saleTotal+price.getVolume();
+//                            saleTotal=saleTotal+price.getVolume();
                         }
                     }
                 }
@@ -199,7 +199,7 @@ public class ReportController {
                     List<Price> prices = priceService.findPriceListByPriceMin(min, itemIdList);
                     sum = sum + prices.size();
                     for(Price price:prices){
-                        saleTotal=saleTotal+price.getVolume();
+//                        saleTotal=saleTotal+price.getVolume();
                     }
                 }
             }
