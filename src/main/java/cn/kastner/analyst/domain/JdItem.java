@@ -6,6 +6,7 @@ import javax.persistence.*;
 @Table(name = "jd_item")
 public class JdItem extends Item{
 
+    @Column(unique = true)
     private String skuId;
 
     private String vendorId;

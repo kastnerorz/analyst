@@ -81,9 +81,112 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     private Lang lang = new Lang();
 
-    private JdItem jdItem = new JdItem();
+    private JdItem jdItem;
 
     private Document document;
+
+    /**
+     * 商品主要信息抓取
+     * @param url 商品链接
+     * @return 基础商品对象
+     */
+    @Override
+    public Item crawl(String url) throws Exception {
+
+        document = getMainDoc(url);
+        JdItem jdItemCrawl = crawlJdItem();
+        JdItem jdItemDb =  jdItemService.findBySkuId(jdItemCrawl.getSkuId());
+        if (jdItemDb == null) {
+            jdItem = jdItemCrawl;
+            jdItemService.insertByJdItem(jdItem);
+            if (jdItem.getCategory().getLevelThreeName().equals("手机")) {
+                phoneDetailService.insertByPhoneDetail(processPhoneDetail());
+            }
+        } else {
+            jdItem = jdItemDb;
+        }
+        priceService.insertByPrice(getPrice());
+        return jdItem;
+    }
+
+    /**
+     * 商品评论抓取
+     */
+    @Override
+    public void crawlItemComment(Item item) throws Exception {
+        jdItem = jdItemService.findById(item.getId());
+        String commentStr;
+        for (int currentPage = 0; currentPage < 5; currentPage++) {
+            String commentUrl = "https://club.jd.com/comment/skuProductPageComments.action?" +
+                    "callback=fetchJSON_comment98vv" + jdItem.getCommentVersion() +
+                    "&productId=" + jdItem.getSkuId() +
+                    "&score=0" +
+                    "&sortType=5" +
+                    "&page=" + currentPage +
+                    "&pageSize=10" +
+                    "&isShadowSku=0" +
+                    "&rid=0" +
+                    "&fold=1";
+            Connection.Response commentDoc = Jsoup.connect(commentUrl)
+                    .header("accept", "*/*")
+                    .header("accept-encoding", "gzip, deflate, br")
+                    .header("accept-language", "zh-CN,zh;q=0.9")
+                    .header("referer", "https://jdItem.jd.com/" + jdItem.getSkuId() + ".html")
+                    .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
+                    .execute();
+            commentStr = commentDoc.body();
+            logger.info(commentStr);
+            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv" + jdItem.getCommentVersion() + "\\((\\{.+\\})\\);");
+            Matcher commentMatcher = commentPattern.matcher(commentStr);
+            if (commentMatcher.find()) {
+                JSONObject comment = new JSONObject(commentMatcher.group(1));
+                if (0 == currentPage) {
+                    JSONObject productCommentsCount = comment.getJSONObject("productCommentSummary");
+
+                    int commentCount = productCommentsCount.getInt("commentCount");
+                    jdItem.setCommentCount(commentCount);
+
+                    String commentCountStr = productCommentsCount.getString("commentCountStr");
+                    jdItem.setCommentCountStr(commentCountStr);
+
+                    int generalCount = productCommentsCount.getInt("generalCount");
+                    jdItem.setGeneralCount(generalCount);
+
+                    String generalCountStr = productCommentsCount.getString("generalCountStr");
+                    jdItem.setGeneralCountStr(generalCountStr);
+
+                    int goodCount = productCommentsCount.getInt("goodCount");
+                    jdItem.setGoodCount(goodCount);
+
+                    String goodCountStr = productCommentsCount.getString("goodCountStr");
+                    jdItem.setGoodCountStr(goodCountStr);
+
+
+                    int poorCount = productCommentsCount.getInt("poorCount");
+                    jdItem.setPoorCount(poorCount);
+
+                    String poorCountStr = productCommentsCount.getString("poorCountStr");
+                    jdItem.setPoorCountStr(poorCountStr);
+
+                }
+                JSONArray comments = comment.getJSONArray("comments");
+                for (int i = 0; i < comments.length(); i++) {
+                    JSONObject cmt = comments.getJSONObject(i);
+                    Comment commentContent = new Comment();
+                    commentContent.setItem(jdItem);
+                    String content = cmt.getString("content");
+                    commentContent.setContent(content);
+                    commentContent.setCrawDate(LocalDate.now());
+                    commentService.insertByComment(commentContent);
+                    logger.info("commentContent has been saved.");
+                }
+            }
+            TimeUnit.SECONDS.sleep(3);
+
+        }
+        jdItem.setCrawDate(LocalDate.now());
+        jdItemService.update(jdItem);
+    }
 
     /**
      * 匹配商品主页面
@@ -462,26 +565,23 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     /**
      * 获取商品基本信息
-     * @param url 商品链接
-     * @throws IOException 网络错误
      * @throws CrawlerException 匹配错误
      */
-    private void crawlJdItem(String url) throws IOException, CrawlerException {
-
-        document = getMainDoc(url);
-
-        jdItem.setMarket(getMarket());
-        jdItem.setSkuId(getSkuId());
-        jdItem.setDescription(getDescription());
-        jdItem.setBrand(getBrand());
-        jdItem.setZhName(getZhName());
-        jdItem.setModel(getModel());
-        jdItem.setVendor(getVendor());
-        jdItem.setVendorId(getVendorId());
-        jdItem.setImageGroup(getImageGroup());
-        jdItem.setSelfSell(getIsSelfSell());
-        jdItem.setCommentVersion(getCommentVersion());
-        jdItem.setCategory(getCategory());
+    private JdItem crawlJdItem() throws CrawlerException {
+        JdItem j = new JdItem();
+        j.setMarket(getMarket());
+        j.setSkuId(getSkuId());
+        j.setDescription(getDescription());
+        j.setBrand(getBrand());
+        j.setZhName(getZhName());
+        j.setModel(getModel());
+        j.setVendor(getVendor());
+        j.setVendorId(getVendorId());
+        j.setImageGroup(getImageGroup());
+        j.setSelfSell(getIsSelfSell());
+        j.setCommentVersion(getCommentVersion());
+        j.setCategory(getCategory());
+        return j;
     }
 
     /**
@@ -501,100 +601,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         return phoneDetail;
     }
 
-    /**
-     * 商品主要信息抓取
-     * @param url 商品链接
-     * @return 基础商品对象
-     */
-    @Override
-    public Item crawl(String url) throws Exception {
-
-        crawlJdItem(url);
-        jdItemService.insertByJdItem(jdItem);
-
-        priceService.insertByPrice(getPrice());
-        if (jdItem.getCategory().getLevelThreeName().equals("手机")) {
-            phoneDetailService.insertByPhoneDetail(processPhoneDetail());
-        }
-        return jdItem;
-    }
-
-    /**
-     * 商品评论抓取
-     */
-    @Override
-    public void crawlItemComment(Item item) throws Exception {
-        jdItem = jdItemService.findById(item.getId());
-        String commentStr;
-        for (int currentPage = 0; currentPage < 5; currentPage++) {
-            String commentUrl = "https://club.jd.com/comment/skuProductPageComments.action?" +
-                    "callback=fetchJSON_comment98vv" + jdItem.getCommentVersion() +
-                    "&productId=" + jdItem.getSkuId() +
-                    "&score=0" +
-                    "&sortType=5" +
-                    "&page=" + currentPage +
-                    "&pageSize=10" +
-                    "&isShadowSku=0" +
-                    "&rid=0" +
-                    "&fold=1";
-            Connection.Response commentDoc = Jsoup.connect(commentUrl)
-                    .header("accept", "*/*")
-                    .header("accept-encoding", "gzip, deflate, br")
-                    .header("accept-language", "zh-CN,zh;q=0.9")
-                    .header("referer", "https://jdItem.jd.com/" + jdItem.getSkuId() + ".html")
-                    .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36")
-                    .execute();
-            commentStr = commentDoc.body();
-            logger.info(commentStr);
-            Pattern commentPattern = Pattern.compile("fetchJSON_comment98vv" + jdItem.getCommentVersion() + "\\((\\{.+\\})\\);");
-            Matcher commentMatcher = commentPattern.matcher(commentStr);
-            if (commentMatcher.find()) {
-                JSONObject comment = new JSONObject(commentMatcher.group(1));
-                if (0 == currentPage) {
-                    JSONObject productCommentsCount = comment.getJSONObject("productCommentSummary");
-
-                    int commentCount = productCommentsCount.getInt("commentCount");
-                    jdItem.setCommentCount(commentCount);
-
-                    String commentCountStr = productCommentsCount.getString("commentCountStr");
-                    jdItem.setCommentCountStr(commentCountStr);
-
-                    int generalCount = productCommentsCount.getInt("generalCount");
-                    jdItem.setGeneralCount(generalCount);
-
-                    String generalCountStr = productCommentsCount.getString("generalCountStr");
-                    jdItem.setGeneralCountStr(generalCountStr);
-
-                    int goodCount = productCommentsCount.getInt("goodCount");
-                    jdItem.setGoodCount(goodCount);
-
-                    String goodCountStr = productCommentsCount.getString("goodCountStr");
-                    jdItem.setGoodCountStr(goodCountStr);
 
 
-                    int poorCount = productCommentsCount.getInt("poorCount");
-                    jdItem.setPoorCount(poorCount);
 
-                    String poorCountStr = productCommentsCount.getString("poorCountStr");
-                    jdItem.setPoorCountStr(poorCountStr);
-
-                }
-                JSONArray comments = comment.getJSONArray("comments");
-                for (int i = 0; i < comments.length(); i++) {
-                    JSONObject cmt = comments.getJSONObject(i);
-                    Comment commentContent = new Comment();
-                    commentContent.setItem(jdItem);
-                    String content = cmt.getString("content");
-                    commentContent.setContent(content);
-                    commentContent.setCrawDate(LocalDate.now());
-                    commentService.insertByComment(commentContent);
-                    logger.info("commentContent has been saved.");
-                }
-            }
-            TimeUnit.SECONDS.sleep(3);
-
-        }
-        jdItem.setCrawDate(LocalDate.now());
-        jdItemService.update(jdItem);
-    }
 }
