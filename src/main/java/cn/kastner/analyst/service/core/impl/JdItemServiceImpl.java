@@ -1,6 +1,8 @@
 package cn.kastner.analyst.service.core.impl;
 
+import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.JdItem;
+import cn.kastner.analyst.repository.core.ItemRepository;
 import cn.kastner.analyst.repository.core.JdItemRepository;
 import cn.kastner.analyst.service.core.JdItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,12 @@ public class JdItemServiceImpl implements JdItemService {
 
     private final JdItemRepository jdItemRepository;
 
+    private final ItemRepository itemRepository;
+
     @Autowired
-    public JdItemServiceImpl(JdItemRepository jdItemRepository) {
+    public JdItemServiceImpl(JdItemRepository jdItemRepository, ItemRepository itemRepository) {
         this.jdItemRepository = jdItemRepository;
+        this.itemRepository = itemRepository;
     }
 
 

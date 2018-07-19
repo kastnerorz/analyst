@@ -44,8 +44,6 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     private final
     JdItemService jdItemService;
 
-    private final ItemService itemService;
-
     private final
     CommentService commentService;
 
@@ -63,9 +61,8 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
     private final PhoneDetailService phoneDetailService;
 
     @Autowired
-    public JdCrawlerServiceImpl(JdItemService jdItemService, ItemService itemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, PhoneDetailService phoneDetailService) {
+    public JdCrawlerServiceImpl(JdItemService jdItemService, CommentService commentService, PriceService priceService, BrandService brandService, CategoryService categoryService, MarketRepository marketRepository, PhoneDetailService phoneDetailService) {
         this.jdItemService = jdItemService;
-        this.itemService = itemService;
         this.commentService = commentService;
         this.priceService = priceService;
         this.brandService = brandService;
@@ -86,7 +83,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
     private JdItem jdItem = new JdItem();
 
-    private Document doc;
+    private Document document;
 
     /**
      * 匹配商品主页面
@@ -95,11 +92,11 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws IOException 链接失败
      */
     private Document getMainDoc(String url) throws IOException {
-        doc = Jsoup.connect(url)
+        document = Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
                 .get();
-        doc.getElementsByClass("Ptable-tips").remove();
-        return doc;
+        document.getElementsByClass("Ptable-tips").remove();
+        return document;
     }
 
     /**
@@ -116,7 +113,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配到商品 SkuId
      */
     private String getSkuId() throws CrawlerException {
-        String skuId = finder.getString(doc.head().toString(), "skuId: (\\d*),", 1);
+        String skuId = finder.getString(document.head().toString(), "skuid: (\\d*),", 1);
         if (skuId != null) {
             return skuId;
         } else {
@@ -130,7 +127,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配到商品描述
      */
     private String getDescription() throws CrawlerException {
-        Elements itemSelect = doc.getElementsByClass("jdItem  selected  ");
+        Elements itemSelect = document.getElementsByClass("item  selected  ");
         String description = itemSelect.get(0).getElementsByTag("i").get(0).text();
         if (description != null) {
             return description;
@@ -145,7 +142,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配到商品品牌
      */
     private Brand getBrand() throws CrawlerException {
-        String brandStr = doc.getElementById("parameter-brand")
+        String brandStr = document.getElementById("parameter-brand")
                 .getElementsByTag("a")
                 .get(0)
                 .text();
@@ -199,7 +196,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配
      */
     private String getZhName() throws CrawlerException {
-        String zhName = finder.getString(doc.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
+        String zhName = finder.getString(document.title(), "(?<=\\\\[)(\\\\S+)(?=\\\\])|(?<=【)[^】]*");
         if (zhName != null) {
             logger.info("Get Item zhName from title: " + zhName);
             return zhName;
@@ -214,11 +211,11 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配
      */
     private String getModel() throws CrawlerException {
-        Element dlEl = doc
+        Element dlEl = document
                 // `div.Ptable`
                 .getElementsByClass("Ptable").get(0)
                 // div.Ptable-jdItem
-                .getElementsByClass("Ptable-jdItem").get(0)
+                .getElementsByClass("Ptable-item").get(0)
                 // dl
                 .getElementsByTag("dl").get(0);
         Elements dtEl = dlEl.getElementsByTag("dt");
@@ -242,7 +239,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      */
     private String getVendorId() throws CrawlerException {
         Pattern vendorIdPattern = Pattern.compile("venderId:(\\d+),");
-        Matcher vendorIdMatcher = vendorIdPattern.matcher(doc.head().toString());
+        Matcher vendorIdMatcher = vendorIdPattern.matcher(document.head().toString());
         if (vendorIdMatcher.find()) {
             return vendorIdMatcher.group(1);
         } else {
@@ -256,7 +253,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配
      */
     private String getImageGroup() throws CrawlerException {
-        String imageListStr = finder.getString(doc.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
+        String imageListStr = finder.getString(document.head().toString(), "imageList: \\[\\\"(.+)\\\"\\]", 1);
         if (imageListStr != null) {
             return StringUtils.join(imageListStr.split("\",\""), ",");
         } else {
@@ -269,7 +266,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @return 是否自营
      */
     private Boolean getIsSelfSell() {
-        Element selfSelling = doc.getElementsByClass("u-jd").get(0);
+        Element selfSelling = document.getElementsByClass("u-jd").get(0);
         return selfSelling != null;
     }
 
@@ -278,7 +275,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @return Rom
      */
     private Double getRom() throws CrawlerException {
-        Double rom = Double.parseDouble(finder.getString(doc.toString(), "机身内存：(.*)GB</li>", 1));
+        Double rom = Double.parseDouble(finder.getString(document.toString(), "机身内存：(.*)GB</li>", 1));
         if (null == rom) {
             throw new CrawlerException("未获取到 Rom");
         } else {
@@ -293,7 +290,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      */
     private String getCommentVersion() throws CrawlerException {
         Pattern commentVersionPattern = Pattern.compile("commentVersion:\\'(.+)\\',");
-        Matcher commentVersionMatcher = commentVersionPattern.matcher(doc.head().toString());
+        Matcher commentVersionMatcher = commentVersionPattern.matcher(document.head().toString());
         if (commentVersionMatcher.find()) {
             return commentVersionMatcher.group(1);
         } else {
@@ -307,7 +304,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * @throws CrawlerException 未匹配
      */
     private String getVendor() throws CrawlerException {
-        String vendor = finder.getString(doc.toString(), "dianpuname.*\">(.*)</a>", 1);
+        String vendor = finder.getString(document.toString(), "dianpuname.*\">(.*)</a>", 1);
         if (vendor != null) {
             return vendor;
         } else {
@@ -322,7 +319,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      */
     private Category getCategory() throws CrawlerException {
         Pattern catPattern = Pattern.compile("cat: \\[(.+)\\],");
-        Matcher catMatcher = catPattern.matcher(doc.head().toString());
+        Matcher catMatcher = catPattern.matcher(document.head().toString());
         if (catMatcher.find()) {
             String categoryStr = catMatcher.group(1);
             String[] cats = categoryStr.split(",");
@@ -345,7 +342,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
             // get level1 name
             Pattern level1Pattern = Pattern.compile("mbNav-1\">(.*)</a>");
-            Matcher level1Matcher = level1Pattern.matcher(doc.toString());
+            Matcher level1Matcher = level1Pattern.matcher(document.toString());
             if (level1Matcher.find()) {
                 String level1 = level1Matcher.group(1);
                 category.setLevelOneName(level1);
@@ -353,7 +350,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
             // get level2 name
             Pattern level2Pattern = Pattern.compile("mbNav-2\">(.*)</a>");
-            Matcher level2Matcher = level2Pattern.matcher(doc.toString());
+            Matcher level2Matcher = level2Pattern.matcher(document.toString());
             if (level2Matcher.find()) {
                 String level2 = level2Matcher.group(1);
                 category.setLevelTwoName(level2);
@@ -361,7 +358,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
             // get level3 name
             Pattern level3Pattern = Pattern.compile("mbNav-3\">(.*)</a>");
-            Matcher level3Matcher = level3Pattern.matcher(doc.toString());
+            Matcher level3Matcher = level3Pattern.matcher(document.toString());
             if (level3Matcher.find()) {
                 String level3 = level3Matcher.group(1);
                 category.setLevelThreeName(level3);
@@ -418,9 +415,10 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * 获取库存信息
      * @return 库存信息JSON对象
      * @throws IOException 连接失败
+     * @throws CrawlerException 解析返回数据失败
      */
-    private JSONObject getStockJSON() throws IOException {
-        Document stockDoc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + jdItem.getSkuId() +
+    private JSONObject getStockJSON() throws IOException, CrawlerException {
+        Document doc = Jsoup.connect("https://c0.3.cn/stock?" + "skuId=" + jdItem.getSkuId() +
                 "&area=1_72_2799_0" +
                 "&vendorId=" + jdItem.getVendorId() +
                 "&cat=" + jdItem.getCategory().getCategoryStr() +
@@ -432,13 +430,14 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
                 "&pdpin=" +
                 "&detailedAdd=null" +
                 "&callback=jQuery" + 6546654)
+                .ignoreContentType(true)
                 .get();
-        Pattern stockPattern = Pattern.compile("jQuery" + 6546654 + "\\(\\{\\\"stock\\\":(\\{.+\\}),\\\"");
-        Matcher stockMatcher = stockPattern.matcher(stockDoc.toString());
-        if (stockMatcher.find()) {
-            return new JSONObject(stockMatcher.group(1));
+        Pattern p = Pattern.compile("jQuery6546654\\(\\{\"stock\":(\\{.*?}),\"choseSuit\":.*?");
+        Matcher m = p.matcher(doc.body().text());
+        if (m.find()) {
+            return new JSONObject(m.group(1));
         } else {
-            throw new IOException("获取库存信息失败");
+            throw new CrawlerException("获取库存信息失败");
         }
     }
 
@@ -446,8 +445,9 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      * 获取商品价格
      * @return 商品价格对象
      * @throws IOException JSON解析失败
+     * @throws CrawlerException 匹配失败
      */
-    private Price getPrice() throws IOException {
+    private Price getPrice() throws IOException, CrawlerException {
         JSONObject stock = getStockJSON();
         JSONObject jdPrice = stock.getJSONObject("jdPrice");
         String p = jdPrice.getString("p");
@@ -468,7 +468,7 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
      */
     private void crawlJdItem(String url) throws IOException, CrawlerException {
 
-        doc = getMainDoc(url);
+        document = getMainDoc(url);
 
         jdItem.setMarket(getMarket());
         jdItem.setSkuId(getSkuId());
@@ -510,7 +510,6 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
 
         crawlJdItem(url);
         jdItemService.insertByJdItem(jdItem);
-        itemService.insertByItem(jdItem);
 
         priceService.insertByPrice(getPrice());
         if (jdItem.getCategory().getLevelThreeName().equals("手机")) {
@@ -596,6 +595,5 @@ public class JdCrawlerServiceImpl implements JdCrawlerService {
         }
         jdItem.setCrawDate(LocalDate.now());
         jdItemService.update(jdItem);
-        itemService.update(jdItem);
     }
 }

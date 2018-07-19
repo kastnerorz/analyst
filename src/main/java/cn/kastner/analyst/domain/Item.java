@@ -7,9 +7,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "item")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Item {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String zhName;

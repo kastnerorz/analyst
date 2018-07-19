@@ -6,10 +6,6 @@ import javax.persistence.*;
 @Table(name = "jd_item")
 public class JdItem extends Item{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
     private String skuId;
 
     private String vendorId;
@@ -20,16 +16,6 @@ public class JdItem extends Item{
 
     @Column(columnDefinition = "TEXT")
     private String keyFeature;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getSkuId() {
         return skuId;
