@@ -246,7 +246,7 @@
 <!-- import ECharts -->
 <script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.js"></script>
 <script th:inline="javascript">
-    var app = new Vue({
+    let app = new Vue({
         el: '#app',
         data() {
             return {
@@ -364,39 +364,9 @@
             }
         },
         created () {
-            axios({
-                url: '/getImageListByItemId',
-                method: 'POST',
-                params: {
-                    id: [[${id}]]
-                }
-            })
-                .then( value=> {
-                    this.$set(this.itemInfo, 'basicImages', value.data.result.split(","))
-                })
-                .catch(function (reason) {
-                    console.log(reason);
-                });
+            this.getImageList()
             this.loading = true
-            axios({
-                url: '/getItemComments',
-                method: 'POST',
-                params: {
-                    id: [[${id}]]
-                }
-            })
-
-                .then(res => {
-                    this.loading = false
-                    this.comments = res.data.result
-                    console.log(res.data.result)
-                })
-                .catch(err => {
-                    this.loading = false
-                    this.$message.error(err)
-                })
-
-
+            this.getComments()
         },
         computed: {
         },
@@ -405,16 +375,50 @@
                 if(app.keyword != null){
                     window.location.href = 'search?keyword=' + app.keyword;
                 }
+            },
+            getImageList () {
+                axios({
+                    url: '/getImageListByItemId',
+                    method: 'POST',
+                    params: {
+                        id: [[${id}]]
+                    }
+                })
+                    .then( value=> {
+                        this.$set(this.itemInfo, 'basicImages', value.data.result.split(","))
+                    })
+                    .catch(function (reason) {
+                        console.log(reason);
+                    });
+            },
+            getComments () {
+                axios({
+                    url: '/getItemComments',
+                    method: 'POST',
+                    params: {
+                        id: [[${id}]]
+                    }
+                })
+
+                    .then(res => {
+                        this.loading = false
+                        this.comments = res.data.result
+                        console.log(res.data.result)
+                    })
+                    .catch(err => {
+                        this.loading = false
+                        this.$message.error(err)
+                    })
             }
         }
     });
 
 
 
-    var totalPriceChart = echarts.init(document.getElementById('totalPriceChart'));
+    let totalPriceChart = echarts.init(document.getElementById('totalPriceChart'));
 
     // 指定图表的配置项和数据
-    var totalVolumeChartOption = {
+    let totalVolumeChartOption = {
         title: {
             text: '历史总销量',
             left: 'center',
@@ -491,12 +495,12 @@
     // 使用刚指定的配置项和数据显示图表。
     totalPriceChart.setOption(totalVolumeChartOption);
 
-    var priceChart = echarts.init(document.getElementById('priceChart'));
+    let priceChart = echarts.init(document.getElementById('priceChart'));
 
-    var dateList = app.itemInfo.prices.map(function (item) {
+    let dateList = app.itemInfo.prices.map(function (item) {
         return item[0];
     });
-    var priceList = app.itemInfo.prices.map(function (item) {
+    let priceList = app.itemInfo.prices.map(function (item) {
         return item[1];
     });
 
@@ -532,12 +536,12 @@
 
 
 
-    var latestPriceChart = echarts.init(document.getElementById('latestPriceChart'));
+    let latestPriceChart = echarts.init(document.getElementById('latestPriceChart'));
 
-    var latestDateList = app.itemInfo.latestPrices.map(function (item) {
+    let latestDateList = app.itemInfo.latestPrices.map(function (item) {
         return item[0];
     });
-    var latestPriceList = app.itemInfo.latestPrices.map(function (item) {
+    let latestPriceList = app.itemInfo.latestPrices.map(function (item) {
         return item[1];
     });
 

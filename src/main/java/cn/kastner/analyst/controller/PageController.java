@@ -73,7 +73,7 @@ public class PageController {
             model.addAttribute("zhName", item.getZhName());
             model.addAttribute("itemModel", item.getModel());
             model.addAttribute("id", item.getId());
-            model.addAttribute("price", priceService.findLatestByItem(item));
+            model.addAttribute("price", priceService.findLatestByItem(item).getPrice());
             return "item";
         }
 
