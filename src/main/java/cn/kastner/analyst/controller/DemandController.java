@@ -29,7 +29,7 @@ public class DemandController {
      *
      * }
      */
-    @GetMapping(value = "users/{id}")
+    @GetMapping(value = "demand/{id}")
     public NetResult getDemand(@PathVariable("id") Long id) {
         Demand demand = demandService.findById(id);
         if (demand == null) {
@@ -42,7 +42,7 @@ public class DemandController {
         return netResult;
     }
 
-    @GetMapping(value = "users")
+    @GetMapping(value = "demand")
     public NetResult getDemands(Category category){
         List<Demand> demands = demandService.findAllByCategory(category);
         if(!demands.isEmpty()){
