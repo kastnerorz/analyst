@@ -6,9 +6,7 @@ import cn.kastner.analyst.service.detail.PhoneDetailService;
 import cn.kastner.analyst.util.NetResult;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +40,20 @@ public class CategoryController {
     }
 
 
-    @JsonIgnore
-    @RequestMapping(value="/getCategoryInfoByCategoryId")
-    public NetResult getCategoryInfoByCategoryId(@RequestParam Long categoryId) {
-        Category category = categoryService.findById(categoryId);
-        System.out.print(category.getCategoryId());
+    /**
+     * 获取品类信息
+     * @param id  品类 id
+     * @return {
+     *     data: {
+     *         category: {
+     *             ...
+     *         }
+     *     }
+     * }
+     */
+    @GetMapping(value= "/category")
+    public NetResult getCategoryById(@RequestParam Long id) {
+        Category category = categoryService.findById(id);
         if (category != null) {
             netResult.data = category;
             netResult.status = 0;
@@ -58,9 +65,16 @@ public class CategoryController {
         }
     }
 
-    @RequestMapping(value="/getItemListByCategoryId")
-    public NetResult getItemListByCategoryId(@RequestParam Long categoryId){
-        List<Item> items=itemService.findByCategoryId(categoryId);
+    /**
+     * 获取品类下的商品列表
+     * @param category 品类
+     * @return {
+     *
+     * }
+     */
+    @GetMapping(value= "/items")
+    public NetResult getItemListByCategory(Category category){
+        List<Item> items=itemService.findByCategory(category);
         if(!items.isEmpty()) {
             netResult.data = items;
             netResult.status = 0;
@@ -73,32 +87,9 @@ public class CategoryController {
     }
 
 
-    @RequestMapping(value="/getNeedListByCategoryId")
-    public NetResult getNeedListByCategoryId(Category category){
-        //一开始展示类别下的所有需求
-        List<Demand> demands = demandService.findAllByCategory(category);
-//        List<HashMap<String,Object>> data=new ArrayList<>();  //[ demand1:[{},{}],demand2:[{}，{}]]
-        if(!demands.isEmpty()){
-//            for(Demand demand:demands){
-//                HashMap<String,Object> demandList=new HashMap<>();
-//                demandList.put("demandId",demand.getId());
-//                demandList.put("categoryId",category);
-//                List<Param> params=paramService.findByDemand(demand);
-//                HashMap<String,Object> tmp=new HashMap<>();
-//                tmp.put(demand.getContent(),params);
-//                demandList.put("demand",tmp);
-//                data.add(demandList);
-//            }
-            netResult.data=demands;
-            netResult.status=0;
-            return netResult;
-        }
-        netResult.message="No such demands";
-        netResult.status=-1;
-        return netResult;
-    }
 
-    @RequestMapping(value = "/getParamsByDemand")
+
+    @GetMapping(value = "/params")
     public NetResult getParamsByDemand(Demand demand) {
         List<Param> paramList = paramService.findByDemand(demand);
         if (!paramList.isEmpty()) {
@@ -111,7 +102,7 @@ public class CategoryController {
         return netResult;
     }
 
-    @RequestMapping(value = "/getItemsAfterFilter")
+    @RequestMapping(value = "/itemsAfterFilter")
     public NetResult getItemsAfterFilter(@RequestParam List<Integer> batteryCap,
                                          @RequestParam List<Double> cpuClock,
                                          @RequestParam List<Double> romCapacity,

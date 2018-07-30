@@ -1,5 +1,6 @@
 package cn.kastner.analyst.service.core;
 
+import cn.kastner.analyst.domain.Category;
 import cn.kastner.analyst.domain.Item;
 
 import java.util.List;
@@ -63,6 +64,8 @@ public interface ItemService {
      * @return item deleted
      */
     Item delete(Long itemId);
+
+    List<Item> findByCategory(Category category);
 
     List<Item> findByCategoryId(Long categoryId);
 

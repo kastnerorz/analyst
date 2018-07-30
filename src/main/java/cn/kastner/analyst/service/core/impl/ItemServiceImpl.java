@@ -1,5 +1,6 @@
 package cn.kastner.analyst.service.core.impl;
 
+import cn.kastner.analyst.domain.Category;
 import cn.kastner.analyst.domain.Item;
 import cn.kastner.analyst.domain.JdItem;
 import cn.kastner.analyst.repository.core.ItemRepository;
@@ -64,6 +65,11 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findItemById(itemId);
         itemRepository.delete(item);
         return item;
+    }
+
+    @Override
+    public List<Item> findByCategory(Category category) {
+        return itemRepository.findByCategory(category);
     }
 
     @Override
