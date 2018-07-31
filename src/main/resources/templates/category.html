@@ -17,7 +17,8 @@
                             <span style="color:#409EFF;font-size: 30px;height: 40px;">智购</span>
                         </el-col>
                         <el-col :span="10">
-                            <el-input prefix-icon="el-icon-search" placeholder="请输入内容" v-model="keyword" @keyup.native.enter="search" clearable></el-input>
+                            <el-input prefix-icon="el-icon-search" placeholder="请输入内容" v-model="keyword"
+                                      @keyup.native.enter="search" clearable></el-input>
                         </el-col>
                         <el-col :span="2" :offset="6">
                             <el-button type="text">清单</el-button>
@@ -32,8 +33,14 @@
         <el-main style="padding:0">
             <el-row type="flex">
                 <el-col :span="18">
-                    <div style="padding:0 20px 20px 0">
-                        <el-button type="primary" class="button" @click="report">生成{{ keyword }}类别报告</el-button>
+
+                    <el-alert
+                            :title='"生成 " + keyword + " 品类数据报告"'
+                            type="success"
+                            description="我们根据收集的行业数据，自动生成品类数据报告，希望能给你一些帮助。">
+                    </el-alert>
+                    <div style="padding:10px 0 10px 0; float: right;">
+                        <el-button type="success" @click="report">生成{{ keyword }}类别报告</el-button>
                     </div>
                 </el-col>
             </el-row>
@@ -44,18 +51,33 @@
                         <el-col :span="6" :key="index" v-for="(item, index) in items">
                             <el-card :body-style="{ padding: '0px' }" justify="center" style="margin-bottom: 10px;">
                                 <div style="text-align: center;padding-top:20px">
-                                    <img :src='"https://img11.360buyimg.com/n1/s450x450_" + item.imageGroup.split(",")[0]' class="image" width="100%">
+                                    <img :src='"https://img11.360buyimg.com/n1/s450x450_" + item.imageGroup.split(",")[0]'
+                                         class="image" width="100%">
                                 </div>
-                                <div style="padding: 14px;height:28px;">
-                                    <span style="color:#c73420" v-if="item.priceList.length">￥ {{ item.priceList[0].price }}&nbsp</span>
-                                    <span style="font-size: 12px">（<span style="color:#c73420">{{ item.commentCountStr}}</span>
-                                        <span v-if="item.commentCountStr === null">暂无</span>评论）</span>
-                                </div>
-                                <div style="height:25px;padding-left:12px;">
-                                    <p style="font-weight: bold;margin: 0px;">{{ item.zhName }}</p>
-                                </div>
-                                <div class="bottom clearfix" style="padding-left:12px;">
-                                    <el-button type="text" class="button" @click="singleAnalyst(item.skuId)">查看分析</el-button>
+                                <div style="padding: 14px;">
+                                    <div style="height:25px;">
+                                        <p style="font-weight: bold;">{{ item.zhName }}</p>
+                                    </div>
+                                    <div style="margin-bottom: 10px">
+                                        <span style="color:#c73420; font-size: 8px;" v-if="item.priceList.length">￥<span
+                                                style="font-size: 16px;">{{ item.priceList[0].price || 0 }}</span></span>
+                                        <span style="font-size: 12px">（<span style="color:#c73420">{{ item.commentCountStr || '暂无' }}评论</span>)</span>
+                                        <!--<span v-if="item.commentCountStr === null">暂无</span>评论）</span>-->
+                                    </div>
+                                    <div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-bottom: 8px">
+                                        <el-tag size="small" style="margin-right: 4px;">游戏流畅</el-tag>
+                                        <el-tag size="small" style="margin-right: 4px;">屏幕大</el-tag>
+                                        <el-tag size="small" style="margin-right: 4px;">待机长</el-tag>
+                                    </div>
+                                    <div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-bottom: 8px">
+                                        <el-tag size="small" type="success" style="margin-right: 4px;">64 GB</el-tag>
+                                        <el-tag size="small" type="success" style="margin-right: 4px;">全网通</el-tag>
+                                        <el-tag size="small" type="success" style="margin-right: 4px;">晓龙 845</el-tag>
+                                    </div>
+                                    <div class="bottom" style="float: right;">
+                                        <el-button type="text" class="button" @click="singleAnalyst(item.skuId)">查看分析
+                                        </el-button>
+                                    </div>
                                 </div>
                             </el-card>
                         </el-col>
@@ -78,7 +100,8 @@
                         ></el-autocomplete>
                         <el-button type="primary">搜索</el-button>
 
-                        <el-collapse v-model="activeNames" @change="handleChange" :key="index" v-for="(demand,index) in demands">
+                        <el-collapse v-model="activeNames" @change="handleChange" :key="index"
+                                     v-for="(demand,index) in demands">
                             <el-collapse-item :title="demand.content" :name="index">
                                 <div>待补充内容</div>
                             </el-collapse-item>
@@ -116,44 +139,8 @@
             }
         },
         created() {
-            axios({
-                url: '/getItemListByCategoryId',
-                method: 'POST',
-                params: {
-                    categoryId: categoryId
-                }
-            })
-                .then(res => {
-                    this.items = res.data.data
-                    this.items.forEach(function (item, idx) {
-                        console.log(item.priceList.get(0).price)
-                    })
-                })
-                .catch(err => {
-                    // this.$message.error(err)
-                }),
-            axios({
-                url: '/getNeedListByCategoryId',
-                methods: 'POST',
-                params: {
-                    categoryId: categoryId
-                }
-            })
-                .then(res => {
-                    console.log(res.data.data);
-                    this.demands = res.data.data;
-                    for(let i = 0; i < this.demands.length; i++) {
-                        this.demandStrings.push({
-                            "id": this.demands[i].id,
-                            "content": this.demands[i].content
-                        })
-                    }
-                    // console.log(this.demandStrings);
-                    // this.demandStrings = this.demandStrings.map(item => {
-                    //     return Object.values(item)
-                    // })
-                    console.log(this.demandStrings);
-                })
+            this.getItems()
+            this.getDemands()
         },
         computed: {
             price(index) {
@@ -161,8 +148,47 @@
             }
         },
         methods: {
-            price(index) {
-                return this.items[index].priceList[0].price
+            getItems() {
+                axios({
+                    url: '/items',
+                    method: 'GET',
+                    params: {
+                        categoryId: categoryId
+                    }
+                })
+                    .then(res => {
+                        this.items = res.data.data
+                        this.items.forEach(function (item, idx) {
+                            console.log(item.priceList.get(0).price)
+                        })
+                    })
+                    .catch(err => {
+                        this.$message.error(err)
+                    })
+            },
+            getDemands() {
+                axios({
+                    url: '/demands',
+                    methods: 'GET',
+                    params: {
+                        categoryId: categoryId
+                    }
+                })
+                    .then(res => {
+                        console.log(res.data.data);
+                        this.demands = res.data.data;
+                        for (let i = 0; i < this.demands.length; i++) {
+                            this.demandStrings.push({
+                                "id": this.demands[i].id,
+                                "content": this.demands[i].content
+                            })
+                        }
+                        // console.log(this.demandStrings);
+                        // this.demandStrings = this.demandStrings.map(item => {
+                        //     return Object.values(item)
+                        // })
+                        console.log(this.demandStrings);
+                    })
             },
             querySearch(queryString, cb) {
                 let demandStrings = this.demandStrings;
