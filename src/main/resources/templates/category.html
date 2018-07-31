@@ -103,7 +103,7 @@
 
 <script th:inline="javascript">
     let categoryId = [[${categoryId}]]
-    let app = new Vue({
+    new Vue({
         el: '#app',
         data() {
             return {
@@ -179,12 +179,12 @@
                 console.log(item);
             },
             search() {
-                if (app.keyword != null) {
-                    window.location.href = 'search?keyword=' + app.keyword;
+                if (this.keyword != null) {
+                    window.location.href = 'search?keyword=' + this.keyword;
                 }
             },
             report() {
-                window.location.href = 'report?keyword=' + app.keyword;
+                window.location.href = 'report?keyword=' + this.keyword;
             },
             singleAnalyst(skuId) {
                 window.location.href = '/search?keyword=https://item.jd.com/' + skuId + '.html';
