@@ -1,6 +1,8 @@
 package cn.kastner.analyst.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -37,9 +39,11 @@ public class Item {
     @Column(columnDefinition = "TEXT")
     private String imageGroup;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<Feature> featureList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<Comment> commentList;
 

@@ -62,7 +62,6 @@
                                         <span style="color:#c73420; font-size: 8px;" v-if="item.priceList.length">￥<span
                                                 style="font-size: 16px;">{{ item.priceList[0].price || 0 }}</span></span>
                                         <span style="font-size: 12px">（<span style="color:#c73420">{{ item.commentCountStr || '暂无' }}评论</span>)</span>
-                                        <!--<span v-if="item.commentCountStr === null">暂无</span>评论）</span>-->
                                     </div>
                                     <div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-bottom: 8px">
                                         <el-tag size="small" style="margin-right: 4px;">游戏流畅</el-tag>
@@ -152,11 +151,7 @@
                 return this.items[index].priceList[0].price
             },
             paramGroupsSelected() {
-                let paramGroupsSelected;
-                let d = this.demandsSelected;
-                for(let i = 0, len1 = d.length; i < len; i++) {
-                    for(let j = 0, len2 = d)
-                }
+
             }
         },
         methods: {
@@ -220,6 +215,8 @@
                 } else {
                     this.demandsSelected.push(item)
                 }
+                this.demandInput = ''
+
             },
             deleteDemand(item) {
                 this.demandsSelected.splice(item);

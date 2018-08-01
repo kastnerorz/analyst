@@ -385,7 +385,7 @@
                     }
                 })
                     .then( value=> {
-                        this.$set(this.itemInfo, 'basicImages', value.data.result.split(","))
+                        this.$set(this.itemInfo, 'basicImages', value.data.data.split(","))
                     })
                     .catch(function (reason) {
                         console.log(reason);
