@@ -37,8 +37,8 @@ public class ItemController {
     }
 
     @RequestMapping(value = "/getItemInfoByItemId")
-    public NetResult getItemInfoByItemId(@RequestParam Long itemId) {
-        Item item = itemService.findById(itemId);
+    public NetResult getItemInfoByItemId(@RequestParam Long id) {
+        Item item = itemService.findById(id);
         if (item != null) {
             netResult.data = item;
             netResult.status = 0;
@@ -63,8 +63,8 @@ public class ItemController {
     }
 
     @RequestMapping(value = "/getImageListByItemId")
-    public NetResult getImageListByItemId(@RequestParam Long itemId) {
-        Item item = itemService.findById(itemId);
+    public NetResult getImageListByItemId(@RequestParam Long id) {
+        Item item = itemService.findById(id);
         if (item != null) {
             netResult.data = item.getImageGroup();
             netResult.status = 0;
@@ -89,8 +89,8 @@ public class ItemController {
 //        return netResult;
 //    }
     @RequestMapping(value = "/getItemComments")
-    public NetResult getItemComments (@RequestParam Long itemId){
-        Item item = itemService.findById(itemId);
+    public NetResult getItemComments (@RequestParam Long id){
+        Item item = itemService.findById(id);
         if (item.getCrawDate() == null || LocalDate.now().minusWeeks(1).isAfter(item.getCrawDate())) {
             try {
                 jdCrawlerService.crawlItemComment(item);

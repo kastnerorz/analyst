@@ -11,4 +11,7 @@ public interface PhoneParamGroupRepository extends JpaRepository<PhoneParamGroup
         JpaSpecificationExecutor<PhoneParamGroupRepository> {
     List<PhoneParamGroup> findPhoneParamGroupByDemand(Demand demand);
     PhoneParamGroup findPhoneParamGroupById(Long id);
+    PhoneParamGroup findPhoneParamGroupByCpuAndCpuClockAndDemandAndOsAndRamCapacityAndRamClockAndRamType(
+        String cpu, Double cpuClock, Demand demand, String os, Double ramCapacity, Double ramClock, String ramType
+    );
 }

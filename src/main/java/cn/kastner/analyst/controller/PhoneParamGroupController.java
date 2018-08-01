@@ -6,9 +6,7 @@ import cn.kastner.analyst.repository.core.PhoneParamGroupRepository;
 import cn.kastner.analyst.service.core.DemandService;
 import cn.kastner.analyst.util.NetResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,7 +26,7 @@ public class PhoneParamGroupController {
         this.netResult = netResult;
     }
 
-    @GetMapping(value = "/phoneParamGroup/{id}")
+    @GetMapping(value = "/phoneParamGroups/{id}")
     public NetResult getPhoneParamGroup(@PathVariable("id") Long id) {
         PhoneParamGroup phoneParamGroup = phoneParamGroupRepository.findPhoneParamGroupById(id);
         if (phoneParamGroup == null) {
@@ -42,16 +40,45 @@ public class PhoneParamGroupController {
         return netResult;
     }
 
-    @GetMapping(value = "/phoneParamGroup")
-    public NetResult getPhoneParamGroups(Demand demand) {
-        List<PhoneParamGroup> phoneParamGroups = phoneParamGroupRepository.findPhoneParamGroupByDemand(demand);
-        if (phoneParamGroups.isEmpty()) {
+    @GetMapping(value = "/phoneParamGroups")
+    public NetResult getPhoneParamGroups(Demand d) {
+        Demand demand = demandService.findById(d.getId());
+        if (demand == null) {
             netResult.status = -1;
-            netResult.message = "参数错误";
+            netResult.message = "提供的 demandId 有误";
         } else {
+            List<PhoneParamGroup> phoneParamGroups = phoneParamGroupRepository.findPhoneParamGroupByDemand(demand);
+            if (phoneParamGroups.isEmpty()) {
+                netResult.status = -1;
+                netResult.message = "参数错误";
+            } else {
+                netResult.status = 0;
+                netResult.message = "查找成功";
+                netResult.data = phoneParamGroups;
+            }
+        }
+        return netResult;
+    }
+
+    @PostMapping(value = "/phoneParamGroups")
+    public NetResult createPhoneParamGroup(PhoneParamGroup p, @RequestParam Demand d) {
+        Demand demand = demandService.findById(d.getId());
+        if (demand == null) {
+            netResult.status = -1;
+            netResult.message = "提供的 demandId 有误";
+        } else {
+            PhoneParamGroup phoneParamGroup = new PhoneParamGroup();
+            phoneParamGroup.setCpu(p.getCpu());
+            phoneParamGroup.setCpuClock(p.getCpuClock());
+            phoneParamGroup.setDemand(demand);
+            phoneParamGroup.setOs(p.getOs());
+            phoneParamGroup.setRamCapacity(p.getRamCapacity());
+            phoneParamGroup.setRamClock(p.getRamClock());
+            phoneParamGroup.setRamType(p.getRamType());
+            phoneParamGroupRepository.save(phoneParamGroup);
             netResult.status = 0;
-            netResult.message = "查找成功";
-            netResult.data = phoneParamGroups;
+            netResult.message = "创建成功";
+            netResult.data = phoneParamGroup;
         }
         return netResult;
     }
