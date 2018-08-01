@@ -40,7 +40,7 @@
                             description="我们根据收集的行业数据，自动生成品类数据报告，希望能给你一些帮助。">
                     </el-alert>
                     <div style="padding:10px 0 10px 0; float: right;">
-                        <el-button type="success" @click="report">生成{{ keyword }}类别报告</el-button>
+                        <el-button type="primary" @click="report">生成{{ keyword }}类别报告</el-button>
                     </div>
                 </el-col>
             </el-row>
@@ -91,17 +91,21 @@
                         <div slot="header">
                             <span>需求清单</span>
                         </div>
-                        <el-autocomplete
-                                class="inline-input"
-                                v-model="state"
-                                :fetch-suggestions="querySearch"
-                                placeholder="请输入内容"
-                                @select="handleSelect"
-                        ></el-autocomplete>
-                        <el-button type="primary">搜索</el-button>
-
+                        <div style="padding-bottom: 10px">
+                            <el-autocomplete
+                                    class="inline-input"
+                                    v-model="demandInput"
+                                    :fetch-suggestions="querySearch"
+                                    placeholder="请输入内容"
+                                    @select="handleSelect"
+                            ></el-autocomplete>
+                            <el-button type="primary">添加需求</el-button>
+                        </div>
+                        <div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-bottom: 10px">
+                            <el-tag size="small" style="margin-right: 4px;" v-for="demand in demandsSelected" :key="demand.content" closable @close="deleteDemand">{{ demand.content }}</el-tag>
+                        </div>
                         <el-collapse v-model="activeNames" @change="handleChange" :key="index"
-                                     v-for="(demand,index) in demands">
+                                     v-for="(param,index) in paramGroupsSelected">
                             <el-collapse-item :title="demand.content" :name="index">
                                 <div>待补充内容</div>
                             </el-collapse-item>
@@ -132,9 +136,10 @@
             return {
                 keyword: [[${keyword}]],
                 items: [],
-                demand: [],
+                demands: [],
                 demandStrings: [],
-                state: '',
+                demandInput: '',
+                demandsSelected: [],
                 activeNames: ['1']
             }
         },
@@ -145,6 +150,13 @@
         computed: {
             price(index) {
                 return this.items[index].priceList[0].price
+            },
+            paramGroupsSelected() {
+                let paramGroupsSelected;
+                let d = this.demandsSelected;
+                for(let i = 0, len1 = d.length; i < len; i++) {
+                    for(let j = 0, len2 = d)
+                }
             }
         },
         methods: {
@@ -158,9 +170,6 @@
                 })
                     .then(res => {
                         this.items = res.data.data
-                        this.items.forEach(function (item, idx) {
-                            console.log(item.priceList.get(0).price)
-                        })
                     })
                     .catch(err => {
                         this.$message.error(err)
@@ -175,34 +184,49 @@
                     }
                 })
                     .then(res => {
-                        console.log(res.data.data);
-                        this.demands = res.data.data;
-                        for (let i = 0; i < this.demands.length; i++) {
-                            this.demandStrings.push({
-                                "id": this.demands[i].id,
-                                "content": this.demands[i].content
-                            })
+                        for(let i = 0, len = res.data.data.length; i < len; i++) {
+                            res.data.data[i].value = res.data.data[i].content
                         }
-                        // console.log(this.demandStrings);
-                        // this.demandStrings = this.demandStrings.map(item => {
-                        //     return Object.values(item)
-                        // })
-                        console.log(this.demandStrings);
+                        this.demands = res.data.data;
+                    })
+                    .catch(err => {
+                        this.$message.error(err)
                     })
             },
             querySearch(queryString, cb) {
-                let demandStrings = this.demandStrings;
-                let results = queryString ? demandStrings.filter(this.createFilter(queryString)) : demandStrings;
+                let demands = this.demands;
+                let results = queryString ? demands.filter(this.createFilter(queryString)) : demands;
                 // 调用 callback 返回建议列表的数据
-                cb(results);
+                clearTimeout(this.timeout);
+                this.timeout = setTimeout(() => {
+                    cb(results);
+                }, 2000 * Math.random());
             },
             createFilter(queryString) {
-                return (demandString) => {
-                    return (demandString.value.indexOf(queryString) === 0);
+                return (state) => {
+                    return (state.value.indexOf(queryString) === 0);
                 };
             },
             handleSelect(item) {
-                console.log(item);
+                let find = false;
+                let d = this.demandsSelected;
+                for (let i = 0, len = d.length; i < len; i++) {
+                    if (d[i].id === item.id) {
+                        find = true
+                    }
+                }
+                if (find) {
+                    this.$message.error('需求重复')
+                } else {
+                    this.demandsSelected.push(item)
+                }
+            },
+            deleteDemand(item) {
+                this.demandsSelected.splice(item);
+                this.$message({
+                    type: 'success',
+                    message: '删除成功'
+                })
             },
             search() {
                 if (this.keyword != null) {
