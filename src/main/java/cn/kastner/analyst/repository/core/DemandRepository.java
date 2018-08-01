@@ -11,5 +11,6 @@ public interface DemandRepository extends JpaRepository<Demand, Long>,
         JpaSpecificationExecutor<DemandRepository> {
     Demand findDemandById(Long demandId);
     List<Demand> findDemandsByCategory(Category category);
+    Demand findDemandByContent(String content);
     List<Demand> findDemandsByCategoryAndContentContaining(Category category, String keyword);
 }

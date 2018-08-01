@@ -37,6 +37,8 @@ public interface DemandService {
      */
     List<Demand> findByKeyword(Category category, String keyword);
 
+    Demand findByContent(String content);
+
     /**
      * retrieve all demands
      *

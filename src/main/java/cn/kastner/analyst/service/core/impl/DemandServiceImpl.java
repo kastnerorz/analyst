@@ -41,6 +41,11 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
+    public Demand findByContent(String content) {
+        return demandRepository.findDemandByContent(content);
+    }
+
+    @Override
     public List<Demand> findAll() {
         return demandRepository.findAll();
     }

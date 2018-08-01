@@ -30,7 +30,7 @@ public class Demand {
      */
     @JsonIgnore
     @OneToMany(mappedBy = "demand")
-    private List<Param> paramList;
+    private List<PhoneParamGroup> phoneParamGroups;
 
     /**
      * 计数器
@@ -56,14 +56,6 @@ public class Demand {
         this.content = content;
     }
 
-    public List<Param> getParamList() {
-        return paramList;
-    }
-
-    public void setParamList(List<Param> paramList) {
-        this.paramList = paramList;
-    }
-
     public Long getFlag() {
         return flag;
     }
@@ -78,5 +70,13 @@ public class Demand {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public List<PhoneParamGroup> getPhoneParamGroups() {
+        return phoneParamGroups;
+    }
+
+    public void setPhoneParamGroups(List<PhoneParamGroup> phoneParamGroups) {
+        this.phoneParamGroups = phoneParamGroups;
     }
 }
