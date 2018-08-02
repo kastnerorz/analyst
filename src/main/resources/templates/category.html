@@ -73,7 +73,11 @@
                                         <el-tag size="small" type="success" style="margin-right: 4px;">全网通</el-tag>
                                         <el-tag size="small" type="success" style="margin-right: 4px;">晓龙 845</el-tag>
                                     </div>
-                                    <div class="bottom" style="float: right;">
+                                    <div class="bottom" style="float: left;">
+                                        <el-button type="text" class="button" @click="buy">想买
+                                        </el-button>
+                                    </div>
+                                    <div class="bottom" style="float: right;left:20px;">
                                         <el-button type="text" class="button" @click="singleAnalyst(item.skuId)">查看分析
                                         </el-button>
                                     </div>
@@ -155,6 +159,12 @@
             }
         },
         methods: {
+            buy() {
+                this.$message({
+                    type: 'success',
+                    message: '我们知道了！'
+                })
+            },
             getItems() {
                 axios({
                     url: '/items',
