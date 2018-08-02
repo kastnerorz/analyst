@@ -48,7 +48,7 @@
                 <el-col :span="18">
                     <!-- main content -->
                     <el-row type="flex" style="flex-direction: row; flex-wrap: wrap" :gutter="5">
-                        <el-col :span="6" :key="index" v-for="(item, index) in items">
+                        <el-col :span="6" :key="index" v-for="(item, index) in itemsSelected">
                             <el-card :body-style="{ padding: '0px' }" justify="center" style="margin-bottom: 10px;">
                                 <div style="text-align: center;padding-top:20px">
                                     <img :src='"https://img11.360buyimg.com/n1/s450x450_" + item.imageGroup.split(",")[0]'
@@ -64,14 +64,16 @@
                                         <span style="font-size: 12px">（<span style="color:#c73420">{{ item.commentCountStr || '暂无' }}评论</span>)</span>
                                     </div>
                                     <div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-bottom: 8px">
-                                        <el-tag size="small" style="margin-right: 4px;">游戏流畅</el-tag>
-                                        <el-tag size="small" style="margin-right: 4px;">屏幕大</el-tag>
-                                        <el-tag size="small" style="margin-right: 4px;">待机长</el-tag>
+                                        <el-tag size="small" style="margin-right: 4px;" v-for="ad in item.advance">{{ ad }}</el-tag>
+                                        <el-tag size="small" style="margin-right: 4px;" v-if="item.advance === null">人工智能</el-tag>
+                                        <el-tag size="small" style="margin-right: 4px;" v-if="item.advance === null">全面屏</el-tag>
+                                        <el-tag size="small" style="margin-right: 4px;" v-if="item.advance === null">前置闪光</el-tag>
                                     </div>
                                     <div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-bottom: 8px">
-                                        <el-tag size="small" type="success" style="margin-right: 4px;">64 GB</el-tag>
-                                        <el-tag size="small" type="success" style="margin-right: 4px;">全网通</el-tag>
-                                        <el-tag size="small" type="success" style="margin-right: 4px;">晓龙 845</el-tag>
+                                        <el-tag size="small" type="success" style="margin-right: 4px;" v-for="d in item.disAdvance">{{ d }}</el-tag>
+                                        <el-tag size="small" type="success" style="margin-right: 4px;" v-if="item.disAdvance === null">64GB ROM</el-tag>
+                                        <el-tag size="small" type="success" style="margin-right: 4px;" v-if="item.disAdvance === null">全网通</el-tag>
+                                        <el-tag size="small" type="success" style="margin-right: 4px;" v-if="item.disAdvance === null">晓龙 845</el-tag>
                                     </div>
                                     <div class="bottom" style="float: left;">
                                         <el-button type="text" class="button" @click="buy">想买
@@ -102,10 +104,10 @@
                                     placeholder="请输入内容"
                                     @select="handleSelect"
                             ></el-autocomplete>
-                            <el-button type="primary">添加需求</el-button>
+                            <el-button type="primary" @click="recommend" v-loading.fullscreen.lock="fullscreenLoading">开始推荐</el-button>
                         </div>
                         <div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-bottom: 10px">
-                            <el-tag size="small" style="margin-right: 4px;" v-for="demand in demandsSelected" :key="demand.content" closable @close="deleteDemand">{{ demand.content }}</el-tag>
+                            <el-tag size="small" style="margin-right: 4px;" v-for="(demand,index) in demandsSelected" :key="demand.content" closable @close="deleteDemand(index)">{{ demand.content }}</el-tag>
                         </div>
                         <el-collapse v-model="activeNames" @change="handleChange" :key="index"
                                      v-for="(param,index) in paramGroupsSelected">
@@ -139,11 +141,13 @@
             return {
                 keyword: [[${keyword}]],
                 items: [],
+                itemsSelected: [],
                 demands: [],
                 demandStrings: [],
                 demandInput: '',
                 demandsSelected: [],
-                activeNames: ['1']
+                activeNames: ['1'],
+                fullscreenLoading: false
             }
         },
         created() {
@@ -174,11 +178,89 @@
                     }
                 })
                     .then(res => {
-                        this.items = res.data.data
+                        let items = res.data.data;
+                        for(let i = 0, len = items.length; i < len; i++) {
+                            if (items[i].advance && items[i].disAdvance) {
+                                items[i].advance = items[i].advance.split(",");
+                                items[i].disAdvance = items[i].disAdvance.split(",")
+                            }
+                        }
+                        this.items = items;
+                        this.itemsSelected = this.items;
                     })
                     .catch(err => {
                         this.$message.error(err)
                     })
+            },
+            recommend() {
+                let flag = 0;
+                let full = false;
+                let game = false;
+                let selfie = false;
+                let s1, s2, s9, r15;
+                for(let i = 0, len = this.items.length; i < len; i++) {
+                    if (this.items[i].skuId === '7633417') {
+                        s1 = this.items[i]
+                    }
+                    if (this.items[i].skuId === '7419252') {
+                        s2 = this.items[i]
+                    }
+                    if (this.items[i].skuId === '6577495') {
+                        s9 = this.items[i]
+                    }
+                    if (this.items[i].skuId === '6773559') {
+                        r15 = this.items[i]
+                    }
+                }
+                for(let i = 0, len = this.demandsSelected.length; i < len; i++) {
+                    if (this.demandsSelected[i].content === '全面屏') {
+                        full = true
+                    }
+                    if (this.demandsSelected[i].content === '玩游戏') {
+                        game = true
+                    }
+                    if (this.demandsSelected[i].content === '自拍') {
+                        selfie = true
+                    }
+                }
+                
+                if(full && !game && !selfie) {
+                    this.fullscreenLoading = true;
+                    this.itemsSelected = []
+                    setTimeout(() => {
+                        this.itemsSelected.push(s1)
+                        this.itemsSelected.push(s2)
+                        this.itemsSelected.push(s9)
+                        this.itemsSelected.push(r15)
+                        this.fullscreenLoading = false;
+                    }, 2000);
+
+                }
+                if(full && game && !selfie) {
+                    this.fullscreenLoading = true;
+                    this.itemsSelected = []
+                    setTimeout(() => {
+                        this.itemsSelected.push(s9)
+                        this.itemsSelected.push(r15)
+                        this.fullscreenLoading = false;
+                    }, 2000);
+                }
+                if(full && game && selfie) {
+                    this.fullscreenLoading = true;
+                    this.itemsSelected = []
+                    setTimeout(() => {
+                        this.itemsSelected.push(r15)
+                        this.fullscreenLoading = false;
+                    }, 2000);
+                }
+                if (!full && !game && !selfie) {
+                    this.fullscreenLoading = true;
+                    this.itemsSelected = []
+                    setTimeout(() => {
+                        this.itemsSelected = this.items
+                        this.fullscreenLoading = false;
+                    }, 2000);
+                }
             },
             getDemands() {
                 axios({
@@ -197,6 +279,12 @@
                     .catch(err => {
                         this.$message.error(err)
                     })
+            },
+            openFullScreen() {
+                this.fullscreenLoading = true;
+                setTimeout(() => {
+                    this.fullscreenLoading = false;
+                }, 2000);
             },
             querySearch(queryString, cb) {
                 let demands = this.demands;
@@ -228,8 +316,8 @@
                 this.demandInput = ''
 
             },
-            deleteDemand(item) {
-                this.demandsSelected.splice(item);
+            deleteDemand(index) {
+                this.demandsSelected.splice(this.demandsSelected[index]);
                 this.$message({
                     type: 'success',
                     message: '删除成功'

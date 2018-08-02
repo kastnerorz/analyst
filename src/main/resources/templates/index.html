@@ -30,7 +30,7 @@
                         <el-input placeholder="请输入内容" prefix-icon="el-icon-search" v-model="keyword" @keyup.native.enter="search"></el-input>
                     </el-col>
                     <el-col :xs="2" :sm="2" :md="1" :lg="1" :xl="1" justify="left">
-                        <el-button type="primary" @click="search" :loading="isLoading" icon="el-icon-search" >搜索</el-button>
+                        <el-button type="primary" @click="search" :loading="isLoading" icon="el-icon-search" v-loading.fullscreen.lock="fullscreenLoading">搜索</el-button>
                     </el-col>
                 </el-row>
                 <el-row  type="flex" class="row-bg three-tips" justify="center" align="middle" :gutter="12">
@@ -123,12 +123,23 @@
             return {
                 keyword: '',
                 searchButtonContent: '搜索',
-                isLoading: false
+                isLoading: false,
+                fullscreenLoading: false
             }
         },
         methods: {
+            openFullScreen() {
+                this.fullscreenLoading = true;
+                setTimeout(() => {
+                    this.fullscreenLoading = false;
+                }, 2000);
+            },
             search: function() {
+                this.fullscreenLoading = true;
                 window.location.href = 'search?keyword=' + app.keyword;
+                setTimeout(() => {
+                    this.fullscreenLoading = false;
+                }, 2000);
             }
             // $.ajax({
             //     url: '/search',
