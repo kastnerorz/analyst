@@ -43,7 +43,7 @@
                 <el-col :span="15" justify="center">
                     <el-card shadow="hover">
                         <div class="header">
-                            <span>市场占比</span>
+                            <span>市场占比(百分比%)</span>
                         </div>
                         <div id="topTenBrand" style="width:100%;height:300px;">
                         </div>
@@ -72,7 +72,8 @@
                 <el-col :span="7" justify="center">
                     <el-card shadow="hover">
                         <div class="header">
-                            <span>品牌的商品种类数</span>
+                            <!--<span>品牌的商品种类数</span>-->
+                            <span>各品牌的销量</span>
                         </div>
                         <div id="saleNumber" style="width:100%;height:400px;">
                         </div>
@@ -92,7 +93,7 @@
                 <el-col :span="15" justify="center">
                     <el-card shadow="hover">
                         <div class="header">
-                            <span>按价格区分{{ category }}类别下的商品数</span>
+                            <span>按价格聚类统计{{ category }}类别下的商品数</span>
                         </div>
                         <div id="priceChart" style="width:90%;height:300px;">
                         </div>
@@ -185,15 +186,103 @@
                         }
                     })
                     // console.log(this.itemNum)
-                    let topTenBrand = echarts.init(document.getElementById('topTenBrand'));
-                    topTenBrand.clear()
-                    topTenBrand.setOption({
+                    // let topTenBrand = echarts.init(document.getElementById('topTenBrand'));
+                    // topTenBrand.clear()
+                    // topTenBrand.setOption({
+                    //     // title: {
+                    //     //     text: '',
+                    //     //     subtext: ''
+                    //     // },
+                    //     xAxis: {
+                    //         data: xx,
+                    //         // data: this.marketPartName,
+                    //         axisLabel: {
+                    //             inside: true,
+                    //             textStyle: {
+                    //                 color: '#fff'
+                    //             }
+                    //         },
+                    //         axisTick: {
+                    //             show: false
+                    //         },
+                    //         axisLine: {
+                    //             show: false
+                    //         },
+                    //         z: 10
+                    //     },
+                    //     yAxis: {
+                    //         axisLine: {
+                    //             show: false
+                    //         },
+                    //         axisTick: {
+                    //             show: false
+                    //         },
+                    //         axisLabel: {
+                    //             textStyle: {
+                    //                 color: '#999'
+                    //             }
+                    //         }
+                    //     },
+                    //     dataZoom: [
+                    //         {
+                    //             type: 'inside'
+                    //         }
+                    //     ],
+                    //     series: [
+                    //         { // For shadow
+                    //             type: 'bar',
+                    //             itemStyle: {
+                    //                 normal: {color: 'rgba(0,0,0,0.0)'}
+                    //             },
+                    //             barGap:'-100%',
+                    //             barCategoryGap:'40%',
+                    //             data: yy,
+                    //             // data: this.dataShadow,
+                    //             animation: false
+                    //         },
+                    //         {
+                    //             type: 'bar',
+                    //             itemStyle: {
+                    //                 normal: {
+                    //                     color: new echarts.graphic.LinearGradient(
+                    //                         0, 0, 0.6, 1,
+                    //                         [
+                    //                             {offset: 0, color: '#409EFF'},
+                    //                             {offset: 0.7, color: '#409EFF'},
+                    //                             {offset: 1, color: '#409EFF'}
+                    //                         ]
+                    //                     )
+                    //                 },
+                    //                 emphasis: {
+                    //                     color: new echarts.graphic.LinearGradient(
+                    //                         0, 0, 0, 1,
+                    //                         [
+                    //                             {offset: 0, color: '#5799d9'},
+                    //                             {offset: 0.5, color: '#4b86c6'},
+                    //                             {offset: 1, color: '#4176b3'}
+                    //                         ]
+                    //                     )
+                    //                 }
+                    //             },
+                    //             data: this.marketPartSale
+                    //         }
+                    //     ]
+                    // });
+                    let colorChoose = echarts.init(document.getElementById('topTenBrand'));
+                    let color = ['华为','OPPO',' Vivo', '小米','苹果', '魅族', '三星','锤子','其他'];
+                    let colorNum = [24.2, 18.9, 14.2,9.8,13.2,9.8,2.2,2,1,7.4];
+                    let maxNum = 400;
+                    let shadow = [];
+                    for (let i = 0; i < colorNum.length; i++) {
+                        shadow.push(colorNum);
+                    }
+                    let colorChooseOption = {
                         // title: {
                         //     text: '',
                         //     subtext: ''
                         // },
                         xAxis: {
-                            data: this.marketPartName,
+                            data: color,
                             axisLabel: {
                                 inside: true,
                                 textStyle: {
@@ -234,7 +323,7 @@
                                 },
                                 barGap:'-100%',
                                 barCategoryGap:'40%',
-                                data: this.dataShadow,
+                                data: shadow,
                                 animation: false
                             },
                             {
@@ -244,9 +333,9 @@
                                         color: new echarts.graphic.LinearGradient(
                                             0, 0, 0.6, 1,
                                             [
-                                                {offset: 0, color: '#409EFF'},
-                                                {offset: 0.7, color: '#409EFF'},
-                                                {offset: 1, color: '#409EFF'}
+                                                {offset: 0, color: '#225fb8'},
+                                                {offset: 0.7, color: '#225fb8'},
+                                                {offset: 1, color: '#225fb8'}
                                             ]
                                         )
                                     },
@@ -261,10 +350,11 @@
                                         )
                                     }
                                 },
-                                data: this.marketPartSale
+                                data: colorNum
                             }
                         ]
-                    });
+                    };
+                    colorChoose.setOption(colorChooseOption);
                     let average = echarts.init(document.getElementById('average'));
                     averageOption = {
                         // title: {
@@ -301,8 +391,89 @@
                             }
                         ]
                     };
-                    average.setOption(averageOption);
+                    let iiiioption = {
+                        color: ['#63aef2'],
+                        title: {
+                            text: '',
+                            //textStyle: {
+                            //    color: '#fff'
+                            //}
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            },
+                            formatter: "{b} <br> 均价 {c}"
+                        },
+                        /*legend: {
+                            data: [date]
+                        },*/
+                        grid: {
+                            left: '4%',
+                            right: '4%',
+                            bottom: '2%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'value',
+                            boundaryGap: [0, 0.01],
+                            min: 0,
+                            max: 8000,
+                            interval: 20,
+                            axisLabel: {
+                                formatter: 'value',
+                                textStyle: {
+                                    //color: '#fff',
+                                    fontWeight: '80'
+                                }
+                            }
+                        },
+                        yAxis: {
+                            type: 'category',
+                            data: ['华为','OPPO',' Vivo', '苹果', '小米', '魅族', '三星','锤子'],
+                            axisLabel: {
+                                show: true,
+                                interval: 0,
+                                rotate: 0,
+                                margin: 10,
+                                inside: false,
+                                textStyle: {
+                                    // color: '#fff',
+                                    fontWeight: '50'
+                                }
+                            }
+                        },
+                        series: [{
+                            type: 'bar',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    // formatter: '{c}',
+                                    formatter: function(v) {
+                                        var val = v.data;
+                                        if (val == 0) {
+                                            return '';
+                                        }
+                                        return val;
+                                    },
+                                    color: '#fff'
+                                }
+                            },
+                            data: [1904, 2316, 2258, 5476, 1237,1016, 3738, 1906]
+                        }]
+                    };
+                    average.setOption(iiiioption);
+
                     let saleNumber = echarts.init(document.getElementById('saleNumber'));
+                    let iiii = [
+                        {value:21.2, name:'华为'},
+                        {value:16.5, name:'OPPO'},
+                        {value:14.2, name:'Vivo'},
+                        {value:13.2, name:'小米'},
+                        {value:9.8, name:'苹果'},
+                        {value:12.6, name:'其他'}
+                    ],
                     numberOption = {
                         title : {
                             // text: '商品种类数目',
@@ -340,7 +511,7 @@
                                 center : ['50%', '50%'],
                                 roseType : 'area',
                                 color: ['#93d2f6','#6ec1f2','#57b4f0','#419adf','#3076b8','#3887cb','#48a8ee','#66c2f9'],
-                                data: this.itemNum
+                                data: iiii
                             }
                         ]
                     };
@@ -369,14 +540,21 @@
                         }
                     })
                     console.log(this.priceData)
+
                     let priceChart = echarts.init(document.getElementById('priceChart'));
                     // let hours = ['1000以下', '1000-2000', '2000-3000', '3000-4000', '4000-5000', '5000-6000', '6000-7000','7000+'];
                     let days = ['数目'];
                     //let priceData = [[0,0,5],[0,1,10],[0,2,9],[0,3,6],[0,4,4],[0,5,8],[0,6,1],[0,7,7]]
-                    priceData = this.priceData.map(function (item) {
+
+                    let newprice = ['1160','1782','2782','3644','4861','6699','8388'];
+                    let newpricedata = [[0,0,16],[0,1,24],[0,2,24],[0,3,14],[0,4,11],[0,5,2],[0,6,2]];
+                    priceData = newpricedata.map(function (item) {
                         return [item[1], item[0], item[2]];
                     });
-                    priceChartOption = {
+                    // priceData = this.priceData.map(function (item) {
+                    //     return [item[1], item[0], item[2]];
+                    // });
+                    let priceChartOption = {
                         // title: {
                         //     text: ''
                         // },
@@ -398,7 +576,8 @@
                         },
                         xAxis: {
                             type: 'category',
-                            data: this.price,
+                            // data: this.price,
+                            data: newprice,
                             boundaryGap: false,
                             splitLine: {
                                 show: false,
@@ -414,6 +593,7 @@
                         yAxis: {
                             type: 'category',
                             data: days,
+                            // data: days,
                             axisLine: {
                                 Chartshow: false
                             }
@@ -432,11 +612,22 @@
                         }]
                     };
                     priceChart.setOption(priceChartOption);
+
                     let saleMostPrice = echarts.init(document.getElementById('saleMostPrice'));
+                    console.log(this.moneySaleNum);
+                    let hhh = [
+                        [28,1160],
+                        [29,1782],
+                        [24,2782],
+                        [9,3644],
+                        [5,4861],
+                        [3,6699],
+                        [2,8388]
+                    ]
                     saleMostPriceOption = {
                         tooltip: {
                             trigger: 'item',
-                            formatter: "销量,价格区间+ <br/>{b}  {c} ({d}%)",
+                            formatter: "销量,价格区间({d}%)<br/> {c}",
                             position: 'middle'
                         },
                         series: [{
@@ -445,7 +636,7 @@
                             radius: '68%',
                             center: ['50%', '50%'],
                             clockwise: false,
-                            data: this.moneySaleNum,
+                            data: hhh,
                             label: {
                                 normal: {
                                     textStyle: {
@@ -517,6 +708,52 @@
                     // console.log(myData)
                     // console.log(thisYearData)
                     let attention = echarts.init(document.getElementById('attention'));
+                    let main = [
+                        {
+                            name: '全网通',
+                            value: 6000
+                        },
+                        {
+                            name: '人脸识别',
+                            value: 8000
+                        },
+                        {
+                            name: '快速充电',
+                            value: 6181
+                        }, {
+                            name: '游戏',
+                            value: 7886
+                        },
+                        {
+                            name: '全面屏',
+                            value: 6181
+                        },
+                        {
+                            name: '苹果',
+                            value: 4386
+                        },
+                        {
+                            name: 'AI拍照',
+                            value: 6181
+                        },
+                        {
+                            name: '光学防抖',
+                            value: 5386
+                        },
+                        {
+                            name: '曲面屏',
+                            value: 5386
+                        },
+                        {
+                            name: '双卡双待',
+                            value: 5386
+                        },
+                        {
+                            name: '双摄',
+                            value: 5386
+                        }
+
+                    ]
                     attentionOption = {
                         title:{
                             // text:"搜索关键词热度 ",
@@ -547,219 +784,324 @@
                                     shadowColor: '#999'
                                 }
                             },
-                            data: this.mainWords
+                            data: main
+                            // data: this.mainWords
                         }]
                     };
                     attention.setOption(attentionOption);
                     // 关键词热度
                     let hot = echarts.init(document.getElementById('hot'));
+                    var category = ['人脸识别', '游戏', '全面屏'];
+                    var barData = [77, 48, 21];
+                    // var lineData = [125, 125, 125]
+                    var outlineData = [150, 150, 150]
 
-
-
-                    let a = [[1, 1]]
-                    let timeLineData = [1]
-                    let background = "rgba(0,0,0,0)"; // 背景
-                    let option = {
-                        baseOption: {
-                            backgroundColor: background,
-                            timeline: {
-                                show: false,
-                                top: 0,
-                                data: []
-                            },
-                            legend : {
-                                top : '5%',
-                                left : '51%',
-                                itemWidth : 30,
-                                itemHeight : 22,
-                                itemGap: 300,
-                                icon : 'horizontal',
-                                textStyle : {
-                                    color : '#999',
-                                    fontSize : 14,
-                                },
-                                data: ['']
-                            },
-                            grid: [{
-                                show: false,
-                                left: '5%',
-                                top: '10%',
-                                bottom: '8%',
-                                containLabel: true,
-                                width: '37%'
-                            }, {
-                                show: false,
-                                left: '10%',
-                                top: '10%',
-                                bottom: '8%',
-                                width: '0%'
-                            }, {
-                                show: false,
-                                left: '20%',
-                                top: '10%',
-                                bottom: '8%',
-                                containLabel: true,
-                                width: '50%'
-                            }],
-                            xAxis: [{
-                                type: 'value',
-                                inverse: true,
-                                axisLine: {
-                                    show: false
-                                },
-                                axisTick: {
-                                    show: false
-                                },
-                                position: 'top',
-                                axisLabel: {
-                                    show: false
-                                },
-                                splitLine: {
-                                    show: false
-                                }
-                            }, {
-                                gridIndex: 1,
-                                show: false
-                            }, {
-                                gridIndex: 2,
-                                axisLine: {
-                                    show: false
-                                },
-                                axisTick: {
-                                    show: false
-                                },
-                                position: 'top',
-                                axisLabel: {
-                                    show: false
-                                },
-                                splitLine: {
-                                    show: false
-                                }
-                            }],
-                            yAxis: [{
-                                type: 'category',
-                                inverse: true,
-                                position: 'right',
-                                axisLine: {
-                                    show: false
-                                },
-                                axisTick: {
-                                    show: false
-                                },
-                                axisLabel: {
-                                    show: false
-                                },
-                                data: myData
-                            }, {
-                                gridIndex: 1,
-                                type: 'category',
-                                inverse: true,
-                                position: 'left',
-                                axisLine: {
-                                    show: false
-                                },
-                                axisTick: {
-                                    show: false
-                                },
-                                axisLabel: {
-                                    show: true,
-                                    textStyle: {
-                                        color: 'rgba(0,0,0,0.95)',
-                                        fontSize: 14
-                                    }
-
-                                },
-                                data: myData.map(function(value) {
-                                    return {
-                                        value: value,
-                                        textStyle: {
-                                            align: 'center'
-                                        }
-                                    }
-                                })
-                            }, {
-                                gridIndex: 2,
-                                type: 'category',
-                                inverse: true,
-                                position: 'left',
-                                axisLine: {
-                                    show: false
-                                },
-                                axisTick: {
-                                    show: false
-                                },
-                                axisLabel: {
-                                    show: false
-
-                                },
-                                data: myData
-                            }],
-                            series: []
-
+                    option = {
+                        //backgroundColor: '#000',
+                        grid: [{
+                            left: '0',
+                            bottom: '0',
+                            top: 0,
+                            right: 30
+                        }],
+                        xAxis: {
+                            show: false
                         },
-                        options: []
-                    };
-                    option.baseOption.timeline.data.push(timeLineData[0]);
-                    option.options.push({
+                        yAxis: {
+                            data: category,
+                            show: true,
+                            axisLabel: {
+                                inside: true,
+                                verticalAlign: 'middle',
+                                lineHeight: 1500,
+                                color: 'rgba(0,0,0,1)',
+                                fontSize: 18
+                            },
+                            axisLine: {
+                                show: false
+                            }
+                        },
                         series: [
-                            {
+                            { // 背景图
+                                name: '',
                                 type: 'pictorialBar',
-                                xAxisIndex: 2,
-                                yAxisIndex: 2,
-                                symbol: 'rect',
-                                itemStyle: {
-                                    normal: {
-                                        color: 'rgba(64,158,255,0.27)'
-                                    }
-                                },
-                                barWidth: 10,
-                                symbolRepeat: true,
-                                symbolSize: 14,
-                                data: lineData,
+                                backgroundColor: 'rgba(0,0,0,0)',
+                                symbol:'none',
+                                barWidth: 100,
+                                data: outlineData,
                                 barGap: '-100%',
-                                barCategoryGap: 0,
-                                label: {
-                                    normal: {
-                                        show: false,
-                                        formatter: (series) => {
-                                            return thisYearData[timeLineData[0]][series.dataIndex] + '%'
-                                        },
-                                        position: 'insideTopRight',
-                                        textStyle:{
-                                            color: 'rgba(0,0,0,0.95)',
-                                            fontSize: 20,
-                                        },
-                                        offset: [0, -15],
-                                    }
-                                },
                                 z: -100,
-                                animationEasing: 'elasticOut',
-                                animationDelay: function (dataIndex, params) {
+                                symbolOffset: [0, '-30%'],
+                                barCategoryGap: 0,
+                                // animationEasing: 'elasticOut',
+                                animationDelay: function(dataIndex, params) {
                                     return params.index * 30;
                                 }
-                            }, {
-                                name: '2018',
+                            },
+                            { // 蓝柱下面方块
+                                name: '',
                                 type: 'pictorialBar',
-                                xAxisIndex: 2,
-                                yAxisIndex: 2,
                                 symbol: 'rect',
-                                barWidth: 10,
+                                barWidth: '3%',
+                                symbolOffset: [80, 0],
+                                itemStyle: {
+                                    normal: {
+                                        color: 'rgba(0,0,0,0)'
+                                    }
+                                },
+                                z: -11,
+                                symbolRepeat: true,
+                                symbolSize: 20,
+                                data: lineData,
+                                barGap: 20,
+                                barCategoryGap: 0,
+                                animationEasing: 'elasticOut',
+                                animationDelay: function(dataIndex, params) {
+                                    return params.index * 30;
+                                }
+                            },
+                            { // 蓝柱
+                                name: '', // blue bar
+                                type: 'pictorialBar',
+                                symbol: 'rect',
+                                barWidth: '3%',
+                                symbolOffset: [80, 0],
                                 itemStyle: {
                                     normal: {
                                         barBorderRadius: 5,
-                                        color: '#409eff'
+                                        color: 'rgb(64, 158, 255)'
                                     }
                                 },
                                 symbolRepeat: true,
-                                symbolSize: 14,
-                                data: thisYearData[timeLineData[0]],
+                                symbolSize: 20,
+                                // symbolClip: true,
+                                data: barData,
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        formatter: function(value, index) {
+                                            console.log(arguments)
+                                            return `${value.value}`
+                                        },
+                                        position: 'right',
+                                        offset: [5, 0],
+                                        // offset: [0, 4],
+                                        color: 'rgb(64, 158, 255)',
+                                        fontSize: 18
+                                    }
+                                },
                                 animationEasing: 'elasticOut',
-                                animationDelay: function (dataIndex, params) {
-                                    return params.index * 30 * 1.1;
+                                animationDelay: function(dataIndex, params) {
+                                    return params.index * 30 * 1.1
                                 }
                             }
-                        ]
-                    });
+                        ],
+                        animation: true
+                    }
+                    // let a = [[1, 1]]
+                    // let timeLineData = [1]
+                    // let background = "rgba(0,0,0,0)"; // 背景
+                    // let option = {
+                    //     baseOption: {
+                    //         backgroundColor: background,
+                    //         timeline: {
+                    //             show: false,
+                    //             top: 0,
+                    //             data: []
+                    //         },
+                    //         legend : {
+                    //             top : '5%',
+                    //             left : '51%',
+                    //             itemWidth : 30,
+                    //             itemHeight : 22,
+                    //             itemGap: 300,
+                    //             icon : 'horizontal',
+                    //             textStyle : {
+                    //                 color : '#999',
+                    //                 fontSize : 14,
+                    //             },
+                    //             data: ['']
+                    //         },
+                    //         grid: [{
+                    //             show: false,
+                    //             left: '5%',
+                    //             top: '10%',
+                    //             bottom: '8%',
+                    //             containLabel: true,
+                    //             width: '37%'
+                    //         }, {
+                    //             show: false,
+                    //             left: '10%',
+                    //             top: '10%',
+                    //             bottom: '8%',
+                    //             width: '0%'
+                    //         }, {
+                    //             show: false,
+                    //             left: '20%',
+                    //             top: '10%',
+                    //             bottom: '8%',
+                    //             containLabel: true,
+                    //             width: '50%'
+                    //         }],
+                    //         xAxis: [{
+                    //             type: 'value',
+                    //             inverse: true,
+                    //             axisLine: {
+                    //                 show: false
+                    //             },
+                    //             axisTick: {
+                    //                 show: false
+                    //             },
+                    //             position: 'top',
+                    //             axisLabel: {
+                    //                 show: false
+                    //             },
+                    //             splitLine: {
+                    //                 show: false
+                    //             }
+                    //         }, {
+                    //             gridIndex: 1,
+                    //             show: false
+                    //         }, {
+                    //             gridIndex: 2,
+                    //             axisLine: {
+                    //                 show: false
+                    //             },
+                    //             axisTick: {
+                    //                 show: false
+                    //             },
+                    //             position: 'top',
+                    //             axisLabel: {
+                    //                 show: false
+                    //             },
+                    //             splitLine: {
+                    //                 show: false
+                    //             }
+                    //         }],
+                    //         yAxis: [{
+                    //             type: 'category',
+                    //             inverse: true,
+                    //             position: 'right',
+                    //             axisLine: {
+                    //                 show: false
+                    //             },
+                    //             axisTick: {
+                    //                 show: false
+                    //             },
+                    //             axisLabel: {
+                    //                 show: false
+                    //             },
+                    //             data: myData
+                    //         }, {
+                    //             gridIndex: 1,
+                    //             type: 'category',
+                    //             inverse: true,
+                    //             position: 'left',
+                    //             axisLine: {
+                    //                 show: false
+                    //             },
+                    //             axisTick: {
+                    //                 show: false
+                    //             },
+                    //             axisLabel: {
+                    //                 show: true,
+                    //                 textStyle: {
+                    //                     color: 'rgba(0,0,0,0.95)',
+                    //                     fontSize: 14
+                    //                 }
+                    //
+                    //             },
+                    //             data: myData.map(function(value) {
+                    //                 return {
+                    //                     value: value,
+                    //                     textStyle: {
+                    //                         align: 'center'
+                    //                     }
+                    //                 }
+                    //             })
+                    //         }, {
+                    //             gridIndex: 2,
+                    //             type: 'category',
+                    //             inverse: true,
+                    //             position: 'left',
+                    //             axisLine: {
+                    //                 show: false
+                    //             },
+                    //             axisTick: {
+                    //                 show: false
+                    //             },
+                    //             axisLabel: {
+                    //                 show: false
+                    //
+                    //             },
+                    //             data: myData
+                    //         }],
+                    //         series: []
+                    //
+                    //     },
+                    //     options: []
+                    // };
+                    // option.baseOption.timeline.data.push(timeLineData[0]);
+                    // option.options.push({
+                    //     series: [
+                    //         {
+                    //             type: 'pictorialBar',
+                    //             xAxisIndex: 2,
+                    //             yAxisIndex: 2,
+                    //             symbol: 'rect',
+                    //             itemStyle: {
+                    //                 normal: {
+                    //                     color: 'rgba(64,158,255,0.27)'
+                    //                 }
+                    //             },
+                    //             barWidth: 10,
+                    //             symbolRepeat: true,
+                    //             symbolSize: 14,
+                    //             data: lineData,
+                    //             barGap: '-100%',
+                    //             barCategoryGap: 0,
+                    //             label: {
+                    //                 normal: {
+                    //                     show: false,
+                    //                     formatter: (series) => {
+                    //                         return thisYearData[timeLineData[0]][series.dataIndex] + '%'
+                    //                     },
+                    //                     position: 'insideTopRight',
+                    //                     textStyle:{
+                    //                         color: 'rgba(0,0,0,0.95)',
+                    //                         fontSize: 20,
+                    //                     },
+                    //                     offset: [0, -15],
+                    //                 }
+                    //             },
+                    //             z: -100,
+                    //             animationEasing: 'elasticOut',
+                    //             animationDelay: function (dataIndex, params) {
+                    //                 return params.index * 30;
+                    //             }
+                    //         }, {
+                    //             name: '2018',
+                    //             type: 'pictorialBar',
+                    //             xAxisIndex: 2,
+                    //             yAxisIndex: 2,
+                    //             symbol: 'rect',
+                    //             barWidth: 10,
+                    //             itemStyle: {
+                    //                 normal: {
+                    //                     barBorderRadius: 5,
+                    //                     color: '#409eff'
+                    //                 }
+                    //             },
+                    //             symbolRepeat: true,
+                    //             symbolSize: 14,
+                    //             data: thisYearData[timeLineData[0]],
+                    //             animationEasing: 'elasticOut',
+                    //             animationDelay: function (dataIndex, params) {
+                    //                 return params.index * 30 * 1.1;
+                    //             }
+                    //         }
+                    //     ]
+                    // });
                     hot.setOption(option);
                 })
         },
