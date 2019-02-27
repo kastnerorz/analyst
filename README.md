@@ -41,7 +41,7 @@ git clone git@github.com:kastnerorz/analyst.git
 
 ```shell
 cd analyst
-mvn install
+nvm install
 ```
 
 3. Run Analyst：
